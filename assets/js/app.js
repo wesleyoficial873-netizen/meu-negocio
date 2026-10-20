@@ -119,7 +119,7 @@ function cardHTML(m){
   return `
   <article class="card">
     <div class="card-media">
-      <img src="${m.thumb}" alt="${m.name}" loading="lazy" onerror="this.src='${m.image}'">
+      <img src="${m.thumb || m.image}" alt="${m.name}" loading="lazy" onerror="if(!this.dataset.fallback){this.dataset.fallback='1';this.src='assets/img/placeholder.svg'}">
       <div class="card-topbar">
         <span class="tag">${m.category}</span>
         ${badge ? `<span class="tag dark">${badge}</span>`:''}

@@ -90,6 +90,7 @@ th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#6b7280;bac
 </div>
 
 <script src="assets/js/data.js"></script>
+<script src="assets/js/more-models.js"></script>
 <script>
 let editingId=null;
 function initAdmin(){
@@ -108,7 +109,7 @@ function renderTable(){
   if(term) list = list.filter(m=> (m.name+' '+m.category).toLowerCase().includes(term));
   tbody.innerHTML = list.map(m=>`
     <tr>
-      <td><img src="${m.thumb||m.image}" style="width:64px;height:42px;object-fit:cover;border-radius:8px"></td>
+      <td><img src="${m.thumb||m.image}" onerror="this.src='assets/img/placeholder.svg'" style="width:64px;height:42px;object-fit:cover;border-radius:8px"></td>
       <td><strong style="font-size:13px">${m.name}</strong><div style="font-size:11px;color:#6b7280">${m.demo}</div></td>
       <td>${m.category}</td>
       <td><div style="display:flex;gap:6px;flex-wrap:wrap">
