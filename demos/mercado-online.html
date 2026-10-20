@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mercado Online — Demonstração</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#f0fdf4;color:#052e16}
+.demo-bar{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:#065f46;color:white;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.btn{padding:10px 16px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer;border:none}
+.container{max-width:1180px;margin:0 auto;padding:0 20px}
+.header{background:white;border-bottom:1px solid #dcfce7;padding:12px 0;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.logo{font-weight:800;font-size:22px;color:#065f46}
+.logo span{font-weight:400;color:#16a34a}
+.search{flex:1;max-width:500px;display:flex;background:#f0fdf4;border:1px solid #dcfce7;border-radius:999px;padding:8px 14px;gap:8px}
+.search input{border:none;outline:none;background:transparent;flex:1}
+.hero{background:white;border:1px solid #dcfce7;border-radius:20px;padding:16px;margin:16px 0;display:grid;grid-template-columns:1.3fr .7fr;gap:16px}
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
+.badge{background:#dcfce7;color:#065f46;padding:6px 10px;border-radius:999px;font-size:11px;letter-spacing:.08em;text-transform:uppercase}
+.grid{display:grid;grid-template-columns:180px 1fr;gap:16px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.categories{background:white;border:1px solid #dcfce7;border-radius:16px;padding:14px}
+.categories h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.categories li{list-style:none;padding:8px 0;font-size:13px;border-bottom:1px solid #f0fdf4;display:flex;justify-content:space-between}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.products{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.products{grid-template-columns:1fr}}
+.card{background:white;border:1px solid #dcfce7;border-radius:16px;padding:12px;position:relative}
+.card img{height:120px;object-fit:contain;width:100%}
+.off{position:absolute;top:10px;left:10px;background:#ef4444;color:white;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700}
+.add{width:100%;margin-top:8px;background:#16a34a;color:white;padding:10px;border-radius:999px;font-weight:700;cursor:pointer;border:none}
+.cart-bar{position:sticky;bottom:0;background:white;border-top:1px solid #dcfce7;padding:12px;display:flex;justify-content:space-between;align-items:center;gap:12px}
+footer{text-align:center;padding:20px;color:#6b7280;font-size:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;place-items:center;z-index:200}
+.modal.open{display:grid}
+.box{background:white;padding:24px;border-radius:16px;width:min(420px,92vw)}
+</style>
+</head>
+<body>
+<div class="demo-bar"><span>Modelo de demonstração — Mercado Online</span><div style="display:flex;gap:10px"><a href="../index.html" class="btn" style="background:white;color:#065f46">Voltar</a><button class="btn" style="background:#16a34a;color:white" onclick="openM()">Quero este</button></div></div>
+<div class="header container"><div class="logo">BOM PREÇO <span>supermercado</span></div><div class="search">🔍 <input placeholder="Buscar por produto, marca ou categoria"><button class="btn" style="background:#065f46;color:white;padding:8px 14px">Buscar</button></div><div style="display:flex;gap:10px;align-items:center"><span style="font-size:12px">📍 Entrega em Chapadão do Sul</span><button class="btn" style="background:#f0fdf4;border:1px solid #dcfce7">Carrinho (2)</button></div></div>
+<div class="container">
+  <div class="hero"><div><span class="badge">Oferta do dia • até 18h</span><h2 style="margin:10px 0">Hortifrúti fresco direto do produtor</h2><p style="font-size:13px;color:#6b7280">Frutas e verduras selecionadas com 20% off e entrega agendada.</p><div style="display:flex;gap:10px;margin-top:12px"><button class="btn" style="background:#065f46;color:white">Ver ofertas</button><button class="btn" style="background:white;border:1px solid #dcfce7">Agendar entrega</button></div></div><img src="https://images.unsplash.com/photo-1542838132-92c53300491e?q=80&w=600&auto=format&fit=crop" style="border-radius:16px;width:100%;height:180px;object-fit:cover"></div>
+  <div class="grid">
+    <div class="categories"><h4>Categorias</h4><ul><li>Hortifrúti <span>42</span></li><li>Açougue <span>28</span></li><li>Padaria <span>18</span></li><li>Bebidas <span>36</span></li><li>Limpeza <span>22</span></li><li>Bebê <span>12</span></li></ul><div style="margin-top:12px;background:#065f46;color:white;padding:12px;border-radius:12px"><strong style="font-size:13px">Entrega agendada</strong><p style="font-size:11px;opacity:.9">Escolha o dia e horário ideal</p></div></div>
+    <div class="products">
+      <div class="card"><span class="off">-20%</span><img src="https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?q=80&w=400&auto=format&fit=crop"><h4 style="font-size:13px;margin-top:8px">Banana Prata 1kg</h4><p style="font-size:11px;color:#6b7280">Direto do produtor</p><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><strong>R$ 7,99</strong><span style="font-size:11px;color:#9ca3af;text-decoration:line-through">R$ 9,99</span></div><button class="add" onclick="add()">Adicionar</button></div>
+      <div class="card"><img src="https://images.unsplash.com/photo-1582284540020-8acbe03f26cc?q=80&w=400&auto=format&fit=crop"><h4 style="font-size:13px;margin-top:8px">Alcatra com Maminha 1kg</h4><p style="font-size:11px;color:#6b7280">Corte nobre • Resfriado</p><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><strong>R$ 42,90</strong></div><button class="add" onclick="add()">Adicionar</button></div>
+      <div class="card"><span class="off">-15%</span><img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?q=80&w=400&auto=format&fit=crop"><h4 style="font-size:13px;margin-top:8px">Leite Integral 1L</h4><p style="font-size:11px;color:#6b7280">Caixa com 12 • Entrega hoje</p><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><strong>R$ 4,99</strong><span style="font-size:11px;color:#9ca3af;text-decoration:line-through">R$ 5,89</span></div><button class="add" onclick="add()">Adicionar</button></div>
+      <div class="card"><img src="https://images.unsplash.com/photo-1608198093002-ad4e0055af07?q=80&w=400&auto=format&fit=crop"><h4 style="font-size:13px;margin-top:8px">Pão Francês 6 unidades</h4><p style="font-size:11px;color:#6b7280">Fornado hoje • 6h e 16h</p><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><strong>R$ 6,50</strong></div><button class="add" onclick="add()">Adicionar</button></div>
+      <div class="card"><img src="https://images.unsplash.com/photo-1622483767028-3f66f32aef97?q=80&w=400&auto=format&fit=crop"><h4 style="font-size:13px;margin-top:8px">Refrigerante 2L</h4><p style="font-size:11px;color:#6b7280">Gelado • Leve 3 pague 2</p><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><strong>R$ 8,99</strong></div><button class="add" onclick="add()">Adicionar</button></div>
+      <div class="card"><span class="off">-10%</span><img src="https://images.unsplash.com/photo-1584305574647-0cc949a2bb9f?q=80&w=400&auto=format&fit=crop"><h4 style="font-size:13px;margin-top:8px">Kit Limpeza Completo</h4><p style="font-size:11px;color:#6b7280">5 produtos essenciais</p><div style="display:flex;gap:6px;align-items:center;margin-top:6px"><strong>R$ 32,90</strong></div><button class="add" onclick="add()">Adicionar</button></div>
+    </div>
+  </div>
+</div>
+<div class="cart-bar container"><div><strong id="c">3 itens no carrinho</strong><p style="font-size:12px;color:#6b7280">Subtotal: <span id="sub">R$ 58,88</span> • Entrega grátis acima de R$ 150</p></div><button class="btn" style="background:#065f46;color:white" onclick="toast()">Finalizar no WhatsApp</button></div>
+<footer>© Bom Preço Supermercado • Demonstração SITEFOLIO</footer>
+<div class="modal" id="m" onclick="if(event.target===this)closeM()"><div class="box"><h3>Mercado Online inteligente?</h3><p style="font-size:13px;color:#6b7280;margin:8px 0 16px">Transforme seu mercado em e-commerce local.</p><button class="btn" style="width:100%;background:#065f46;color:white" onclick="go()">Quero este modelo</button><button class="btn" style="width:100%;margin-top:8px;background:white;border:1px solid #dcfce7" onclick="closeM()">Voltar</button></div></div>
+<script>let n=3,v=58.88;function add(){n++;v+=7.99;document.getElementById('c').textContent=n+' itens no carrinho';document.getElementById('sub').textContent='R$ '+v.toFixed(2).replace('.',',')}function toast(){add()}function openM(){document.getElementById('m').classList.add('open')}function closeM(){document.getElementById('m').classList.remove('open')}function go(){window.open('https://wa.me/5567999016886?text='+encodeURIComponent('Olá, gostaria de solicitar um site baseado no modelo Mercado Online.'),'_blank')}</script>
+</body>
+</html>

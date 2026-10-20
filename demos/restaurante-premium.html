@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Restaurante Premium — Demonstração SITEFOLIO</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#fcfaf7;color:#1a1a1a}
+.demo-bar{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;gap:16px;padding:10px 20px;background:#0a0a0a;color:white;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+.demo-bar span{opacity:.8}
+.demo-bar-actions{display:flex;gap:10px}
+.btn{padding:10px 18px;border-radius:999px;font-size:12px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;border:1px solid transparent;cursor:pointer}
+.btn-ghost{background:white;color:#0a0a0a}
+.btn-dark{background:#c9a96e;color:#0a0a0a;border-color:#c9a96e}
+.header{padding:18px 0;border-bottom:1px solid #e7e2d9;background:white;position:sticky;top:42px;z-index:90}
+.container{max-width:1180px;margin:0 auto;padding:0 20px}
+.nav{display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:'Cormorant Garamond',serif;font-size:26px;letter-spacing:.08em}
+.logo em{font-weight:400;font-style:italic;color:#8a7a60}
+.nav-links{display:flex;gap:24px;font-size:13px;letter-spacing:.08em;text-transform:uppercase}
+.nav-links a{color:#6b6b6b;text-decoration:none}
+.nav-right{display:flex;gap:12px;align-items:center}
+.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:32px;align-items:center;padding:48px 0}
+@media(max-width:900px){.hero{grid-template-columns:1fr}}
+.hero h1{font-family:'Cormorant Garamond',serif;font-size:56px;line-height:.9;font-weight:600}
+.hero h1 em{font-style:italic;color:#8a7a60;font-weight:400}
+.hero p{color:#6b6b6b;margin:16px 0 22px;line-height:1.6}
+.hero-img{border-radius:24px;overflow:hidden;aspect-ratio:4/3;object-fit:cover;width:100%}
+.filters{display:flex;gap:10px;margin:18px 0;flex-wrap:wrap}
+.pill{padding:8px 16px;border-radius:999px;border:1px solid #e7e2d9;background:white;font-size:12px;letter-spacing:.06em;text-transform:uppercase}
+.pill.active{background:#0a0a0a;color:white;border-color:#0a0a0a}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
+@media(max-width:900px){.grid{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.card{background:white;border:1px solid #ede8e0;border-radius:20px;overflow:hidden}
+.card img{height:180px;object-fit:cover;width:100%}
+.card-body{padding:16px}
+.card-body h4{font-size:15px}
+.card-body p{font-size:12px;color:#8a8a8a;margin:6px 0}
+.price{font-weight:700}
+.add{width:100%;margin-top:12px;padding:12px;border-radius:999px;border:1px solid #0a0a0a;background:#0a0a0a;color:white;font-weight:600;letter-spacing:.06em;text-transform:uppercase;font-size:11px;cursor:pointer}
+.info{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin:40px 0;padding:24px;background:#0a0a0a;color:white;border-radius:20px}
+.info h4{font-family:'Cormorant Garamond',serif;font-size:18px}
+.info p{font-size:12px;color:#b9a896;margin-top:6px;line-height:1.6}
+footer{background:#0a0a0a;color:#a8a8a8;text-align:center;padding:24px;font-size:12px}
+.cart{position:fixed;bottom:20px;right:20px;background:#0a0a0a;color:white;padding:14px 18px;border-radius:999px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;place-items:center;z-index:200}
+.modal.open{display:grid}
+.modal-box{background:white;padding:28px;border-radius:20px;width:min(420px,92vw)}
+</style>
+</head>
+<body>
+<div class="demo-bar"><span>Modelo de demonstração — Restaurante Premium</span><div class="demo-bar-actions"><a href="../index.html" class="btn btn-ghost">Voltar para modelos</a><button class="btn btn-dark" onclick="openM()">Quero este modelo</button></div></div>
+<header class="header"><div class="container nav">
+  <div class="logo">MAISON <em>Lumière</em></div>
+  <div class="nav-links"><a href="#">Cardápio</a><a href="#">Reservas</a><a href="#">Sobre</a><a href="#">Contato</a></div>
+  <div class="nav-right"><span style="font-size:12px;color:#6b6b6b">Seg a Dom • 11h às 23h</span><button class="btn btn-dark" onclick="toast()">Pedir agora</button></div>
+</div></header>
+
+<div class="container">
+  <section class="hero">
+    <div>
+      <p style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8a7a60">Cozinha autoral desde 2012 • Chapadão do Sul</p>
+      <h1>Sabor que <em>permanece</em> na memória</h1>
+      <p>Cardápio autoral, ingredientes selecionados e uma experiência que vai do salão ao delivery com o mesmo padrão. Faça seu pedido direto pelo WhatsApp.</p>
+      <div style="display:flex;gap:12px">
+        <button class="btn btn-dark" onclick="toast()">Ver cardápio completo</button>
+        <button class="btn" style="border:1px solid #0a0a0a;background:white">Fazer reserva</button>
+      </div>
+      <div style="display:flex;gap:20px;margin-top:18px;font-size:12px;color:#6b6b6b"><span>★ 4.9 (847 avaliações)</span><span>Entrega em 30-45 min</span></div>
+    </div>
+    <img class="hero-img" src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?q=80&w=900&auto=format&fit=crop" alt="Restaurante">
+  </section>
+
+  <div class="filters"><span class="pill active">Todos</span><span class="pill">Entradas</span><span class="pill">Principais</span><span class="pill">Massas</span><span class="pill">Sobremesas</span><span class="pill">Vinhos</span></div>
+
+  <div class="grid">
+    <div class="card"><img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?q=80&w=600&auto=format&fit=crop"><div class="card-body"><h4>Risoto de Funghi com Trufa</h4><p>Arborio, funghi fresco e azeite trufado</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="price">R$ 89</span><span style="font-size:11px;color:#6b6b6b">450g • Serve 1</span></div><button class="add" onclick="add()">Adicionar ao pedido</button></div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=600&auto=format&fit=crop"><div class="card-body"><h4>Salmoni Croccante</h4><p>Salmão, crosta de ervas e legumes baby</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="price">R$ 112</span><span style="font-size:11px;color:#6b6b6b">320g • Serve 1</span></div><button class="add" onclick="add()">Adicionar ao pedido</button></div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop"><div class="card-body"><h4>Tagliatelle al Tartufo</h4><p>Massa fresca, manteiga de sálvia e parmesão</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="price">R$ 78</span><span style="font-size:11px;color:#6b6b6b">280g • Serve 1</span></div><button class="add" onclick="add()">Adicionar ao pedido</button></div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop"><div class="card-body"><h4>Pizza Bianca Gourmet</h4><p>Mussarela de búfala, jamón e rúcula</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="price">R$ 94</span><span style="font-size:11px;color:#6b6b6b">35cm • 8 fatias</span></div><button class="add" onclick="add()">Adicionar ao pedido</button></div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?q=80&w=600&auto=format&fit=crop"><div class="card-body"><h4>Tiramisù della Casa</h4><p>Clássico italiano com café especial</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="price">R$ 32</span><span style="font-size:11px;color:#6b6b6b">120g</span></div><button class="add" onclick="add()">Adicionar ao pedido</button></div></div>
+    <div class="card"><img src="https://images.unsplash.com/photo-1476224203421-9ac39bcb3327?q=80&w=600&auto=format&fit=crop"><div class="card-body"><h4>Steak Au Poivre</h4><p>Bife ancho, pimenta verde e batatas rústicas</p><div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px"><span class="price">R$ 138</span><span style="font-size:11px;color:#6b6b6b">420g • Serve 1</span></div><button class="add" onclick="add()">Adicionar ao pedido</button></div></div>
+  </div>
+
+  <div class="info">
+    <div><h4>Horário de funcionamento</h4><p>Segunda a quinta 11h–15h e 19h–23h<br>Sexta e sábado até 00h<br>Domingo 11h–16h</p></div>
+    <div><h4>Localização</h4><p>Av. Brasil Central, 1240<br>Chapadão do Sul, MS<br>Estacionamento com manobrista</p></div>
+    <div><h4>Pedidos e reservas</h4><p>WhatsApp: (67) 99901-6886<br>Reservas com 2h de antecedência<br>Taxa de entrega a partir de R$ 6</p></div>
+  </div>
+</div>
+
+<div class="cart"><span id="cartCount">0 itens • R$ 0,00</span><button class="btn btn-dark" style="padding:8px 14px" onclick="toast()">Finalizar pedido</button></div>
+<footer>© 2025 Maison Lumière • Demonstração SITEFOLIO • Fotos ilustrativas via Unsplash</footer>
+
+<div class="modal" id="modal" onclick="if(event.target===this)closeM()"><div class="modal-box"><h3>Gostou deste modelo?</h3><p style="font-size:13px;color:#6b6b6b;margin:8px 0 16px">Você será redirecionado para o WhatsApp com a mensagem pronta.</p><button class="btn btn-dark" style="width:100%" onclick="go()">Quero este modelo — Restaurante Premium</button><button class="btn" style="width:100%;margin-top:8px;border:1px solid #e5e7eb;background:white" onclick="closeM()">Continuar navegando</button></div></div>
+<script>
+let c=0,v=0;function add(){c++;v+=89;document.getElementById('cartCount').textContent=c+' itens • R$ '+v.toFixed(2).replace('.',',');}
+function toast(){document.getElementById('cartCount').textContent='Pedido no WhatsApp aberto'; setTimeout(()=>{add();},300);}
+function openM(){document.getElementById('modal').classList.add('open')}
+function closeM(){document.getElementById('modal').classList.remove('open')}
+function go(){window.open('https://wa.me/5567999016886?text='+encodeURIComponent('Olá, gostaria de solicitar um site baseado no modelo Restaurante Premium.'),'_blank')}
+</script>
+</body>
+</html>

@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SITEFOLIO — Painel de Administração</title>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+<style>
+.admin-wrap{max-width:1280px;margin:0 auto;padding:24px 20px}
+.admin-grid{display:grid;gap:20px;grid-template-columns:1fr}
+@media(min-width:960px){.admin-grid{grid-template-columns:340px 1fr}}
+.card-admin{background:white;border:1px solid #e7e7e3;border-radius:20px;padding:20px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th,td{padding:12px 10px;text-align:left;border-bottom:1px solid #e7e7e3;white-space:nowrap}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#6b7280;background:#fcfcf9}
+.badge-admin{font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:5px 8px;border-radius:999px;border:1px solid #e7e7e3}
+.badge-admin.on{background:#0a0a0a;color:white;border-color:#0a0a0a}
+</style>
+</head>
+<body>
+<header class="header">
+  <div class="container header-inner">
+    <a href="index.html" class="brand"><div class="brand-mark">S</div><div><div class="brand-name">SITEFOLIO</div><div class="brand-sub">Painel admin</div></div></a>
+    <div class="header-actions">
+      <a href="index.html" class="btn btn-ghost btn-small">← Voltar para modelos</a>
+      <button class="btn btn-primary btn-small" onclick="exportData()">Exportar JSON</button>
+    </div>
+  </div>
+</header>
+
+<div class="admin-wrap">
+  <div style="padding:18px 0">
+    <h1 style="font-family:'Instrument Serif',serif;font-size:36px;font-weight:400;letter-spacing:-.02em">Painel de administração</h1>
+    <p style="color:#6b7280;margin-top:6px;max-width:700px">Gerencie os modelos exibidos na vitrine. Tudo é salvo no navegador (localStorage) e fica pronto para exportar para seu backend. Você pode adicionar, editar, duplicar, excluir e marcar destaques.</p>
+    <div style="display:flex;gap:10px;margin-top:14px;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="openForm()">+ Novo modelo</button>
+      <button class="btn btn-ghost" onclick="resetData()">Restaurar padrão</button>
+      <span id="countInfo" style="align-self:center;font-size:13px;color:#6b7280"></span>
+    </div>
+  </div>
+
+  <div class="admin-grid">
+    <div class="card-admin">
+      <h3 style="font-weight:600">Formulário do modelo</h3>
+      <p style="font-size:12px;color:#6b7280;margin:6px 0 16px">Preencha e clique em salvar. Campos com * são obrigatórios.</p>
+      <form id="modelForm" onsubmit="saveModel(event)" style="display:grid;gap:12px">
+        <input type="hidden" name="id">
+        <div><label class="label">Nome do modelo *</label><input class="input" name="name" required placeholder="Ex: Restaurante Premium"></div>
+        <div><label class="label">Categoria *</label><select class="input" name="category" required id="catSelect"></select></div>
+        <div><label class="label">Descrição curta *</label><textarea class="input" name="description" rows="2" required placeholder="Frase de venda do modelo"></textarea></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><label class="label">Preço indicativo</label><input class="input" name="price" placeholder="A partir de R$ 897"></div>
+          <div><label class="label">Link da demonstração</label><input class="input" name="demo" placeholder="demos/...html"></div>
+        </div>
+        <div><label class="label">Imagem (URL) *</label><input class="input" name="image" required placeholder="https://..."><span style="font-size:11px;color:#6b7280">Use Unsplash ou seu CDN. Recomendado 1200x800.</span></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" name="featured"> Destaque</label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" name="popular"> Popular</label>
+          <label style="display:flex;gap:8px;align-items:center;font-size:13px"><input type="checkbox" name="isNew"> Novo</label>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Salvar modelo</button>
+        <button type="button" class="btn btn-ghost" onclick="clearForm()" style="width:100%">Cancelar</button>
+      </form>
+      <div style="margin-top:18px;padding:14px;background:#fcfcf9;border:1px solid #e7e7e3;border-radius:16px">
+        <strong style="font-size:13px">Dica profissional</strong>
+        <p style="font-size:12px;color:#6b7280;margin-top:6px;line-height:1.5">Mantenha no máximo 9 modelos por página na vitrine para não confundir o cliente. Use “Destaque” para empurrar o que você quer vender mais.</p>
+      </div>
+    </div>
+
+    <div class="card-admin">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap">
+        <h3 style="font-weight:600">Modelos cadastrados</h3>
+        <input id="adminSearch" placeholder="Filtrar..." style="padding:10px 14px;border-radius:999px;border:1px solid #e7e7e3;background:#fcfcf9;font-size:13px;min-width:160px">
+      </div>
+      <div class="table-wrap" style="margin-top:16px">
+        <table>
+          <thead><tr><th>Preview</th><th>Nome</th><th>Categoria</th><th>Status</th><th>Preço</th><th>Ações</th></tr></thead>
+          <tbody id="adminTable"></tbody>
+        </table>
+      </div>
+      <div style="margin-top:18px" id="leadsSection">
+        <h4 style="font-weight:600">Leads recebidos (local)</h4>
+        <p style="font-size:12px;color:#6b7280">Simulação do que viria do formulário “Quero este modelo”.</p>
+        <div id="leadsList" style="margin-top:12px;display:grid;gap:10px"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/js/data.js"></script>
+<script>
+let editingId=null;
+function initAdmin(){
+  const stored = localStorage.getItem('sitefolio_models');
+  if(stored){ try{ const arr=JSON.parse(stored); if(arr.length) MODELS.splice(0,MODELS.length,...arr);}catch(e){}}
+  document.getElementById('catSelect').innerHTML = CATEGORIES.filter(c=>c!=='Todos').map(c=>`<option>${c}</option>`).join('');
+  document.getElementById('adminSearch').addEventListener('input', renderTable);
+  renderTable();
+  renderLeads();
+  document.getElementById('countInfo').textContent = MODELS.length + ' modelos • ' + MODELS.filter(m=>m.featured).length + ' destaques';
+}
+function renderTable(){
+  const term = (document.getElementById('adminSearch').value||'').toLowerCase();
+  const tbody = document.getElementById('adminTable');
+  let list = MODELS;
+  if(term) list = list.filter(m=> (m.name+' '+m.category).toLowerCase().includes(term));
+  tbody.innerHTML = list.map(m=>`
+    <tr>
+      <td><img src="${m.thumb||m.image}" style="width:64px;height:42px;object-fit:cover;border-radius:8px"></td>
+      <td><strong style="font-size:13px">${m.name}</strong><div style="font-size:11px;color:#6b7280">${m.demo}</div></td>
+      <td>${m.category}</td>
+      <td><div style="display:flex;gap:6px;flex-wrap:wrap">
+        ${m.featured?'<span class="badge-admin on">Destaque</span>':''}
+        ${m.popular?'<span class="badge-admin on" style="background:#065f46">Popular</span>':''}
+        ${m.isNew?'<span class="badge-admin on" style="background:#7c3aed">Novo</span>':''}
+      </div></td>
+      <td>${m.price||'-'}</td>
+      <td><div style="display:flex;gap:6px">
+        <button class="btn-card" onclick="editModel('${m.id}')">Editar</button>
+        <button class="btn-card" onclick="duplicateModel('${m.id}')">Duplicar</button>
+        <button class="btn-card primary" onclick="deleteModel('${m.id}')">Excluir</button>
+      </div></td>
+    </tr>
+  `).join('');
+}
+function openForm(){ editingId=null; document.getElementById('modelForm').reset(); window.scrollTo({top:0,behavior:'smooth'}); }
+function clearForm(){ editingId=null; document.getElementById('modelForm').reset(); }
+function editModel(id){
+  const m = MODELS.find(x=>x.id===id); if(!m) return;
+  editingId=id;
+  const f=document.getElementById('modelForm');
+  f.name.value=m.name; f.category.value=m.category; f.description.value=m.description; f.price.value=m.price||''; f.demo.value=m.demo||''; f.image.value=m.image||m.thumb||'';
+  f.featured.checked=!!m.featured; f.popular.checked=!!m.popular; f.isNew.checked=!!m.isNew;
+  f.id.value=id;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function duplicateModel(id){
+  const m=MODELS.find(x=>x.id===id); if(!m) return;
+  const copy={...m, id:m.id+'-copy-'+Date.now(), name:m.name+' (Cópia)', featured:false};
+  MODELS.unshift(copy); persist(); renderTable();
+}
+function deleteModel(id){
+  if(!confirm('Excluir este modelo?')) return;
+  const idx=MODELS.findIndex(m=>m.id===id); if(idx>=0) MODELS.splice(idx,1); persist(); renderTable();
+}
+function saveModel(e){
+  e.preventDefault();
+  const fd=new FormData(e.target);
+  const data=Object.fromEntries(fd.entries());
+  const payload={
+    id: editingId || data.name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'') + '-' + Date.now().toString(36),
+    name: data.name,
+    category: data.category,
+    description: data.description,
+    longDescription: data.description,
+    image: data.image,
+    thumb: data.image,
+    color:"#0a0a0a",
+    accent:"#0a0a0a",
+    price: data.price || 'A partir de R$ 897',
+    featured: !!data.featured,
+    popular: !!data.popular,
+    isNew: !!data.isNew,
+    demo: data.demo || `demos/${(data.name.toLowerCase().replace(/[^a-z0-9]+/g,'-'))}.html`,
+    pages:["Home","Serviços","Contato"],
+    features:["WhatsApp integrado","Design responsivo","Alta conversão"]
+  };
+  if(editingId){
+    const idx=MODELS.findIndex(m=>m.id===editingId); MODELS[idx]=payload;
+  } else {
+    MODELS.unshift(payload);
+  }
+  persist(); renderTable(); clearForm(); document.getElementById('countInfo').textContent = MODELS.length + ' modelos • ' + MODELS.filter(m=>m.featured).length + ' destaques';
+}
+function persist(){ localStorage.setItem('sitefolio_models', JSON.stringify(MODELS)); }
+function resetData(){ if(confirm('Restaurar modelos originais? Isso apaga alterações locais.')){ localStorage.removeItem('sitefolio_models'); location.reload(); } }
+function exportData(){
+  const blob=new Blob([JSON.stringify(MODELS,null,2)], {type:'application/json'});
+  const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download='sitefolio-modelos.json'; a.click(); URL.revokeObjectURL(url);
+}
+function renderLeads(){
+  const list=JSON.parse(localStorage.getItem('sitefolio_leads')||'[]');
+  const wrap=document.getElementById('leadsList');
+  if(!list.length){ wrap.innerHTML='<p style="font-size:13px;color:#6b7280">Nenhum lead ainda. Envie um teste pela vitrine.</p>'; return; }
+  wrap.innerHTML = list.slice().reverse().map(l=>`
+    <div style="padding:12px 14px;border:1px solid #e7e7e3;border-radius:12px;background:#fcfcf9;display:flex;justify-content:space-between;gap:12px">
+      <div>
+        <strong style="font-size:13px">${l.nome} — ${l.modelName||l.modelo}</strong>
+        <div style="font-size:12px;color:#6b7280">${l.empresa||''} • ${l.cidade||''} • ${l.whatsapp}</div>
+        <div style="font-size:12px;color:#52525b;margin-top:4px">${l.mensagem||''}</div>
+      </div>
+      <span style="font-size:11px;color:#6b7280">${new Date(l.date).toLocaleString('pt-BR')}</span>
+    </div>
+  `).join('');
+}
+document.addEventListener('DOMContentLoaded', initAdmin);
+</script>
+</body>
+</html>

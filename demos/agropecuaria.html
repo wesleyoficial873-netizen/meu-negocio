@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Agropecuária — Demonstração</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Public+Sans:wght@600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#f7fee7;color:#1a2e05}
+.demo-bar{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:#1c3a13;color:white;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.btn{padding:10px 16px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer;border:none}
+.container{max-width:1180px;margin:0 auto;padding:0 20px}
+.header{background:white;border-bottom:1px solid #d9f99d;padding:12px 0;display:flex;justify-content:space-between;align-items:center}
+.logo{font-weight:800;color:#1c3a13;font-size:18px;letter-spacing:.06em}
+.hero{background:linear-gradient(90deg,#1c3a13,#365314);color:white;border-radius:20px;padding:24px;margin:16px 0;display:grid;grid-template-columns:1.2fr .8fr;gap:16px;align-items:center}
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
+.grid{display:grid;grid-template-columns:220px 1fr;gap:16px}
+@media(max-width:900px){.grid{grid-template-columns:1fr}}
+.cat{background:white;border:1px solid #d9f99d;border-radius:16px;padding:14px}
+.cat h4{font-size:12px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.cat li{list-style:none;padding:8px 0;border-bottom:1px solid #f7fee7;font-size:13px;display:flex;justify-content:space-between}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media(max-width:900px){.products{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.products{grid-template-columns:1fr}}
+.card{background:white;border:1px solid #d9f99d;border-radius:16px;padding:12px}
+.card img{height:130px;object-fit:cover;width:100%;border-radius:12px}
+.add{width:100%;margin-top:8px;background:#65a30d;color:white;padding:10px;border-radius:999px;font-weight:700;cursor:pointer;border:none}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:16px 0}
+.stats div{background:white;border:1px solid #d9f99d;border-radius:16px;padding:14px;text-align:center}
+footer{text-align:center;padding:20px;color:#6b7280;font-size:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;place-items:center;z-index:200}
+.modal.open{display:grid}
+.box{background:white;padding:24px;border-radius:16px;width:min(420px,92vw)}
+</style>
+</head>
+<body>
+<div class="demo-bar"><span>Modelo de demonstração — Agropecuária Campo Forte</span><div style="display:flex;gap:10px"><a href="../index.html" class="btn" style="background:white;color:#1c3a13">Voltar</a><button class="btn" style="background:#84cc16;color:#1c3a13" onclick="openM()">Quero este</button></div></div>
+<div class="header container"><div class="logo">CAMPO FORTE • AGRO</div><div style="display:flex;gap:10px"><span style="font-size:12px">Atendemos toda a região • Entrega agendada</span><button class="btn" style="background:#1c3a13;color:white">Solicitar cotação</button></div></div>
+<div class="container">
+  <div class="hero"><div><p style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.9">Sementes • Defensivos • Fertilizantes • Máquinas</p><h2 style="font-size:32px;line-height:1">Solução completa para quem produz</h2><p style="font-size:13px;opacity:.9;margin:10px 0">Catálogo técnico com ficha, cotação rápida e entrega regional. Atendimento por cultura e por categoria.</p><div style="display:flex;gap:10px"><button class="btn" style="background:#84cc16;color:#1c3a13">Ver catálogo técnico</button><button class="btn" style="background:white;color:#1c3a13">Falar com agrônomo</button></div></div><img src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?q=80&w=600&auto=format&fit=crop" style="width:100%;height:180px;object-fit:cover;border-radius:16px"></div>
+  <div class="grid">
+    <div class="cat"><h4>Categorias</h4><ul><li>Sementes <span>24</span></li><li>Fertilizantes <span>18</span></li><li>Defensivos <span>32</span></li><li>Ferramentas <span>14</span></li><li>Máquinas <span>9</span></li><li>Veterinária <span>21</span></li></ul><div style="margin-top:12px;background:#1c3a13;color:white;padding:12px;border-radius:12px"><strong style="font-size:13px">Consultoria gratuita</strong><p style="font-size:11px;opacity:.8">Venha até a loja em Chapadão do Sul</p></div></div>
+    <div class="products">
+      <div class="card"><img src="https://images.unsplash.com/photo-1416879595882-3373a0480b5b?q=80&w=400&auto=format&fit=crop"><h4 style="font-size:13px;margin-top:8px">Semente Soja 8473 IPRO</h4><p style="font-size:11px;color:#6b7280">Alta produtividade • Ciclo médio</p><strong>R$ 289,00 / saca 40kg</strong><button class="add" onclick="add()">Solicitar cotação</button></div>
+      <div class="card"><img src="https://images.unsplash.com/photo-1589923188651-268a9765e432?q=80&w=400&auto=format&fit=crop"><h4 style="font-size:13px;margin-top:8px">Adubo NPK 05-25-15</h4><p style="font-size:11px;color:#6b7280">Formulação para Cerrado</p><strong>R$ 189,00 / 50kg</strong><button class="add" onclick="add()">Solicitar cotação</button></div>
+      <div class="card"><img src="https://images.unsplash.com/photo-1625246333195-78d9c38ad449?q=80&w=400&auto=format&fit=crop"><h4 style="font-size:13px;margin-top:8px">Pulverizador Costal 20L</h4><p style="font-size:11px;color:#6b7280">Atomizador profissional</p><strong>R$ 459,00</strong><button class="add" onclick="add()">Solicitar cotação</button></div>
+    </div>
+  </div>
+  <div class="stats"><div><strong>1200+</strong><p style="font-size:12px;color:#6b7280">Produtores atendidos</p></div><div><strong>15 anos</strong><p style="font-size:12px;color:#6b7280">De campo e confiança</p></div><div><strong>Entrega 24h</strong><p style="font-size:12px;color:#6b7280">Para toda região</p></div></div>
+</div>
+<footer>© Campo Forte Agropecuária • Demonstração SITEFOLIO • BR-060, Chapadão do Sul</footer>
+<div class="modal" id="m" onclick="if(event.target===this)closeM()"><div class="box"><h3>Agropecuária robusta?</h3><p style="font-size:13px;color:#6b7280;margin:8px 0 16px">Catálogo técnico que gera confiança.</p><button class="btn" style="width:100%;background:#65a30d;color:white" onclick="go()">Quero este modelo</button><button class="btn" style="width:100%;margin-top:8px;background:white;border:1px solid #d9f99d" onclick="closeM()">Voltar</button></div></div>
+<script>function add(){alert('Cotação enviada via WhatsApp — na versão real abre conversa por categoria')}function openM(){document.getElementById('m').classList.add('open')}function closeM(){document.getElementById('m').classList.remove('open')}function go(){window.open('https://wa.me/5567999016886?text='+encodeURIComponent('Olá, gostaria de solicitar um site baseado no modelo Agropecuária Campo Forte.'),'_blank')}</script>
+</body>
+</html>
