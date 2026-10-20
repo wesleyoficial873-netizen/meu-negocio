@@ -1,0 +1,4 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="800" viewBox="0 0 1200 800">
+<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#18181b"/><stop offset="1" stop-color="#3f3f46"/></linearGradient></defs>
+<rect width="1200" height="800" fill="url(#g)"/><circle cx="600" cy="340" r="78" fill="none" stroke="#71717a" stroke-width="3"/><path d="M555 350l35 35 65-82" fill="none" stroke="#a1a1aa" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/><text x="600" y="500" text-anchor="middle" fill="#fafafa" font-family="Arial,sans-serif" font-size="38" letter-spacing="10">SITEFOLIO</text><text x="600" y="550" text-anchor="middle" fill="#a1a1aa" font-family="Arial,sans-serif" font-size="20" letter-spacing="4">MODELO PROFISSIONAL</text>
+</svg>

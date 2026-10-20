@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pizzaria Moderna — Demonstração</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#0f0f0f;color:white}
+.demo-bar{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:#e63946;color:white;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.btn{padding:10px 16px;border-radius:999px;font-weight:700;font-size:12px;border:none;cursor:pointer}
+.container{max-width:1180px;margin:0 auto;padding:0 20px}
+.header{padding:14px 0;background:#0f0f0f;border-bottom:1px solid #222;display:flex;justify-content:space-between;align-items:center}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.06em}
+.logo span{color:#e63946}
+.hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;padding:28px 0;align-items:center}
+.hero h1{font-family:'Bebas Neue',sans-serif;font-size:64px;line-height:.9}
+.hero h1 em{color:#e63946;font-style:normal}
+.hero p{color:#a1a1a1;margin:12px 0 18px}
+.badges{display:flex;gap:10px;flex-wrap:wrap}
+.badges span{padding:8px 12px;border-radius:999px;background:#1a1a1a;border:1px solid #222;font-size:12px}
+.pizza-builder{background:#171717;border:1px solid #222;border-radius:20px;padding:18px}
+.builder-title{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:.06em}
+.sizes{display:flex;gap:10px;margin:12px 0}
+.size{flex:1;padding:12px;border-radius:12px;background:#0f0f0f;border:1px solid #222;text-align:center;cursor:pointer}
+.size.active{border-color:#e63946;background:#1f0a0a}
+.menu{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:24px 0}
+@media(max-width:900px){.hero{grid-template-columns:1fr}.menu{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.menu{grid-template-columns:1fr}}
+.card{background:#171717;border:1px solid #222;border-radius:18px;overflow:hidden}
+.card img{height:160px;object-fit:cover;width:100%}
+.card-body{padding:14px}
+.card-body h4{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:.04em}
+.price{color:#e63946;font-weight:700}
+.add{width:100%;margin-top:10px;background:#e63946;color:white;padding:10px;border-radius:999px;font-weight:700;cursor:pointer;border:none}
+.offer{background:linear-gradient(90deg,#e63946,#ff6b35);border-radius:18px;padding:18px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+footer{background:#0a0a0a;color:#666;text-align:center;padding:20px;font-size:12px}
+.cart{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:white;color:#0f0f0f;padding:10px 16px;border-radius:999px;display:flex;gap:12px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;place-items:center;z-index:200}
+.modal.open{display:grid}
+.box{background:#171717;border:1px solid #222;padding:24px;border-radius:16px;width:min(420px,92vw)}
+</style>
+</head>
+<body>
+<div class="demo-bar"><span>Modelo de demonstração — Pizzaria Moderna</span><div style="display:flex;gap:10px"><a href="../index.html" class="btn" style="background:white;color:#0f0f0f">Voltar</a><button class="btn" style="background:#0f0f0f;color:white;border:1px solid white" onclick="openM()">Quero este</button></div></div>
+<div class="header container"><div class="logo">FORNO<span> • </span>NAPOLI</div><div style="display:flex;gap:12px;align-items:center"><span style="font-size:12px;color:#a1a1a1">Aberto até 23h • Entrega 30min</span><button class="btn" style="background:#e63946;color:white">Pedir agora</button></div></div>
+<div class="container">
+  <section class="hero">
+    <div>
+      <p style="font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#e63946">Massa artesanal • Fermentação 48h</p>
+      <h1>Pizza de <em>verdade</em> não tem pressa. Mas a entrega tem.</h1>
+      <p>Forno a lenha, ingredientes italianos e o rastreio do seu pedido em tempo real. Monte sua pizza do seu jeito.</p>
+      <div class="badges"><span>★ 4.9 • 2.3k avaliações</span><span>Entrega grátis acima de R$ 80</span><span>Pagamento na entrega ou Pix</span></div>
+      <div style="display:flex;gap:12px;margin-top:16px"><button class="btn" style="background:#e63946;color:white">Ver cardápio</button><button class="btn" style="background:#1a1a1a;color:white;border:1px solid #222">Ver ofertas</button></div>
+    </div>
+    <div class="pizza-builder">
+      <div class="builder-title">Monte sua pizza</div>
+      <p style="font-size:12px;color:#a1a1a1">Escolha o tamanho e os sabores</p>
+      <div class="sizes"><div class="size active"><strong>Média</strong><div style="font-size:11px;color:#a1a1a1">6 fatias • R$ 59</div></div><div class="size"><strong>Grande</strong><div style="font-size:11px;color:#a1a1a1">8 fatias • R$ 79</div></div><div class="size"><strong>Família</strong><div style="font-size:11px;color:#a1a1a1">12 fatias • R$ 98</div></div></div>
+      <div style="display:grid;gap:8px;margin-top:12px;font-size:13px"><label><input type="checkbox" checked> Margherita Verace</label><label><input type="checkbox"> Pepperoni Especial</label><label><input type="checkbox"> Calabresa com Catupiry</label><label><input type="checkbox"> 4 Queijos</label></div>
+      <button class="add" onclick="add()">Adicionar • R$ 79,90</button>
+      <p style="font-size:11px;color:#666;margin-top:8px">Taxa calculada por CEP • Estimativa 25-35 min</p>
+    </div>
+  </section>
+
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px"><h3 style="font-family:'Bebas Neue',sans-serif;letter-spacing:.06em;font-size:22px">Mais pedidas</h3><span style="font-size:12px;color:#a1a1a1">Cardápio completo →</span></div>
+  <div class="menu">
+    <div class="card"><img onerror="this.onerror=null;this.src='../assets/img/placeholder.svg'" src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=600&auto=format&fit=crop"><div class="card-body"><h4>Margherita Verace</h4><p style="font-size:12px;color:#a1a1a1">San Marzano, fior di latte e manjericão</p><div style="display:flex;justify-content:space-between;margin-top:8px"><span class="price">R$ 69,90</span><span style="font-size:11px;color:#a1a1a1">30cm</span></div><button class="add" onclick="add()">Adicionar</button></div></div>
+    <div class="card"><img onerror="this.onerror=null;this.src='../assets/img/placeholder.svg'" src="https://images.unsplash.com/photo-1579751626657-72bc17010498?q=80&w=600&auto=format&fit=crop"><div class="card-body"><h4>Pepperoni D.O.P</h4><p style="font-size:12px;color:#a1a1a1">Pepperoni curado + mussarela artesanal</p><div style="display:flex;justify-content:space-between;margin-top:8px"><span class="price">R$ 79,90</span><span style="font-size:11px;color:#a1a1a1">30cm</span></div><button class="add" onclick="add()">Adicionar</button></div></div>
+    <div class="card"><img onerror="this.onerror=null;this.src='../assets/img/placeholder.svg'" src="https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?q=80&w=600&auto=format&fit=crop"><div class="card-body"><h4>Trufa & Funghi</h4><p style="font-size:12px;color:#a1a1a1">Funghi fresco, azeite trufado e parmesão</p><div style="display:flex;justify-content:space-between;margin-top:8px"><span class="price">R$ 89,90</span><span style="font-size:11px;color:#a1a1a1">30cm</span></div><button class="add" onclick="add()">Adicionar</button></div></div>
+  </div>
+  <div class="offer"><div><h4 style="font-family:'Bebas Neue',sans-serif;font-size:22px">Segunda em dobro</h4><p style="font-size:13px;opacity:.9">Peça uma pizza grande e ganhe uma média do mesmo sabor.</p></div><button class="btn" style="background:white;color:#e63946">Resgatar oferta</button></div>
+</div>
+<div class="cart"><span id="c">0 itens • R$ 0,00</span><button class="btn" style="background:#e63946;color:white" onclick="toast()">Finalizar no WhatsApp</button></div>
+<footer>© Forno Napoli • Demonstração SITEFOLIO</footer>
+<div class="modal" id="m" onclick="if(event.target===this)closeM()"><div class="box"><h3 style="font-family:'Bebas Neue',sans-serif">Gostou da Pizzaria Moderna?</h3><p style="font-size:13px;color:#a1a1a1;margin:8px 0 16px">Vamos criar sua pizzaria com pedidos sem taxa.</p><button class="btn" style="width:100%;background:#e63946;color:white" onclick="go()">Quero este modelo</button><button class="btn" style="width:100%;margin-top:8px;background:#222;color:white" onclick="closeM()">Continuar</button></div></div>
+<script>let n=0,v=0;function add(){n++;v+=79.9;document.getElementById('c').textContent=n+' itens • R$ '+v.toFixed(2).replace('.',',')}function toast(){add()}function openM(){document.getElementById('m').classList.add('open')}function closeM(){document.getElementById('m').classList.remove('open')}function go(){window.open('https://wa.me/5567999016886?text='+encodeURIComponent('Olá, gostaria de solicitar um site baseado no modelo Pizzaria Moderna.'),'_blank')}</script>
+</body>
+</html>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lanchonete Delivery — Demonstração</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Baloo+2:wght@700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:'Inter',sans-serif;background:#fff7ed;color:#1a1a1a}
+.demo-bar{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:10px 20px;background:#111827;color:white;font-size:11px;letter-spacing:.12em;text-transform:uppercase}
+.btn{padding:10px 16px;border-radius:999px;font-weight:700;font-size:12px;cursor:pointer;border:none}
+.container{max-width:1180px;margin:0 auto;padding:0 20px}
+.header{padding:14px 0;background:white;border-bottom:1px solid #ffedd5;display:flex;justify-content:space-between;align-items:center;gap:16px}
+.logo{font-family:'Baloo 2',sans-serif;font-size:28px;color:#ea580c}
+.header-search{flex:1;max-width:420px;display:flex;gap:8px;background:#fff7ed;border:1px solid #ffedd5;padding:8px 12px;border-radius:999px}
+.header-search input{border:none;outline:none;background:transparent;flex:1}
+.hero{background:linear-gradient(135deg,#ea580c,#f59e0b);color:white;border-radius:24px;padding:24px;margin:18px 0;display:grid;grid-template-columns:1.2fr .8fr;gap:20px;align-items:center}
+@media(max-width:860px){.hero{grid-template-columns:1fr}}
+.hero h1{font-family:'Baloo 2',sans-serif;font-size:42px;line-height:.9}
+.grid{display:grid;grid-template-columns:240px 1fr 320px;gap:16px}
+@media(max-width:1000px){.grid{grid-template-columns:1fr}}
+.cat-card{background:white;border:1px solid #ffedd5;border-radius:16px;padding:14px}
+.cat-card h4{font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin-bottom:10px}
+.cat-card ul{list-style:none;display:grid;gap:8px;font-size:13px}
+.cat-card li{padding:8px 10px;border-radius:999px;background:#fff7ed;cursor:pointer}
+.cat-card li.active{background:#111827;color:white}
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:600px){.cards{grid-template-columns:1fr}}
+.card{background:white;border:1px solid #ffedd5;border-radius:18px;overflow:hidden;display:flex;gap:12px;padding:12px}
+.card img{width:110px;height:110px;object-fit:cover;border-radius:12px}
+.badge{background:#fef3c7;color:#92400e;font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:4px 8px;border-radius:999px}
+.summary{background:white;border:1px solid #ffedd5;border-radius:16px;padding:16px;position:sticky;top:60px}
+footer{text-align:center;padding:20px;color:#a1a1a1;font-size:12px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;place-items:center;z-index:200}
+.modal.open{display:grid}
+.box{background:white;padding:24px;border-radius:16px;width:min(420px,92vw)}
+</style>
+</head>
+<body>
+<div class="demo-bar"><span>Modelo de demonstração — Lanchonete Delivery</span><div style="display:flex;gap:10px"><a href="../index.html" class="btn" style="background:white;color:#111827">Voltar</a><button class="btn" style="background:#ea580c;color:white" onclick="openM()">Quero este</button></div></div>
+<div class="header container"><div class="logo">BURGER MANIA</div><div class="header-search">🔍 <input placeholder="Buscar lanches, combos, bebidas..."></div><div style="display:flex;gap:10px"><span style="font-size:12px">Entrega 20-30 min • Taxa R$ 5</span><button class="btn" style="background:#111827;color:white">Meus pedidos</button></div></div>
+<div class="container">
+  <div class="hero"><div><p style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;opacity:.9">Combo da semana • Só no app</p><h1>Combo duplo + batata + refri por R$ 49,90</h1><p style="font-size:13px;opacity:.9;margin:10px 0 14px">Dois smash burgers, fritas crocantes e refrigerante lata. Retirar ou delivery.</p><div style="display:flex;gap:10px"><button class="btn" style="background:white;color:#ea580c">Pedir combo agora</button><button class="btn" style="background:rgba(0,0,0,.2);color:white;border:1px solid rgba(255,255,255,.4)">Ver todos os combos</button></div></div><img onerror="this.onerror=null;this.src='../assets/img/placeholder.svg'" src="https://images.unsplash.com/photo-1568909344668-6f14a07b56a0?q=80&w=600&auto=format&fit=crop" style="width:100%;height:220px;object-fit:cover;border-radius:16px"></div>
+  <div class="grid">
+    <div class="cat-card"><h4>Categorias</h4><ul><li class="active">Todos</li><li>Combos (8)</li><li>Smash Burgers (12)</li><li>Artesanais (9)</li><li>Porções (6)</li><li>Bebidas (14)</li><li>Sobremesas (5)</li></ul><div style="margin-top:14px;padding:12px;background:#111827;color:white;border-radius:12px"><strong style="font-size:13px">Cupom: MANIA10</strong><p style="font-size:11px;opacity:.8">10% off no primeiro pedido</p></div></div>
+    <div class="cards">
+      <div class="card"><img onerror="this.onerror=null;this.src='../assets/img/placeholder.svg'" src="https://images.unsplash.com/photo-1568909344668-6f14a07b56a0?q=80&w=300&auto=format&fit=crop"><div><span class="badge">Mais pedido</span><h4 style="margin:4px 0">Smash Duplo Bacon</h4><p style="font-size:11px;color:#6b7280">Pão brioche, 2x 90g, bacon crocante, cheddar cremoso</p><div style="display:flex;justify-content:space-between;margin-top:8px"><strong>R$ 32,90</strong><button class="btn" style="background:#ea580c;color:white;padding:6px 10px" onclick="add()">+ Adicionar</button></div></div></div>
+      <div class="card"><img onerror="this.onerror=null;this.src='../assets/img/placeholder.svg'" src="https://images.unsplash.com/photo-1550547660-d9450f859349?q=80&w=300&auto=format&fit=crop"><div><span class="badge">Oferta</span><h4 style="margin:4px 0">Artesanal Supreme</h4><p style="font-size:11px;color:#6b7280">180g, queijo coalho, rúcula e maionese da casa</p><div style="display:flex;justify-content:space-between;margin-top:8px"><strong>R$ 38,90</strong><button class="btn" style="background:#ea580c;color:white;padding:6px 10px" onclick="add()">+ Adicionar</button></div></div></div>
+      <div class="card"><img onerror="this.onerror=null;this.src='../assets/img/placeholder.svg'" src="https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=300&auto=format&fit=crop"><div><h4 style="margin:4px 0">Batata Mania Grande</h4><p style="font-size:11px;color:#6b7280">400g + cheddar e bacon à vontade</p><div style="display:flex;justify-content:space-between;margin-top:8px"><strong>R$ 24,90</strong><button class="btn" style="background:#111827;color:white;padding:6px 10px" onclick="add()">+ Adicionar</button></div></div></div>
+      <div class="card"><img onerror="this.onerror=null;this.src='../assets/img/placeholder.svg'" src="https://images.unsplash.com/photo-1571091718767-18b5b1457add?q=80&w=300&auto=format&fit=crop"><div><h4 style="margin:4px 0">Mania Kids</h4><p style="font-size:11px;color:#6b7280">Mini burger + batata + suco + brinquedo</p><div style="display:flex;justify-content:space-between;margin-top:8px"><strong>R$ 29,90</strong><button class="btn" style="background:#111827;color:white;padding:6px 10px" onclick="add()">+ Adicionar</button></div></div></div>
+    </div>
+    <div class="summary"><h4>Seu carrinho</h4><p style="font-size:12px;color:#6b7280;margin:6px 0 12px"><span id="c">0 itens</span> • Tempo estimado 25 min</p><div style="background:#fff7ed;border:1px dashed #fed7aa;padding:10px;border-radius:12px;font-size:12px">Adicione R$ 20,02 e ganhe frete grátis!</div><div style="margin-top:12px;display:grid;gap:8px;font-size:13px"><div style="display:flex;justify-content:space-between"><span>Subtotal</span><strong id="sub">R$ 0,00</strong></div><div style="display:flex;justify-content:space-between"><span>Taxa entrega</span><span>R$ 5,00</span></div><div style="display:flex;justify-content:space-between;font-weight:700;border-top:1px solid #ffedd5;padding-top:8px"><span>Total</span><span id="tot">R$ 5,00</span></div></div><button class="btn" style="width:100%;background:#ea580c;color:white;margin-top:12px" onclick="toast()">Finalizar no WhatsApp</button><p style="font-size:11px;color:#6b7280;text-align:center;margin-top:8px">Pix, cartão e dinheiro</p></div>
+  </div>
+</div>
+<footer>© Burger Mania • Demonstração SITEFOLIO</footer>
+<div class="modal" id="m" onclick="if(event.target===this)closeM()"><div class="box"><h3>Lanchonete Delivery em foco?</h3><p style="font-size:13px;color:#6b7280;margin:8px 0 16px">Alta conversão no horário de pico.</p><button class="btn" style="width:100%;background:#ea580c;color:white" onclick="go()">Quero este modelo</button><button class="btn" style="width:100%;margin-top:8px;background:white;border:1px solid #e5e7eb" onclick="closeM()">Voltar</button></div></div>
+<script>let n=0,v=0;function add(){n++;v+=32.9;document.getElementById('c').textContent=n+' itens';document.getElementById('sub').textContent='R$ '+v.toFixed(2).replace('.',',');document.getElementById('tot').textContent='R$ '+(v+5).toFixed(2).replace('.',',')}function toast(){add()}function openM(){document.getElementById('m').classList.add('open')}function closeM(){document.getElementById('m').classList.remove('open')}function go(){window.open('https://wa.me/5567999016886?text='+encodeURIComponent('Olá, gostaria de solicitar um site baseado no modelo Lanchonete Delivery.'),'_blank')}</script>
+</body>
+</html>

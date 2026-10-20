@@ -1,0 +1,35 @@
+const ADDITIONAL_MODELS = [
+  ["academia-performance","Academia Performance","Academias","Treinos, planos, grade de aulas e matrícula online em uma experiência energética.","https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1200&auto=format&fit=crop",true,true],
+  ["hotel-boutique","Hotel Boutique Serra","Hotéis","Reservas, acomodações, experiências e galeria para hotelaria de alto padrão.","https://images.unsplash.com/photo-1566073771259-6a8506099945?q=80&w=1200&auto=format&fit=crop",true,false],
+  ["pousada-charme","Pousada Charme","Pousadas","Atmosfera acolhedora com quartos, tarifas, avaliações e reserva direta.","https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?q=80&w=1200&auto=format&fit=crop",false,true],
+  ["calcados-urban","Urban Calçados","Calçados","Vitrine moderna com numerações, cores, lançamentos e compra pelo WhatsApp.","https://images.unsplash.com/photo-1542291026-7eec264c27ff?q=80&w=1200&auto=format&fit=crop",true,true],
+  ["autopecas-pro","Autopeças Pro","Autopeças","Busca por veículo, catálogo de peças, compatibilidade e orçamento rápido.","https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?q=80&w=1200&auto=format&fit=crop",false,false],
+  ["igreja-comunidade","Igreja Comunidade Viva","Igrejas","Cultos ao vivo, agenda, ministérios, pedidos de oração e contribuições.","https://images.unsplash.com/photo-1438032005730-c779502df39b?q=80&w=1200&auto=format&fit=crop",false,true],
+  ["advocacia-nobre","Nobre Advocacia","Profissionais autônomos","Presença institucional sóbria com áreas de atuação e consulta reservada.","https://images.unsplash.com/photo-1450101499163-c8848c66ca85?q=80&w=1200&auto=format&fit=crop",true,false],
+  ["arquitetura-linea","Linea Arquitetura","Portfólios","Portfólio editorial para projetos residenciais, comerciais e interiores.","https://images.unsplash.com/photo-1497366811353-6870744d04b2?q=80&w=1200&auto=format&fit=crop",true,true],
+  ["contabilidade-exata","Exata Contabilidade","Empresas","Serviços contábeis, abertura de empresa e diagnóstico para empreendedores.","https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?q=80&w=1200&auto=format&fit=crop",false,false],
+  ["petshop-amigo","Pet Shop Amigo","Lojas","Produtos, banho e tosa, agenda veterinária e clube de vantagens.","https://images.unsplash.com/photo-1601758228041-f3b2795255f1?q=80&w=1200&auto=format&fit=crop",true,true],
+  ["farmacia-saude","Farmácia Saúde","Lojas","Ofertas, perfumaria, medicamentos, entrega rápida e atendimento farmacêutico.","https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?q=80&w=1200&auto=format&fit=crop",false,false],
+  ["cafeteria-grao","Cafeteria Grão","Restaurantes","Cardápio artesanal, combos, clube do café e pedidos para retirada.","https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?q=80&w=1200&auto=format&fit=crop",true,true],
+  ["construtora-base","Construtora Base","Empresas","Empreendimentos, obras entregues, diferenciais e captação de investidores.","https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=1200&auto=format&fit=crop",false,false],
+  ["energia-solar","Solaris Energia","Serviços","Simulador de economia, projetos instalados e orçamento de energia solar.","https://images.unsplash.com/photo-1508514177221-188b1cf16e9d?q=80&w=1200&auto=format&fit=crop",true,true],
+  ["eventos-celebra","Celebra Eventos","Serviços","Espaços, pacotes, galeria, agenda e orçamento para eventos especiais.","https://images.unsplash.com/photo-1492684223066-81342ee5ff30?q=80&w=1200&auto=format&fit=crop",false,false],
+  ["moveis-design","Forma Móveis","Catálogos digitais","Catálogo sofisticado de móveis com ambientes, medidas e solicitação de projeto.","https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=1200&auto=format&fit=crop",true,true],
+  ["eletronicos-tech","Tech Store","Lojas","Loja tecnológica com comparador, especificações, ofertas e retirada na loja.","https://images.unsplash.com/photo-1498049794561-7780e7231661?q=80&w=1200&auto=format&fit=crop",false,true],
+  ["transportadora-rota","Rota Certa Logística","Empresas","Cotação de frete, rastreamento, áreas atendidas e soluções logísticas B2B.","https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=1200&auto=format&fit=crop",false,false],
+  ["fotografo-memoria","Memória Fotografia","Portfólios","Portfólio visual para casamentos, famílias, ensaios e solicitação de orçamento.","https://images.unsplash.com/photo-1452780212940-6f5c0d14d848?q=80&w=1200&auto=format&fit=crop",true,false],
+  ["curso-online","Método Digital","Landing Pages","Landing page de alta conversão para cursos, mentorias e infoprodutos.","https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=1200&auto=format&fit=crop",false,true],
+  ["distribuidora-bebidas","Gelada Distribuidora","Catálogos digitais","Catálogo rápido de bebidas, kits para festas e entrega expressa.","https://images.unsplash.com/photo-1569529465841-dfecdab7503b?q=80&w=1200&auto=format&fit=crop",false,false],
+  ["papelaria-criativa","Ponto Criativo Papelaria","Lojas","Materiais escolares, escritório, presentes e encomendas personalizadas.","https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=1200&auto=format&fit=crop",false,true],
+  ["dentista-sorriso","Sorriso Odontologia","Clínicas","Tratamentos, equipe, casos clínicos e agendamento acolhedor para odontologia.","https://images.unsplash.com/photo-1606811971618-4486d14f3f99?q=80&w=1200&auto=format&fit=crop",true,false],
+  ["turismo-explore","Explore Viagens","Serviços","Pacotes, destinos, roteiros personalizados e atendimento consultivo.","https://images.unsplash.com/photo-1488646953014-85cb44e25828?q=80&w=1200&auto=format&fit=crop",false,true]
+].map((x,i)=>({
+  id:x[0],name:x[1],category:x[2],description:x[3],longDescription:x[3],image:x[4],thumb:x[4],
+  color:'#0a0a0a',accent:['#2563eb','#db2777','#16a34a','#f59e0b'][i%4],
+  price:i%3===0?'A partir de R$ 997':i%3===1?'A partir de R$ 797':'A partir de R$ 897',
+  featured:x[5],popular:x[6],isNew:i%2===0,
+  demo:`demos/modelo.html?id=${x[0]}`,
+  pages:['Início','Produtos e serviços','Sobre','Contato'],
+  features:['WhatsApp integrado','Layout responsivo','Formulário inteligente','Otimizado para vendas']
+}));
+MODELS.push(...ADDITIONAL_MODELS);
