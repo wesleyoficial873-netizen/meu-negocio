@@ -29,6 +29,24 @@ const CATEGORIES = [
 
 const MODELS = [
   {
+    id: "volterra",
+    name: "Volterra — Loja de Tênis",
+    category: "Calçados",
+    description: "Landing page premium com hero em parallax, tênis em 360°, troca de cores interativa, carrinho e checkout no WhatsApp.",
+    longDescription: "Modelo de e-commerce esportivo com animações de alto impacto, visualizador 3D do produto, vitrine filtrável e experiência mobile impecável.",
+    image: "demos/volterra/assets/cover.webp",
+    thumb: "demos/volterra/assets/cover.webp",
+    color: "#0a0f1a",
+    accent: "#ff6a00",
+    price: "A partir de R$ 1.490",
+    featured: true,
+    popular: true,
+    isNew: true,
+    demo: "demos/volterra/index.html",
+    pages: ["Home animada", "Coleção", "Experiência 360°", "Carrinho"],
+    features: ["Hero com parallax", "Tênis 360° arrastável", "Troca de cores", "Carrinho + WhatsApp"]
+  },
+  {
     id: "restaurante-premium",
     name: "Restaurante Premium",
     category: "Restaurantes",

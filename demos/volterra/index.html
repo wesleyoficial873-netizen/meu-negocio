@@ -1,0 +1,1988 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VOLTERRA — Move Faster. Go Further.</title>
+<meta name="description" content="Volterra — tênis de performance ultraleves, mesh respirável e amortecimento responsivo. Mova-se mais rápido, vá mais longe.">
+<meta name="theme-color" content="#eaf6ff">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --ink:#080d16;
+  --ink-soft:#1a2434;
+  --muted:#5d6b80;
+  --line:rgba(8,13,22,.09);
+  --paper:#ffffff;
+  --blue:#3b82f6;
+  --indigo:#4f46e5;
+  --violet:#7c3aed;
+  --orange:#ff6a00;
+  --orange-soft:#fff1e6;
+  --sky-1:#e9f6ff;
+  --sky-2:#d6ecfb;
+  --glass:rgba(255,255,255,.55);
+  --glass-strong:rgba(255,255,255,.78);
+  --shadow-sm:0 2px 10px rgba(10,25,60,.06);
+  --shadow-md:0 18px 50px -18px rgba(12,40,90,.28);
+  --shadow-lg:0 40px 100px -40px rgba(9,35,80,.45);
+  --r-sm:14px; --r-md:22px; --r-lg:32px; --r-xl:44px;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --ease-out:cubic-bezier(.16,1,.3,1);
+  --font-display:"Sora",system-ui,-apple-system,sans-serif;
+  --font-body:"Plus Jakarta Sans",system-ui,-apple-system,sans-serif;
+  --max:1240px;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--paper);color:var(--ink);
+  font-family:var(--font-body);font-size:16px;line-height:1.6;
+  -webkit-font-smoothing:antialiased;overflow-x:hidden;
+}
+body.is-locked{overflow:hidden}
+img{max-width:100%;display:block}
+a{color:inherit;text-decoration:none}
+button{font-family:inherit;color:inherit;border:0;background:none;cursor:pointer}
+input,select,textarea{font-family:inherit;font-size:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--indigo);outline-offset:3px;border-radius:6px}
+::selection{background:rgba(79,70,229,.18)}
+h1,h2,h3,h4{font-family:var(--font-display);margin:0;line-height:1.04;letter-spacing:-.03em;font-weight:700}
+p{margin:0}
+.wrap{width:min(100% - 44px,var(--max));margin-inline:auto}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:9px;
+  font-size:11.5px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-soft);
+}
+.dot-pulse{width:7px;height:7px;border-radius:50%;background:var(--orange);position:relative;flex:none}
+.dot-pulse::after{content:"";position:absolute;inset:-5px;border-radius:50%;border:1px solid rgba(255,106,0,.5);animation:pulseRing 2.2s var(--ease) infinite}
+@keyframes pulseRing{0%{transform:scale(.55);opacity:.9}70%{transform:scale(1.5);opacity:0}100%{opacity:0}}
+
+/* ============ LOADER ============ */
+.loader{position:fixed;inset:0;z-index:9999;background:linear-gradient(180deg,#f7fbff,#e8f5ff);display:grid;place-items:center;transition:opacity .7s var(--ease),visibility .7s}
+.loader.done{opacity:0;visibility:hidden}
+.loader-inner{display:flex;flex-direction:column;align-items:center;gap:20px}
+.loader-mark{width:54px;height:54px;animation:loaderSpin 2.4s var(--ease) infinite}
+@keyframes loaderSpin{0%,100%{transform:rotate(-8deg) scale(.94)}50%{transform:rotate(8deg) scale(1.06)}}
+.loader-bar{width:180px;height:3px;border-radius:99px;background:rgba(10,30,60,.12);overflow:hidden}
+.loader-bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--violet),var(--orange));animation:loadBar 1.5s var(--ease) forwards}
+@keyframes loadBar{to{width:100%}}
+.loader-text{font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+/* ============ CURSOR ============ */
+.cursor-dot,.cursor-ring{position:fixed;top:0;left:0;pointer-events:none;z-index:9998;border-radius:50%;opacity:0;transition:opacity .3s}
+.cursor-dot{width:6px;height:6px;background:var(--ink);transform:translate(-50%,-50%)}
+.cursor-ring{width:36px;height:36px;border:1px solid rgba(8,13,22,.28);transform:translate(-50%,-50%);transition:width .3s var(--ease),height .3s var(--ease),background .3s,border-color .3s,opacity .3s}
+.cursor-ring.hov{width:62px;height:62px;background:rgba(255,106,0,.10);border-color:rgba(255,106,0,.5)}
+body.has-cursor .cursor-dot,body.has-cursor .cursor-ring{opacity:1}
+@media (hover:none),(pointer:coarse){.cursor-dot,.cursor-ring{display:none}}
+
+/* ============ SCROLL PROGRESS ============ */
+.progress{position:fixed;top:0;left:0;height:3px;width:0;z-index:1200;background:linear-gradient(90deg,#2f7bff,var(--violet),var(--orange));box-shadow:0 0 14px rgba(79,70,229,.6)}
+
+/* ============ DEMO BAR ============ */
+.demo-bar{
+  position:relative;z-index:1100;display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:9px 22px;background:var(--ink);color:#fff;font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:600;
+}
+.demo-bar .db-left{display:flex;align-items:center;gap:10px}
+.demo-bar .db-left span{opacity:.66}
+.demo-bar .db-actions{display:flex;align-items:center;gap:8px}
+.demo-bar a,.demo-bar button{
+  display:inline-flex;align-items:center;gap:7px;padding:7px 14px;border-radius:99px;font-size:10.5px;letter-spacing:.1em;
+  background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.18);transition:.3s var(--ease);font-weight:700;text-transform:uppercase;
+}
+.demo-bar a:hover,.demo-bar button:hover{background:#fff;color:var(--ink);transform:translateY(-1px)}
+.demo-bar .db-wa{background:#25d366;border-color:#25d366;color:#04240f}
+.demo-bar .db-wa:hover{background:#3ff083;color:#04240f}
+
+/* ============ HEADER ============ */
+.site-header{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  padding:20px 0;transition:padding .45s var(--ease),background .45s var(--ease),box-shadow .45s var(--ease),backdrop-filter .4s;
+}
+.site-header .bar{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.site-header.scrolled{
+  padding:10px 0;background:rgba(255,255,255,.82);backdrop-filter:blur(18px) saturate(160%);
+  box-shadow:0 10px 40px -24px rgba(9,35,80,.45);border-bottom:1px solid rgba(255,255,255,.6);
+}
+.brand{display:flex;align-items:center;gap:11px;flex:none}
+.brand svg{width:34px;height:34px;transition:transform .6s var(--ease)}
+.brand:hover svg{transform:rotate(-10deg) scale(1.06)}
+.brand-name{font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:.16em}
+.nav{display:flex;align-items:center;gap:4px;background:rgba(255,255,255,.5);border:1px solid rgba(255,255,255,.65);padding:5px;border-radius:99px;backdrop-filter:blur(12px);box-shadow:var(--shadow-sm)}
+.nav a{position:relative;padding:9px 17px;border-radius:99px;font-size:13.5px;font-weight:600;color:#1c2a3d;transition:color .3s,background .35s var(--ease);white-space:nowrap}
+.nav a::after{content:"";position:absolute;left:50%;bottom:4px;width:0;height:2px;border-radius:2px;background:var(--orange);transform:translateX(-50%);transition:width .35s var(--ease)}
+.nav a:hover{background:rgba(255,255,255,.85);color:#000}
+.nav a:hover::after,.nav a.active::after{width:16px}
+.nav a.active{background:#fff;box-shadow:0 4px 14px -8px rgba(9,35,80,.5)}
+.header-actions{display:flex;align-items:center;gap:8px;flex:none}
+.icon-btn{
+  width:40px;height:40px;display:grid;place-items:center;border-radius:50%;
+  background:rgba(255,255,255,.6);border:1px solid rgba(255,255,255,.8);color:#122033;
+  transition:.35s var(--ease);position:relative;backdrop-filter:blur(10px);
+}
+.icon-btn:hover{background:#fff;transform:translateY(-2px);box-shadow:var(--shadow-sm)}
+.icon-btn svg{width:18px;height:18px}
+.badge-count{
+  position:absolute;top:-3px;right:-3px;min-width:18px;height:18px;padding:0 5px;border-radius:99px;
+  background:var(--orange);color:#fff;font-size:10px;font-weight:800;display:grid;place-items:center;
+  transform:scale(0);transition:transform .4s var(--ease);
+}
+.badge-count.show{transform:scale(1)}
+.badge-count.bump{animation:bump .5s var(--ease)}
+@keyframes bump{0%,100%{transform:scale(1)}40%{transform:scale(1.45)}}
+.btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  padding:15px 26px;border-radius:99px;font-weight:700;font-size:14px;letter-spacing:-.01em;
+  transition:transform .4s var(--ease),box-shadow .4s var(--ease),background .4s,color .4s;
+  position:relative;overflow:hidden;isolation:isolate;white-space:nowrap;
+}
+.btn svg{width:16px;height:16px;transition:transform .4s var(--ease)}
+.btn:hover svg{transform:translateX(4px)}
+.btn-dark{background:var(--ink);color:#fff;box-shadow:0 16px 34px -16px rgba(8,13,22,.8)}
+.btn-dark::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(100deg,var(--indigo),var(--violet));transform:translateY(101%);transition:transform .5s var(--ease)}
+.btn-dark:hover{transform:translateY(-3px);box-shadow:0 22px 44px -18px rgba(79,70,229,.7)}
+.btn-dark:hover::before{transform:translateY(0)}
+.btn-orange{background:linear-gradient(120deg,var(--orange),#ff9a3d);color:#fff;box-shadow:0 16px 34px -16px rgba(255,106,0,.9)}
+.btn-orange:hover{transform:translateY(-3px);box-shadow:0 24px 46px -18px rgba(255,106,0,.85)}
+.btn-ghost{background:rgba(255,255,255,.55);border:1px solid rgba(255,255,255,.9);color:var(--ink);backdrop-filter:blur(10px)}
+.btn-ghost:hover{background:#fff;transform:translateY(-3px);box-shadow:var(--shadow-sm)}
+.btn-small{padding:11px 18px;font-size:12.5px}
+.header-cta{padding:12px 20px;font-size:13px}
+.menu-toggle{display:none;width:42px;height:42px;border-radius:50%;background:rgba(255,255,255,.65);border:1px solid #fff;place-items:center}
+.menu-toggle span{display:block;width:17px;height:2px;background:var(--ink);border-radius:2px;position:relative;transition:.35s var(--ease)}
+.menu-toggle span::before,.menu-toggle span::after{content:"";position:absolute;left:0;width:17px;height:2px;background:var(--ink);border-radius:2px;transition:.35s var(--ease)}
+.menu-toggle span::before{top:-6px}.menu-toggle span::after{top:6px}
+.menu-open .menu-toggle span{background:transparent}
+.menu-open .menu-toggle span::before{top:0;transform:rotate(45deg)}
+.menu-open .menu-toggle span::after{top:0;transform:rotate(-45deg)}
+.mobile-menu{
+  position:fixed;inset:0;z-index:990;background:rgba(244,250,255,.96);backdrop-filter:blur(22px);
+  display:flex;flex-direction:column;justify-content:center;padding:90px 30px 40px;
+  clip-path:circle(0% at 92% 40px);transition:clip-path .8s var(--ease);pointer-events:none;
+}
+.mobile-menu.open{clip-path:circle(150% at 92% 40px);pointer-events:auto}
+.mobile-menu a{font-family:var(--font-display);font-size:clamp(26px,7vw,38px);font-weight:700;letter-spacing:-.03em;padding:10px 0;opacity:0;transform:translateY(20px);transition:.6s var(--ease)}
+.mobile-menu.open a{opacity:1;transform:none}
+.mobile-menu.open a:nth-child(2){transition-delay:.07s}
+.mobile-menu.open a:nth-child(3){transition-delay:.14s}
+.mobile-menu.open a:nth-child(4){transition-delay:.21s}
+.mobile-menu.open a:nth-child(5){transition-delay:.28s}
+.mobile-menu.open a:nth-child(6){transition-delay:.35s}
+.mobile-menu a small{font-size:11px;letter-spacing:.2em;color:var(--orange);display:block;font-family:var(--font-body);font-weight:700;margin-bottom:2px}
+.mobile-menu .mm-foot{margin-top:26px;display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:1080px){.nav{display:none}.menu-toggle{display:grid}}
+@media(max-width:560px){.header-cta{display:none}}
+
+/* ============ HERO ============ */
+.hero{
+  position:relative;min-height:100svh;padding:124px 0 34px;overflow:hidden;
+  display:flex;align-items:center;isolation:isolate;background:#cfeeff;
+}
+.hero-sky{position:absolute;inset:-6% -2%;z-index:-4;overflow:hidden}
+.hero-sky img{width:100%;height:100%;object-fit:cover;object-position:center 42%;transform:scale(1.08);will-change:transform}
+.hero::before{
+  content:"";position:absolute;inset:0;z-index:-3;
+  background:
+    radial-gradient(70% 60% at 18% 45%,rgba(255,255,255,.92) 0%,rgba(255,255,255,.35) 42%,rgba(255,255,255,0) 72%),
+    linear-gradient(95deg,rgba(240,250,255,.95) 0%,rgba(240,250,255,.68) 36%,rgba(240,250,255,0) 62%),
+    linear-gradient(180deg,rgba(255,255,255,.35) 0%,rgba(255,255,255,0) 22%,rgba(210,240,255,.25) 78%,rgba(255,255,255,.7) 100%);
+}
+.hero-grain{position:absolute;inset:0;z-index:-2;opacity:.16;pointer-events:none;mix-blend-mode:soft-light;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");}
+.hero-inner{display:grid;grid-template-columns:1.02fr .98fr;gap:20px;align-items:center;width:100%;position:relative;z-index:3}
+.hero-copy{position:relative;z-index:4}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:10px;padding:8px 8px 8px 12px;border-radius:99px;
+  background:rgba(255,255,255,.8);border:1px solid #fff;box-shadow:0 10px 30px -18px rgba(9,35,80,.5);
+  font-size:11.5px;font-weight:700;letter-spacing:.13em;text-transform:uppercase;color:#25344a;backdrop-filter:blur(12px);
+}
+.hero-badge b{background:var(--ink);color:#fff;padding:4px 10px;border-radius:99px;font-size:9.5px;letter-spacing:.14em}
+.hero h1{
+  margin:26px 0 0;font-size:clamp(50px,6.4vw,92px);line-height:.94;letter-spacing:-.045em;font-weight:800;color:#050b16;
+}
+.hero h1 .line{display:block;overflow:hidden}
+.hero h1 .line > span{display:block;transform:translateY(110%);animation:riseIn 1.1s var(--ease-out) forwards}
+.hero h1 .line:nth-child(2) > span{animation-delay:.14s}
+@keyframes riseIn{to{transform:translateY(0)}}
+.grad-text{
+  background:linear-gradient(96deg,#2f7bff 0%,#4f46e5 45%,#8b5cf6 100%);
+  -webkit-background-clip:text;background-clip:text;color:transparent;
+  background-size:200% 100%;animation:gradShift 9s ease-in-out infinite;
+}
+@keyframes gradShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+.hero-sub{max-width:430px;margin-top:22px;font-size:16px;line-height:1.72;color:#3d4c61;opacity:0;animation:fadeUp .9s var(--ease-out) .5s forwards}
+@keyframes fadeUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+.hero-actions{display:flex;align-items:center;gap:14px;flex-wrap:wrap;margin-top:32px;opacity:0;animation:fadeUp .9s var(--ease-out) .64s forwards}
+.play-btn{display:inline-flex;align-items:center;gap:13px;font-weight:700;font-size:13.5px;letter-spacing:.01em;color:#101d30}
+.play-circle{
+  position:relative;width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.85);border:1px solid #fff;
+  display:grid;place-items:center;box-shadow:0 12px 30px -16px rgba(9,35,80,.7);transition:.4s var(--ease);
+}
+.play-circle svg{width:15px;height:15px;fill:var(--ink);margin-left:2px;transition:.4s var(--ease)}
+.play-circle::after{content:"";position:absolute;inset:-6px;border-radius:50%;border:1px solid rgba(8,13,22,.16);animation:ringPulse 2.8s var(--ease) infinite}
+@keyframes ringPulse{0%{transform:scale(.86);opacity:.85}70%{transform:scale(1.22);opacity:0}100%{opacity:0}}
+.play-btn:hover .play-circle{background:var(--ink);transform:scale(1.06)}
+.play-btn:hover .play-circle svg{fill:#fff}
+.play-btn:hover .play-circle::after{border-color:rgba(255,106,0,.5)}
+.hero-specs{display:flex;gap:16px 20px;flex-wrap:wrap;margin-top:44px;opacity:0;animation:fadeUp .9s var(--ease-out) .8s forwards}
+.hero-spec{display:flex;align-items:center;gap:10px;flex:1 1 118px;max-width:152px;min-width:0}
+.hero-spec svg{width:20px;height:20px;stroke:#16243a;flex:none;stroke-width:1.5;fill:none}
+.hero-spec strong{display:block;font-size:12.5px;font-weight:800;letter-spacing:-.01em;line-height:1.2}
+.hero-spec span{font-size:10.5px;color:#5c6c82;line-height:1.3;display:block}
+@media(max-width:1080px){
+  .hero-specs{gap:16px 22px}
+  .hero-spec{max-width:132px}
+}
+
+/* ---- hero stage ---- */
+.stage{position:relative;height:min(64vh,570px);display:grid;place-items:center;perspective:1400px;z-index:3}
+.stage-glow{
+  position:absolute;width:78%;aspect-ratio:1;border-radius:50%;filter:blur(60px);opacity:.55;
+  background:radial-gradient(circle,rgba(255,138,52,.55) 0%,rgba(110,190,255,.42) 45%,rgba(255,255,255,0) 72%);
+  transition:background .8s var(--ease);transform:translateY(2%);
+}
+.stage-ring{
+  position:absolute;width:min(86%,560px);aspect-ratio:1;border-radius:50%;
+  border:1px solid rgba(255,255,255,.7);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);
+  animation:slowSpin 34s linear infinite;
+}
+.stage-ring::before,.stage-ring::after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:var(--orange);box-shadow:0 0 0 6px rgba(255,106,0,.16)}
+.stage-ring::before{top:-4px;left:50%}
+.stage-ring::after{bottom:-4px;left:22%;background:#fff;box-shadow:0 0 0 6px rgba(255,255,255,.35)}
+.stage-ring.two{width:min(96%,640px);border-style:dashed;border-color:rgba(255,255,255,.45);animation-direction:reverse;animation-duration:52s}
+@keyframes slowSpin{to{transform:rotate(360deg)}}
+.shoe-wrap{
+  position:relative;z-index:4;transform-style:preserve-3d;touch-action:pan-y;
+  transform:translate3d(var(--mx,0px),var(--my,0px),0) rotateX(var(--rx,0deg)) rotateY(var(--ry,0deg)) rotateZ(var(--rz,0deg)) scale(var(--sc,1));
+  transition:transform .5s var(--ease);will-change:transform;cursor:grab;
+}
+.shoe-wrap.dragging{cursor:grabbing;transition:transform .12s linear}
+.shoe-float{animation:shoeFloat 6.5s ease-in-out infinite;transform-style:preserve-3d}
+@keyframes shoeFloat{
+  0%,100%{transform:translateY(-8px) rotate(-1.2deg)}
+  50%{transform:translateY(14px) rotate(1.4deg)}
+}
+.hero-shoe{width:min(632px,44vw);filter:drop-shadow(0 42px 42px rgba(12,40,90,.34)) drop-shadow(0 8px 12px rgba(12,40,90,.16));user-select:none;-webkit-user-drag:none;transition:opacity .5s var(--ease),filter .6s var(--ease)}
+.hero-shoe.swap{opacity:0;transform:scale(.94)}
+.shoe-shadow{
+  position:absolute;left:50%;bottom:-2%;width:56%;height:34px;transform:translateX(-50%);
+  background:radial-gradient(ellipse at center,rgba(9,25,50,.34),rgba(9,25,50,0) 70%);
+  filter:blur(7px);animation:shadowPulse 6.5s ease-in-out infinite;z-index:2;
+}
+@keyframes shadowPulse{0%,100%{transform:translateX(-50%) scale(.9);opacity:.55}50%{transform:translateX(-50%) scale(1.05);opacity:.85}}
+.drag-hint{
+  position:absolute;top:5%;left:0;display:flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:99px;background:rgba(255,255,255,.72);backdrop-filter:blur(10px);
+  border:1px solid #fff;font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#38485f;
+  box-shadow:var(--shadow-sm);z-index:6;transition:opacity .4s,transform .4s;pointer-events:none;white-space:nowrap;
+}
+.drag-hint svg{width:13px;height:13px;animation:hintDrag 2.4s var(--ease) infinite}
+@keyframes hintDrag{0%,100%{transform:translateX(-3px)}50%{transform:translateX(3px)}}
+.drag-hint.hide{opacity:0;transform:translateY(-8px)}
+
+/* glass cards */
+.glass-card{
+  position:absolute;z-index:7;border-radius:20px;padding:14px 16px;
+  background:linear-gradient(140deg,rgba(255,255,255,.72),rgba(255,255,255,.42));
+  border:1px solid rgba(255,255,255,.9);box-shadow:0 24px 50px -28px rgba(9,35,80,.55);
+  backdrop-filter:blur(16px) saturate(160%);
+}
+.gc-tech{top:8%;right:-2%;display:flex;gap:12px;align-items:flex-start;max-width:236px;animation:floatCard 7s ease-in-out infinite}
+@keyframes floatCard{0%,100%{transform:translateY(-6px)}50%{transform:translateY(8px)}}
+.gc-icon{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#ff8a2b,#ff5b00);display:grid;place-items:center;flex:none;box-shadow:0 10px 20px -10px rgba(255,90,0,.9)}
+.gc-icon svg{width:16px;height:16px;stroke:#fff;fill:none;stroke-width:2}
+.gc-tech h4{font-size:12.5px;font-weight:800;letter-spacing:-.01em}
+.gc-tech p{font-size:10.5px;color:#4f5f75;line-height:1.45;margin-top:3px}
+.gc-tech .arrow{margin-left:auto;align-self:center;width:26px;height:26px;border-radius:50%;background:#fff;display:grid;place-items:center;box-shadow:var(--shadow-sm);flex:none}
+.gc-tech .arrow svg{width:12px;height:12px;stroke:#132135;stroke-width:2;fill:none}
+.gc-colors{bottom:17%;right:2%;display:flex;flex-direction:column;gap:10px;padding:16px;animation:floatCard 8s ease-in-out .8s infinite}
+.gc-colors .gc-title{display:flex;justify-content:space-between;align-items:center;gap:16px;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:#5b6b80;font-weight:700}
+.gc-colors .gc-title b{color:var(--ink);font-size:11px;letter-spacing:0;text-transform:none}
+.swatches{display:flex;gap:8px}
+.swatch{
+  width:26px;height:26px;border-radius:50%;position:relative;box-shadow:inset 0 0 0 1px rgba(8,13,22,.12);
+  transition:transform .35s var(--ease),box-shadow .35s var(--ease);
+}
+.swatch::after{content:"";position:absolute;inset:-4px;border-radius:50%;border:1.5px solid transparent;transition:.35s var(--ease)}
+.swatch:hover{transform:scale(1.12)}
+.swatch.active::after{border-color:var(--ink)}
+.swatch[data-color="orange"]{background:linear-gradient(135deg,#ffb066,#ff5b00)}
+.swatch[data-color="black"]{background:linear-gradient(135deg,#3b4757,#080d16)}
+.swatch[data-color="blue"]{background:linear-gradient(135deg,#8fc6ff,#2f7bff)}
+.swatch[data-color="court"]{background:linear-gradient(135deg,#f5f0e6,#cdc2ae)}
+.hero-thumbs{
+  position:absolute;left:0;bottom:1%;z-index:8;display:flex;align-items:center;gap:8px;padding:8px;
+  border-radius:20px;background:rgba(255,255,255,.6);border:1px solid #fff;backdrop-filter:blur(14px);
+  box-shadow:0 24px 50px -30px rgba(9,35,80,.6);
+}
+.thumb{
+  width:62px;height:50px;border-radius:14px;display:grid;place-items:center;background:rgba(255,255,255,.55);
+  border:1px solid transparent;transition:.35s var(--ease);position:relative;overflow:hidden;
+}
+.thumb img{width:88%;height:auto;transition:transform .4s var(--ease)}
+.thumb:hover{background:#fff;transform:translateY(-2px)}
+.thumb:hover img{transform:scale(1.08)}
+.thumb.active{background:#fff;border-color:rgba(8,13,22,.14);box-shadow:0 8px 18px -10px rgba(9,35,80,.6)}
+.thumb.active::after{content:"";position:absolute;left:50%;bottom:4px;width:14px;height:2px;border-radius:2px;background:var(--orange);transform:translateX(-50%)}
+.thumb-count{font-size:10px;font-weight:800;color:#48586e;padding:0 8px 0 6px;letter-spacing:.04em;white-space:nowrap}
+.thumb-count b{display:block;font-size:13px;color:var(--ink)}
+.scroll-cue{position:absolute;right:0;bottom:0;z-index:8;display:flex;align-items:center;gap:12px;font-size:10px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#43536a}
+.scroll-cue .mouse{width:24px;height:38px;border-radius:99px;border:1.5px solid rgba(8,13,22,.35);display:grid;justify-items:center;padding-top:7px}
+.scroll-cue .mouse i{width:3px;height:7px;border-radius:99px;background:var(--orange);animation:wheel 1.8s var(--ease) infinite}
+@keyframes wheel{0%{transform:translateY(0);opacity:1}70%{transform:translateY(12px);opacity:0}100%{opacity:0}}
+.hero-orb{position:absolute;border-radius:50%;filter:blur(2px);opacity:.75;z-index:1;pointer-events:none}
+.hero-island{position:absolute;z-index:2;pointer-events:none;filter:drop-shadow(0 26px 30px rgba(9,40,70,.22));will-change:transform}
+.hero-island.i1{width:150px;right:6%;top:16%;opacity:.9;animation:islandA 15s ease-in-out infinite}
+.hero-island.i2{width:104px;left:46%;bottom:6%;opacity:.7;animation:islandB 18s ease-in-out infinite}
+.hero-island.i3{width:74px;left:2%;top:18%;opacity:.55;animation:islandA 20s ease-in-out reverse infinite}
+@keyframes islandA{0%,100%{transform:translate3d(0,0,0) rotate(-2deg)}50%{transform:translate3d(0,-20px,0) rotate(2deg)}}
+@keyframes islandB{0%,100%{transform:translate3d(0,6px,0) rotate(3deg)}50%{transform:translate3d(-14px,-12px,0) rotate(-3deg)}}
+@media(max-width:1080px){
+  .hero{min-height:auto;padding-top:108px;padding-bottom:70px}
+  .hero-inner{grid-template-columns:1fr;gap:6px}
+  .hero-sub{max-width:520px}
+  .stage{height:min(56vh,450px);margin-top:26px}
+  .hero-shoe{width:min(86vw,480px)}
+  .gc-tech{top:0;right:0;max-width:200px;padding:10px 12px}
+  .hero-thumbs{bottom:0;left:50%;transform:translateX(-50%)}
+  .scroll-cue{display:none}
+  .hero-island.i1{width:110px;top:44%;right:-2%}
+  .hero-island.i2{display:none}
+  .gc-colors{bottom:22%;right:0}
+  .drag-hint{top:36%}
+}
+@media(max-width:760px){
+  .hero-island{display:none}
+}
+@media(max-width:680px){
+  .gc-tech{display:none}
+  .gc-colors{top:2px;bottom:auto;right:0;padding:11px 13px}
+  .drag-hint{top:auto;bottom:72px;left:50%;transform:translateX(-50%)}
+  .drag-hint.hide{transform:translate(-50%,8px)}
+  .hero h1{font-size:clamp(44px,12.5vw,64px)}
+  .hero-sub{font-size:14.5px;max-width:100%}
+  .hero-specs{margin-top:30px;gap:14px 18px}
+  .hero-spec{max-width:118px}
+  .hero-spec span{font-size:9.5px}
+  .hero-spec strong{font-size:11.5px}
+  .gc-tech{max-width:172px;top:2%}
+  .gc-tech p{font-size:9.5px}
+  .gc-colors{padding:12px}
+  .thumb{width:52px;height:44px}
+  .thumb-count{display:none}
+  .gn-hero-title{font-size:44px}
+}
+
+/* ============ REVEAL ============ */
+[data-reveal]{opacity:0;transform:translateY(36px);transition:opacity 1s var(--ease-out),transform 1s var(--ease-out)}
+[data-reveal].in{opacity:1;transform:none}
+[data-reveal="left"]{transform:translateX(-44px)}
+[data-reveal="right"]{transform:translateX(44px)}
+[data-reveal="zoom"]{transform:scale(.92)}
+[data-reveal].in[data-reveal="left"],[data-reveal].in[data-reveal="right"],[data-reveal].in[data-reveal="zoom"]{transform:none}
+
+/* ============ MARQUEE ============ */
+.marquee{border-block:1px solid var(--line);background:linear-gradient(180deg,#fff,#f7fbff);padding:18px 0;overflow:hidden;position:relative;z-index:5}
+.marquee::before,.marquee::after{content:"";position:absolute;top:0;bottom:0;width:90px;z-index:2;pointer-events:none}
+.marquee::before{left:0;background:linear-gradient(90deg,#fff,transparent)}
+.marquee::after{right:0;background:linear-gradient(270deg,#f7fbff,transparent)}
+.marquee-track{display:flex;width:max-content;animation:marq 34s linear infinite}
+.marquee:hover .marquee-track{animation-play-state:paused}
+.marquee-track span{
+  display:inline-flex;align-items:center;gap:26px;padding-right:26px;font-family:var(--font-display);
+  font-size:clamp(15px,1.5vw,21px);font-weight:700;letter-spacing:-.01em;color:#132033;white-space:nowrap;
+}
+.marquee-track span i{font-style:normal;font-size:15px;color:var(--orange);animation:starSpin 6s linear infinite;display:inline-block}
+@keyframes starSpin{to{transform:rotate(360deg)}}
+@keyframes marq{to{transform:translateX(-50%)}}
+
+/* ============ SECTION SHELL ============ */
+.section{position:relative;padding:clamp(72px,9vw,132px) 0}
+.section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:32px;flex-wrap:wrap;margin-bottom:clamp(34px,4vw,58px)}
+.section-head h2{font-size:clamp(34px,4.6vw,62px);letter-spacing:-.045em;line-height:.98;margin-top:16px;max-width:15ch}
+.section-head p{color:var(--muted);font-size:15px;max-width:44ch;margin-top:14px;line-height:1.7}
+.head-link{display:inline-flex;align-items:center;gap:9px;font-size:12.5px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;padding-bottom:5px;border-bottom:1px solid var(--ink);transition:.35s var(--ease);white-space:nowrap}
+.head-link svg{width:14px;height:14px;transition:transform .35s var(--ease)}
+.head-link:hover{color:var(--indigo);border-color:var(--indigo)}
+.head-link:hover svg{transform:translateX(4px)}
+
+/* ============ TECH ============ */
+.tech{background:
+  radial-gradient(60% 60% at 90% 10%,rgba(59,130,246,.10),transparent 60%),
+  radial-gradient(50% 50% at 5% 90%,rgba(255,106,0,.08),transparent 60%),#fff}
+.tech-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:clamp(30px,5vw,70px);align-items:center}
+.tech-visual{position:relative;border-radius:var(--r-lg);overflow:hidden;background:#0d1520;aspect-ratio:1.06;box-shadow:var(--shadow-lg)}
+.tech-visual .layer{position:absolute;inset:0;opacity:0;transition:opacity .8s var(--ease),transform 1.2s var(--ease);transform:scale(1.06)}
+.tech-visual .layer.on{opacity:1;transform:scale(1)}
+.tech-visual .layer img{width:100%;height:100%;object-fit:cover}
+.tech-visual .layer::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,14,26,0) 35%,rgba(6,14,26,.75) 100%)}
+.tech-visual .tv-badge{
+  position:absolute;top:18px;left:18px;z-index:3;display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:99px;
+  background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.28);backdrop-filter:blur(10px);
+  color:#fff;font-size:10px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+}
+.tech-visual .tv-cap{position:absolute;left:22px;bottom:22px;right:22px;z-index:3;color:#fff}
+.tech-visual .tv-cap small{font-size:10px;letter-spacing:.2em;text-transform:uppercase;opacity:.72}
+.tech-visual .tv-cap h3{font-size:clamp(22px,2.4vw,30px);margin-top:8px;letter-spacing:-.03em}
+.tech-visual .tv-cap p{font-size:12.5px;opacity:.8;margin-top:8px;max-width:34ch;line-height:1.6}
+.tech-visual .tv-ring{position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;border:1px solid rgba(255,255,255,.18);z-index:2}
+.tech-list{display:flex;flex-direction:column;gap:8px;margin-top:30px}
+.tech-item{border-top:1px solid var(--line);padding:20px 4px;cursor:pointer;position:relative;transition:.4s var(--ease)}
+.tech-item:last-child{border-bottom:1px solid var(--line)}
+.tech-item .ti-head{display:flex;align-items:center;gap:14px}
+.tech-item .ti-num{font-size:10.5px;font-weight:800;letter-spacing:.14em;color:#93a2b6;transition:.35s}
+.tech-item h4{font-size:clamp(16px,1.7vw,20px);font-weight:700;letter-spacing:-.02em;transition:.35s var(--ease)}
+.tech-item .ti-arrow{margin-left:auto;width:28px;height:28px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;transition:.4s var(--ease);flex:none}
+.tech-item .ti-arrow svg{width:12px;height:12px;stroke:currentColor;fill:none;stroke-width:2}
+.tech-item p{font-size:13px;color:var(--muted);line-height:1.65;max-height:0;overflow:hidden;opacity:0;transition:.5s var(--ease);padding-left:32px}
+.tech-item:hover h4,.tech-item.active h4{color:var(--indigo)}
+.tech-item:hover .ti-num,.tech-item.active .ti-num{color:var(--orange)}
+.tech-item.active .ti-arrow{background:var(--ink);color:#fff;transform:rotate(45deg);border-color:var(--ink)}
+.tech-item.active p{max-height:120px;opacity:1;margin-top:8px}
+.tech-item.active{padding-top:26px}
+.tech-item:hover::before{content:"";position:absolute;left:-14px;top:12px;bottom:12px;width:2px;background:linear-gradient(180deg,var(--orange),transparent);border-radius:2px}
+.tech-meters{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:34px}
+.meter{background:#f7fafd;border:1px solid var(--line);border-radius:16px;padding:14px}
+.meter b{font-family:var(--font-display);font-size:22px;display:block;letter-spacing:-.03em}
+.meter span{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.meter .bar{height:4px;border-radius:99px;background:#e4ecf5;margin-top:10px;overflow:hidden}
+.meter .bar i{display:block;height:100%;width:0;border-radius:99px;background:linear-gradient(90deg,var(--blue),var(--violet));transition:width 1.6s var(--ease)}
+@media(max-width:980px){.tech-grid{grid-template-columns:1fr}.tech-visual{aspect-ratio:1.3;order:2}.tech-meters{gap:10px}}
+
+/* ============ 360 VIEWER ============ */
+.viewer-sec{position:relative;overflow:hidden;background:
+  radial-gradient(70% 80% at 50% 0%,#eaf6ff 0%,#f8fbff 45%,#fff 100%)}
+.viewer{display:grid;grid-template-columns:1fr 1fr;gap:clamp(24px,4vw,60px);align-items:center}
+.viper{position:relative;border-radius:var(--r-lg);background:linear-gradient(160deg,#eff8ff,#d9ecfb 55%,#cfe6f8);border:1px solid #fff;box-shadow:var(--shadow-lg);overflow:hidden;min-height:min(70vh,560px);display:grid;place-items:center;cursor:grab;touch-action:pan-y}
+.viper.grabbing{cursor:grabbing}
+.viper::before{content:"";position:absolute;inset:0;background:
+  radial-gradient(circle at 50% 42%,rgba(255,255,255,.95),rgba(255,255,255,0) 58%),
+  repeating-linear-gradient(90deg,rgba(255,255,255,.35) 0 1px,transparent 1px 60px),
+  repeating-linear-gradient(0deg,rgba(255,255,255,.35) 0 1px,transparent 1px 60px);
+  opacity:.6;pointer-events:none}
+.viper .vp-floor{position:absolute;left:50%;bottom:14%;width:62%;height:70px;transform:translateX(-50%);border-radius:50%;
+  background:radial-gradient(ellipse at center,rgba(14,40,75,.32),rgba(14,40,75,0) 68%);filter:blur(8px);opacity:.7}
+.viper .vp-shoe{position:relative;z-index:3;width:min(78%,540px);transform-style:preserve-3d;will-change:transform;user-select:none;-webkit-user-drag:none;
+  filter:drop-shadow(0 34px 30px rgba(14,40,75,.3))}
+.viper .vp-shine{position:absolute;inset:0;z-index:4;pointer-events:none;mix-blend-mode:soft-light;opacity:.85}
+.viper .vp-glow{position:absolute;width:60%;aspect-ratio:1;border-radius:50%;filter:blur(50px);z-index:1;opacity:.6;
+  background:radial-gradient(circle,rgba(255,140,60,.55),rgba(255,255,255,0) 70%);transition:background .6s}
+.viper-hud{position:absolute;z-index:6;display:flex;flex-direction:column;gap:10px;pointer-events:none}
+.viper-hud.top{top:18px;left:18px;flex-direction:row;align-items:center}
+.viper-hud.top .pill{pointer-events:auto;display:inline-flex;align-items:center;gap:8px;padding:8px 13px;border-radius:99px;background:rgba(255,255,255,.8);border:1px solid #fff;backdrop-filter:blur(10px);font-size:10px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:#20304a;box-shadow:var(--shadow-sm)}
+.viper-hud.bottom{bottom:18px;left:18px;right:18px;flex-direction:row;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;pointer-events:none}
+.viper-hud.bottom > *{pointer-events:auto}
+.angle-read{font-family:var(--font-display);font-size:12px;font-weight:700;color:#22334c;background:rgba(255,255,255,.75);border:1px solid #fff;padding:7px 12px;border-radius:99px;backdrop-filter:blur(8px);letter-spacing:.04em}
+.auto-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border-radius:99px;background:var(--ink);color:#fff;font-size:10.5px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;transition:.35s var(--ease)}
+.auto-btn:hover{background:var(--indigo);transform:translateY(-2px)}
+.auto-btn svg{width:12px;height:12px;fill:currentColor}
+.auto-btn .ic-pause{display:none}
+.auto-btn.on .ic-pause{display:block}
+.auto-btn.on .ic-play{display:none}
+.hotspot{position:absolute;z-index:5;width:24px;height:24px;border-radius:50%;border:1px solid rgba(255,255,255,.9);background:rgba(255,106,0,.9);box-shadow:0 0 0 0 rgba(255,106,0,.5);cursor:pointer;transition:.3s var(--ease);animation:hsPulse 2.6s infinite}
+@keyframes hsPulse{0%{box-shadow:0 0 0 0 rgba(255,106,0,.55)}70%{box-shadow:0 0 0 16px rgba(255,106,0,0)}100%{box-shadow:0 0 0 0 rgba(255,106,0,0)}}
+.hotspot::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#fff}
+.hotspot span{
+  position:absolute;left:32px;top:50%;transform:translateY(-50%) scale(.9);white-space:nowrap;
+  background:var(--ink);color:#fff;font-size:10.5px;font-weight:700;padding:6px 10px;border-radius:8px;
+  opacity:0;pointer-events:none;transition:.3s var(--ease);letter-spacing:.02em;
+}
+.hotspot:hover span{opacity:1;transform:translateY(-50%) scale(1)}
+.hotspot.h1{left:38%;top:32%}
+.hotspot.h2{left:58%;top:60%}
+.hotspot.h3{left:30%;top:66%}
+.viewer-copy h2{font-size:clamp(34px,4.4vw,58px);letter-spacing:-.045em;line-height:.98;margin-top:16px}
+.viewer-copy > p{color:var(--muted);margin-top:16px;font-size:15px;line-height:1.75;max-width:44ch}
+.vp-swatches{display:flex;align-items:center;gap:12px;margin-top:28px;flex-wrap:wrap}
+.vp-swatches .swatch{width:38px;height:38px}
+.vp-label{font-size:11px;letter-spacing:.14em;text-transform:uppercase;font-weight:800;color:var(--muted);margin-right:4px}
+.vp-specs{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:30px;max-width:440px}
+.vp-spec{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:14px;background:#f6fafe;border:1px solid #e8f1fa;transition:.35s var(--ease)}
+.vp-spec:hover{background:#fff;box-shadow:var(--shadow-sm);transform:translateY(-2px)}
+.vp-spec svg{width:16px;height:16px;stroke:var(--indigo);fill:none;stroke-width:1.8;flex:none;margin-top:2px}
+.vp-spec b{display:block;font-size:12px;font-weight:800;letter-spacing:-.01em}
+.vp-spec span{font-size:10.5px;color:var(--muted);line-height:1.4;display:block}
+.vp-cta{display:flex;gap:12px;margin-top:30px;flex-wrap:wrap}
+@media(max-width:980px){.viewer{grid-template-columns:1fr}.viper{order:2;min-height:420px}.viewer-copy{order:1}}
+@media(max-width:560px){.vp-specs{grid-template-columns:1fr}.hotspot span{display:none}}
+
+/* ============ COLLECTION ============ */
+.collection{background:#fbfdff;position:relative;overflow:hidden}
+.collection::before{content:"";position:absolute;top:-140px;right:-140px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(255,120,20,.12),transparent 65%);pointer-events:none}
+.filters{display:flex;gap:8px;flex-wrap:wrap}
+.filter-btn{
+  padding:10px 18px;border-radius:99px;border:1px solid var(--line);background:#fff;font-size:12.5px;font-weight:700;
+  color:#43536a;transition:.35s var(--ease);position:relative;
+}
+.filter-btn:hover{border-color:#b9c9dd;transform:translateY(-2px)}
+.filter-btn.active{background:var(--ink);border-color:var(--ink);color:#fff;box-shadow:0 12px 24px -14px rgba(8,13,22,.9)}
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(258px,1fr));gap:22px}
+.product{
+  position:relative;background:#fff;border:1px solid #eaf1f8;border-radius:var(--r-md);overflow:hidden;
+  transition:transform .5s var(--ease),box-shadow .5s var(--ease),border-color .4s;transform-style:preserve-3d;
+  opacity:1;
+}
+.product.hidden{display:none}
+.product:hover{box-shadow:0 34px 70px -40px rgba(9,35,80,.5);border-color:#dbe8f5}
+.product-media{position:relative;background:radial-gradient(circle at 50% 58%,#f1f8fe,#e3f1fc);padding:22px 18px 12px;overflow:hidden}
+.product-media::after{content:"";position:absolute;left:50%;bottom:16px;width:58%;height:22px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(10,35,70,.22),transparent 70%);filter:blur(6px);transition:.5s var(--ease)}
+.product:hover .product-media::after{width:68%;opacity:.8}
+.product-media img{position:relative;z-index:2;width:100%;height:200px;object-fit:contain;transition:transform .7s var(--ease);filter:drop-shadow(0 16px 18px rgba(10,35,70,.12))}
+.product:hover .product-media img{transform:translateY(-6px) scale(1.07) rotate(-2deg)}
+.tag-flag{position:absolute;top:14px;left:14px;z-index:3;font-size:9.5px;font-weight:800;letter-spacing:.13em;text-transform:uppercase;padding:6px 10px;border-radius:99px;background:var(--ink);color:#fff}
+.tag-flag.new{background:linear-gradient(120deg,#ff7a1a,#ff9f45)}
+.tag-flag.sale{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.quick-actions{position:absolute;top:14px;right:14px;z-index:3;display:flex;flex-direction:column;gap:8px}
+.qa{
+  width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.9);display:grid;place-items:center;
+  box-shadow:var(--shadow-sm);border:1px solid #fff;transition:.35s var(--ease);opacity:0;transform:translateX(8px);
+}
+.product:hover .qa{opacity:1;transform:none}
+.product:hover .qa:nth-child(2){transition-delay:.05s}
+.qa svg{width:15px;height:15px;stroke:#132135;fill:none;stroke-width:1.7}
+.qa:hover{background:var(--ink)}
+.qa:hover svg{stroke:#fff}
+.qa.liked{background:#ffe8e8}
+.qa.liked svg{fill:#ef4444;stroke:#ef4444}
+.product-body{padding:18px}
+.product-cat{font-size:9.5px;letter-spacing:.16em;text-transform:uppercase;color:#8a99ad;font-weight:800}
+.product-name{font-family:var(--font-display);font-size:19px;font-weight:700;letter-spacing:-.025em;margin-top:6px}
+.product-desc{font-size:11.5px;color:var(--muted);margin-top:5px;line-height:1.5}
+.product-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px}
+.price{font-family:var(--font-display);font-weight:800;font-size:19px;letter-spacing:-.03em}
+.price small{font-size:10px;color:var(--muted);font-weight:600;display:block;letter-spacing:0;margin-top:-2px}
+.price-old{font-size:11px;color:#a3b0c2;text-decoration:line-through;font-weight:600;margin-left:6px}
+.buy-btn{
+  display:inline-flex;align-items:center;gap:7px;padding:10px 15px;border-radius:99px;background:#eef6ff;color:#16324f;
+  font-size:11.5px;font-weight:800;transition:.35s var(--ease);border:1px solid transparent;
+}
+.buy-btn svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2}
+.buy-btn:hover{background:var(--ink);color:#fff;transform:translateY(-2px)}
+.product-colors{display:flex;gap:5px;margin-top:12px}
+.product-colors i{width:12px;height:12px;border-radius:50%;box-shadow:inset 0 0 0 1px rgba(8,13,22,.12)}
+.collection-foot{display:flex;justify-content:center;margin-top:44px}
+
+/* ============ BANNER (parallax lifestyle) ============ */
+.banner{position:relative;height:min(84vh,660px);overflow:hidden;isolation:isolate;display:grid;align-items:end;color:#fff}
+.banner-img{position:absolute;inset:-18% 0;z-index:-2;will-change:transform}
+.banner-img img{width:100%;height:100%;object-fit:cover;object-position:center 35%}
+.banner::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(4,12,24,.35) 0%,rgba(4,12,24,.05) 35%,rgba(4,12,24,.82) 100%)}
+.banner-inner{padding:0 0 clamp(40px,6vw,72px)}
+.banner h2{font-size:clamp(40px,6.4vw,86px);letter-spacing:-.05em;line-height:.94;max-width:16ch}
+.banner h2 em{font-style:normal;color:#ffb37a}
+.banner p{max-width:46ch;margin-top:18px;font-size:15px;line-height:1.7;color:rgba(255,255,255,.82)}
+.banner-foot{display:flex;gap:clamp(22px,4vw,56px);flex-wrap:wrap;margin-top:34px;align-items:center}
+.bstat b{font-family:var(--font-display);font-size:clamp(26px,3vw,38px);letter-spacing:-.04em;display:block;line-height:1}
+.bstat span{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;color:rgba(255,255,255,.66);font-weight:700;margin-top:8px;display:block}
+.banner .btn{background:#fff;color:var(--ink);margin-left:auto}
+.banner .btn::before{background:linear-gradient(100deg,#ff7a1a,#ffb066)}
+.banner .btn:hover{color:#fff}
+@media(max-width:860px){.banner .btn{margin-left:0}}
+
+/* ============ TESTIMONIALS ============ */
+.testi{background:#fff;overflow:hidden}
+.testi-track{display:flex;gap:20px;overflow-x:auto;scroll-snap-type:x mandatory;padding:6px 4px 26px;scrollbar-width:none;-ms-overflow-style:none;cursor:grab}
+.testi-track::-webkit-scrollbar{display:none}
+.testi-track.drag{cursor:grabbing;scroll-snap-type:none}
+.testi-card{
+  flex:0 0 clamp(280px,32vw,390px);scroll-snap-align:start;background:linear-gradient(160deg,#fbfdff,#f2f8ff);
+  border:1px solid #e9f2fb;border-radius:var(--r-md);padding:26px;transition:.4s var(--ease);position:relative;overflow:hidden;
+}
+.testi-card::before{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:radial-gradient(circle,rgba(79,70,229,.10),transparent 70%)}
+.testi-card:hover{transform:translateY(-6px);box-shadow:var(--shadow-md);background:#fff}
+.stars{display:flex;gap:3px;color:#ffab2e;margin-bottom:14px}
+.stars svg{width:14px;height:14px;fill:currentColor}
+.testi-card p{font-size:14px;line-height:1.75;color:#2b3a4f}
+.testi-user{display:flex;align-items:center;gap:12px;margin-top:22px;padding-top:18px;border-top:1px solid #e9f2fb}
+.avatar{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:13px;color:#fff;flex:none;background:linear-gradient(135deg,#3b82f6,#7c3aed);letter-spacing:.02em}
+.avatar.o{background:linear-gradient(135deg,#ff9a3d,#ff5b00)}
+.avatar.g{background:linear-gradient(135deg,#34d399,#0f9d70)}
+.testi-user b{font-size:12.5px;display:block;letter-spacing:-.01em}
+.testi-user span{font-size:10.5px;color:var(--muted)}
+.testi-nav{display:flex;gap:8px;align-items:center}
+.round-btn{width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:#fff;display:grid;place-items:center;transition:.35s var(--ease)}
+.round-btn svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2}
+.round-btn:hover{background:var(--ink);color:#fff;transform:translateY(-2px)}
+.round-btn:disabled{opacity:.35;cursor:not-allowed;transform:none}
+
+/* ============ NEWSLETTER + FOOTER ============ */
+.footer{background:var(--ink);color:#fff;padding:clamp(72px,8vw,110px) 0 28px;position:relative;overflow:hidden}
+.footer::before{content:"";position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:900px;height:500px;border-radius:50%;background:radial-gradient(ellipse,rgba(79,70,229,.28),transparent 65%);pointer-events:none}
+.newsletter{position:relative;display:grid;grid-template-columns:1.1fr .9fr;gap:36px;align-items:center;padding-bottom:clamp(40px,5vw,64px);border-bottom:1px solid rgba(255,255,255,.1)}
+.newsletter h3{font-size:clamp(28px,3.6vw,44px);letter-spacing:-.045em;line-height:1.02}
+.newsletter p{color:rgba(255,255,255,.6);margin-top:12px;font-size:14px;max-width:42ch;line-height:1.7}
+.news-form{display:flex;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);padding:7px;border-radius:99px;transition:.4s var(--ease)}
+.news-form:focus-within{border-color:rgba(255,255,255,.4);background:rgba(255,255,255,.11);box-shadow:0 0 0 4px rgba(124,58,237,.18)}
+.news-form input{flex:1;min-width:0;background:none;border:0;outline:none;padding:10px 16px;color:#fff;font-size:13.5px}
+.news-form input::placeholder{color:rgba(255,255,255,.42)}
+.news-msg{font-size:11.5px;margin-top:10px;color:#8ef0bc;min-height:16px;padding-left:16px}
+.footer-grid{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:32px;padding:clamp(38px,5vw,56px) 0}
+.footer .brand-name{color:#fff}
+.footer-about{color:rgba(255,255,255,.55);font-size:13px;line-height:1.75;max-width:34ch;margin-top:16px}
+.socials{display:flex;gap:8px;margin-top:20px}
+.socials a{width:36px;height:36px;border-radius:50%;border:1px solid rgba(255,255,255,.16);display:grid;place-items:center;transition:.35s var(--ease)}
+.socials a:hover{background:#fff;color:var(--ink);transform:translateY(-3px)}
+.socials svg{width:15px;height:15px;fill:currentColor}
+.fcol h5{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.45);margin:0 0 16px;font-weight:800;font-family:var(--font-body)}
+.fcol a{display:block;font-size:13px;color:rgba(255,255,255,.72);padding:6px 0;transition:.3s var(--ease);width:fit-content}
+.fcol a:hover{color:#fff;transform:translateX(4px)}
+.footer-bottom{display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;padding-top:24px;border-top:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.42);font-size:11.5px}
+.footer-bottom a:hover{color:#fff}
+@media(max-width:900px){.newsletter{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr;gap:26px}.footer-grid .fcol:first-child{grid-column:1/-1}}
+@media(max-width:520px){.footer-grid{grid-template-columns:1fr 1fr}}
+
+/* ============ CART DRAWER ============ */
+.overlay{position:fixed;inset:0;z-index:1300;background:rgba(6,14,26,.42);backdrop-filter:blur(6px);opacity:0;visibility:hidden;transition:.5s var(--ease)}
+.overlay.open{opacity:1;visibility:visible}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;z-index:1400;width:min(420px,100%);background:#fff;
+  transform:translateX(102%);transition:transform .6s var(--ease);display:flex;flex-direction:column;
+  box-shadow:-30px 0 80px -40px rgba(6,14,26,.5);
+}
+.drawer.open{transform:none}
+.drawer-head{display:flex;align-items:center;justify-content:space-between;padding:22px 24px;border-bottom:1px solid var(--line)}
+.drawer-head h3{font-size:18px;letter-spacing:-.02em}
+.drawer-head .close{width:34px;height:34px;border-radius:50%;background:#f4f8fc;display:grid;place-items:center;transition:.3s var(--ease)}
+.drawer-head .close:hover{background:var(--ink);color:#fff;transform:rotate(90deg)}
+.drawer-body{flex:1;overflow-y:auto;padding:18px 24px}
+.cart-empty{text-align:center;padding:60px 10px;color:var(--muted)}
+.cart-empty svg{width:48px;height:48px;stroke:#c3d2e4;fill:none;stroke-width:1.3;margin:0 auto 16px}
+.cart-empty h4{font-size:16px;color:var(--ink);margin-bottom:6px}
+.cart-empty p{font-size:12.5px;line-height:1.6}
+.cart-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--line);animation:cartIn .5s var(--ease)}
+@keyframes cartIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:none}}
+.cart-item img{width:82px;height:72px;object-fit:contain;background:#f3f9ff;border-radius:12px;padding:6px;flex:none}
+.cart-item-info{flex:1;min-width:0}
+.cart-item-info b{font-size:13px;display:block;letter-spacing:-.01em}
+.cart-item-info span{font-size:11px;color:var(--muted);display:block;margin-top:2px}
+.qty{display:flex;align-items:center;gap:10px;margin-top:9px}
+.qty button{width:24px;height:24px;border-radius:50%;border:1px solid var(--line);display:grid;place-items:center;font-size:14px;line-height:1;transition:.25s}
+.qty button:hover{background:var(--ink);color:#fff}
+.qty b{font-size:12px;min-width:14px;text-align:center}
+.cart-item-price{font-size:13px;font-weight:800;white-space:nowrap}
+.cart-remove{font-size:10px;color:#9aa8bb;text-decoration:underline;margin-top:6px;display:inline-block}
+.cart-remove:hover{color:#ef4444}
+.drawer-foot{padding:20px 24px 26px;border-top:1px solid var(--line);background:#fbfdff}
+.cart-total{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:16px}
+.cart-total span{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+.cart-total b{font-family:var(--font-display);font-size:24px;letter-spacing:-.03em}
+.drawer-foot .btn{width:100%}
+.drawer-foot small{display:block;text-align:center;color:var(--muted);font-size:10.5px;margin-top:12px}
+
+/* ============ MODALS ============ */
+.modal{position:fixed;inset:0;z-index:1500;display:grid;place-items:center;padding:20px;opacity:0;visibility:hidden;transition:.45s var(--ease)}
+.modal.open{opacity:1;visibility:visible}
+.modal-bg{position:absolute;inset:0;background:rgba(6,14,26,.55);backdrop-filter:blur(8px)}
+.modal-card{
+  position:relative;z-index:2;background:#fff;border-radius:var(--r-lg);width:min(560px,100%);max-height:90vh;overflow:auto;
+  transform:translateY(26px) scale(.97);transition:.55s var(--ease);box-shadow:var(--shadow-lg);
+}
+.modal.open .modal-card{transform:none}
+.modal-close{position:absolute;top:14px;right:14px;z-index:5;width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.9);display:grid;place-items:center;box-shadow:var(--shadow-sm);transition:.3s var(--ease)}
+.modal-close:hover{background:var(--ink);color:#fff;transform:rotate(90deg)}
+.product-modal{display:grid;grid-template-columns:1fr 1fr}
+.pm-media{background:radial-gradient(circle at 50% 55%,#f2f9ff,#e0effc);display:grid;place-items:center;padding:24px;position:relative}
+.pm-media img{width:100%;max-height:300px;object-fit:contain;filter:drop-shadow(0 22px 24px rgba(10,35,70,.18))}
+.pm-body{padding:28px 26px}
+.pm-body .product-cat{font-size:9.5px}
+.pm-body h3{font-size:24px;letter-spacing:-.03em;margin-top:8px}
+.pm-body p{font-size:12.5px;color:var(--muted);line-height:1.65;margin-top:10px}
+.sizes{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px}
+.size{min-width:40px;padding:8px 6px;border-radius:10px;border:1px solid var(--line);font-size:12px;font-weight:700;transition:.25s}
+.size:hover{border-color:#94a9c4}
+.size.active{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pm-price{display:flex;align-items:baseline;gap:8px;margin-top:16px}
+@media(max-width:620px){.product-modal{grid-template-columns:1fr}.pm-media{padding:18px}.pm-media img{max-height:190px}.pm-body{padding:20px}}
+
+/* --- video manifesto --- */
+.video-modal .modal-card{width:min(880px,100%);background:#050b14;border-radius:var(--r-md);overflow:hidden}
+.film{position:relative;aspect-ratio:16/9;display:grid;place-items:center;overflow:hidden;background:#04090f}
+.film-sky{position:absolute;inset:0;background:url('assets/sky-clean.webp') center/cover;opacity:.5;animation:kenburns 18s ease-in-out infinite alternate}
+@keyframes kenburns{from{transform:scale(1.04)}to{transform:scale(1.22) translateY(-2%)}}
+.film-shoe{position:absolute;width:46%;right:2%;bottom:-6%;filter:drop-shadow(0 30px 40px rgba(0,0,0,.5));animation:filmShoe 9s ease-in-out infinite;opacity:.96}
+@keyframes filmShoe{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-18px) rotate(2deg)}}
+.film-lines{position:relative;z-index:3;padding:0 8%;width:100%;text-align:left}
+.film-lines p{font-family:var(--font-display);font-weight:800;letter-spacing:-.04em;font-size:clamp(20px,3.6vw,46px);line-height:1.02;color:#fff;opacity:0;transform:translateY(24px);animation:filmLine 6s var(--ease) infinite}
+.film-lines p:nth-child(1){animation-delay:.4s}
+.film-lines p:nth-child(2){animation-delay:2.4s}
+.film-lines p:nth-child(3){animation-delay:4.4s}
+.film-lines p em{font-style:normal;background:linear-gradient(96deg,#6da8ff,#b982ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+@keyframes filmLine{0%{opacity:0;transform:translateY(24px)}8%,26%{opacity:1;transform:none}34%,100%{opacity:0;transform:translateY(-18px)}}
+.film-bar{position:absolute;left:0;bottom:0;height:2px;width:0;background:linear-gradient(90deg,#3b82f6,#ff7a1a);z-index:5;animation:filmBar 6s linear infinite}
+@keyframes filmBar{from{width:0}to{width:100%}}
+@media(max-width:600px){.film-shoe{width:60%;opacity:.55}}
+
+/* ============ TOAST ============ */
+.toast-wrap{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:2000;display:flex;flex-direction:column;gap:8px;align-items:center;pointer-events:none}
+.toast{
+  display:flex;align-items:center;gap:10px;background:var(--ink);color:#fff;padding:12px 18px;border-radius:99px;
+  font-size:12.5px;font-weight:600;box-shadow:0 20px 40px -20px rgba(6,14,26,.8);
+  transform:translateY(24px);opacity:0;transition:.45s var(--ease);max-width:90vw;
+}
+.toast.show{transform:none;opacity:1}
+.toast svg{width:15px;height:15px;stroke:#7ee7a8;fill:none;stroke-width:2.4;flex:none}
+.toast.warn svg{stroke:#ffb066}
+
+/* ============ BACK TO TOP / FLOAT ============ */
+.to-top{
+  position:fixed;right:20px;bottom:22px;z-index:900;width:44px;height:44px;border-radius:50%;
+  background:var(--ink);color:#fff;display:grid;place-items:center;box-shadow:0 18px 34px -18px rgba(6,14,26,.9);
+  opacity:0;visibility:hidden;transform:translateY(14px);transition:.45s var(--ease);
+}
+.to-top.show{opacity:1;visibility:visible;transform:none}
+.to-top:hover{background:var(--indigo);transform:translateY(-3px)}
+.to-top svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+  [data-reveal]{opacity:1;transform:none}
+  .hero h1 .line > span{transform:none}
+  .hero-sub,.hero-actions,.hero-specs{opacity:1}
+}
+
+/* offset de âncoras + busca */
+section[id], main[id], footer[id]{scroll-margin-top:86px}
+.filters-wrap{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.search-field{display:flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:99px;padding:0 16px;height:42px;transition:.35s var(--ease);box-shadow:var(--shadow-sm)}
+.search-field:focus-within{border-color:#b8cbe0;box-shadow:0 10px 24px -18px rgba(9,35,80,.6)}
+.search-field svg{width:15px;height:15px;stroke:#7d8da3;fill:none;stroke-width:2;flex:none}
+.search-field input{border:0;outline:0;background:none;font-size:12.5px;width:158px;font-weight:600;color:var(--ink)}
+.search-field input::placeholder{color:#94a3b8;font-weight:500}
+.site-header{transition:padding .45s var(--ease),top .45s var(--ease),background .45s var(--ease),box-shadow .45s var(--ease),backdrop-filter .4s}
+@media(max-width:1080px){.search-field input{width:130px}}
+@media(max-width:560px){.filters-wrap{width:100%}.search-field{flex:1}.search-field input{width:100%}}
+
+/* demo bar responsiva */
+@media(max-width:820px){
+  .demo-bar{padding:8px 14px;font-size:9.5px;letter-spacing:.1em;gap:8px}
+  .demo-bar .db-left span{display:none}
+  .demo-bar a,.demo-bar button{padding:6px 10px;font-size:9px;letter-spacing:.06em}
+}
+@media(max-width:420px){
+  .demo-bar .db-left strong{display:none}
+  .demo-bar{justify-content:center}
+}
+
+@media(max-width:560px){
+  .hero{padding-bottom:96px}
+  .hero-sub{margin-top:18px}
+  #searchBtn,#wishBtn{display:none}
+  .header-actions{gap:6px}
+  .hero-specs{display:grid;grid-template-columns:1fr 1fr;gap:14px 12px;margin-top:34px}
+  .hero-spec{max-width:none}
+  .hero-actions{gap:10px}
+  .hero-actions .btn{flex:1 1 100%;justify-content:center}
+  .play-btn{justify-content:center;width:100%}
+  .hero-badge{font-size:9.5px;letter-spacing:.1em;padding:6px 6px 6px 10px;max-width:100%}
+  .stage{height:min(58vh,400px);margin-top:30px}
+  .hero-shoe{width:min(90vw,380px)}
+  .hero-thumbs{padding:6px;gap:5px;bottom:-4px}
+  .thumb{width:46px;height:40px}
+  .gc-colors .gc-title b{font-size:10px}
+  .swatch{width:22px;height:22px}
+  .gc-colors{padding:10px 12px;gap:8px}
+}
+
+/* barra de compra mobile */
+.mobile-buy{
+  position:fixed;left:12px;right:12px;bottom:12px;z-index:890;display:none;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 10px 10px 16px;border-radius:18px;background:rgba(255,255,255,.94);backdrop-filter:blur(16px);
+  border:1px solid #fff;box-shadow:0 20px 44px -22px rgba(6,14,26,.6);
+  transform:translateY(120%);transition:transform .5s var(--ease);
+}
+.mobile-buy.show{transform:none}
+.mobile-buy b{display:block;font-size:12.5px;letter-spacing:-.01em}
+.mobile-buy span{font-size:11px;color:var(--muted);font-weight:700}
+.mobile-buy small{display:block;font-size:9px;color:#8a99ad;letter-spacing:.08em;text-transform:uppercase;font-weight:800}
+@media(max-width:720px){
+  .mobile-buy{display:flex}
+  .to-top{bottom:88px;width:38px;height:38px}
+}
+</style>
+</head>
+<body>
+
+<!-- ========== LOADER ========== -->
+<div class="loader" id="loader">
+  <div class="loader-inner">
+    <svg class="loader-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <path d="M4 9l11 22c1.4 2.8 5.4 2.6 6.6-.3L32 9" stroke="#0a1220" stroke-width="3.4" stroke-linecap="round"/>
+      <path d="M14 6L26 6" stroke="#ff6a00" stroke-width="3.4" stroke-linecap="round"/>
+    </svg>
+    <div class="loader-bar"><i></i></div>
+    <div class="loader-text">Volterra</div>
+  </div>
+</div>
+
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div class="progress" id="progress"></div>
+
+<!-- ========== DEMO BAR ========== -->
+<div class="demo-bar">
+  <div class="db-left">
+    <span class="dot-pulse" style="background:#7ee7a8"></span>
+    <strong>Modelo demonstrativo</strong><span>Volterra — Loja de calçados</span>
+  </div>
+  <div class="db-actions">
+    <a href="../index.html" aria-label="Voltar para a vitrine de modelos">← Voltar</a>
+    <a class="db-wa" href="https://wa.me/5567999016886?text=Ol%C3%A1%20Wesley%2C%20gostei%20do%20modelo%20Volterra%20e%20quero%20um%20site%20assim." target="_blank" rel="noopener">Quero este site</a>
+  </div>
+</div>
+
+<!-- ========== HEADER ========== -->
+<header class="site-header" id="siteHeader">
+  <div class="wrap bar">
+    <a href="#top" class="brand" aria-label="Volterra — início">
+      <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+        <path d="M4 9l11 22c1.4 2.8 5.4 2.6 6.6-.3L32 9" stroke="#0a1220" stroke-width="3.2" stroke-linecap="round"/>
+        <path d="M14 6L26 6" stroke="#ff6a00" stroke-width="3.2" stroke-linecap="round"/>
+      </svg>
+      <span class="brand-name">VOLTERRA</span>
+    </a>
+
+    <nav class="nav" aria-label="Navegação principal">
+      <a href="#top" class="active">Início</a>
+      <a href="#tecnologia">Tecnologia</a>
+      <a href="#colecao">Coleção</a>
+      <a href="#experiencia">Experiência</a>
+      <a href="#depoimentos">Depoimentos</a>
+      <a href="#contato">Contato</a>
+    </nav>
+
+    <div class="header-actions">
+      <button class="icon-btn" aria-label="Buscar" id="searchBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+      </button>
+      <button class="icon-btn" aria-label="Favoritos" id="wishBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M12 20s-7.5-4.6-7.5-9.4A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.5 3C19.5 15.4 12 20 12 20z"/></svg>
+        <span class="badge-count" id="wishCount">0</span>
+      </button>
+      <button class="icon-btn" aria-label="Abrir carrinho" id="cartBtn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"><path d="M4 7h16l-1.4 11.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8L4 7z"/><path d="M9 7V5.6a3 3 0 0 1 6 0V7"/></svg>
+        <span class="badge-count" id="cartCount">0</span>
+      </button>
+      <a href="#colecao" class="btn btn-dark header-cta">Comprar agora <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a>
+      <button class="menu-toggle" id="menuToggle" aria-label="Abrir menu" aria-expanded="false"><span></span></button>
+    </div>
+  </div>
+</header>
+
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <a href="#top"><small>01</small>Início</a>
+  <a href="#tecnologia"><small>02</small>Tecnologia</a>
+  <a href="#colecao"><small>03</small>Coleção</a>
+  <a href="#experiencia"><small>04</small>Experiência 360°</a>
+  <a href="#depoimentos"><small>05</small>Depoimentos</a>
+  <a href="#contato"><small>06</small>Contato</a>
+  <div class="mm-foot">
+    <a href="#colecao" class="btn btn-dark btn-small">Comprar agora</a>
+    <a href="https://wa.me/5567999016886" target="_blank" rel="noopener" class="btn btn-ghost btn-small">WhatsApp</a>
+  </div>
+</div>
+
+<!-- ========== HERO ========== -->
+<main id="top">
+<section class="hero" id="hero">
+  <div class="hero-sky" id="heroSky"><img src="assets/hero-sky.webp" alt="" aria-hidden="true" fetchpriority="high"></div>
+  <div class="hero-grain"></div>
+
+  <img class="hero-island i1" src="assets/island.webp" alt="" aria-hidden="true">
+  <img class="hero-island i2" src="assets/island.webp" alt="" aria-hidden="true">
+  <img class="hero-island i3" src="assets/island.webp" alt="" aria-hidden="true">
+
+  <div class="wrap hero-inner">
+    <div class="hero-copy">
+      <div class="hero-badge" data-parallax="0.04">
+        <span class="dot-pulse"></span> Nova geração de performance <b>2025</b>
+      </div>
+
+      <h1>
+        <span class="line"><span>Move Faster</span></span>
+        <span class="line"><span class="grad-text">Go Further</span></span>
+      </h1>
+
+      <p class="hero-sub">Engenharia para quem sonha mais longe. Ultraleve, respirável e com amortecimento responsivo — feito para acompanhar cada passo seu.</p>
+
+      <div class="hero-actions">
+        <a href="#colecao" class="btn btn-dark">Comprar agora <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a>
+        <button class="play-btn" id="openFilm">
+          <span class="play-circle"><svg viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg></span>
+          Assistir vídeo
+        </button>
+      </div>
+
+      <div class="hero-specs">
+        <div class="hero-spec">
+          <svg viewBox="0 0 24 24"><path d="M20 12c0-4.4-3.6-8-8-8S4 7.6 4 12"/><path d="M4 12c0 4.4 3.6 8 8 8s8-3.6 8-8"/><path d="M12 4v16"/><path d="M8 12h8"/></svg>
+          <div><strong>Ultra Leve</strong><span>242g de liberdade</span></div>
+        </div>
+        <div class="hero-spec">
+          <svg viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/><path d="M8 3v18M16 3v18"/></svg>
+          <div><strong>Mesh Respirável</strong><span>Fluxo de ar 360°</span></div>
+        </div>
+        <div class="hero-spec">
+          <svg viewBox="0 0 24 24"><path d="M3 16c3-6 6-9 9-9s6 3 9 9"/><path d="M3 20h18"/></svg>
+          <div><strong>Grip Durável</strong><span>Adere em qualquer piso</span></div>
+        </div>
+        <div class="hero-spec">
+          <svg viewBox="0 0 24 24"><path d="M12 21c5-2 7-6 7-11V5l-7-2-7 2v5c0 5 2 9 7 11z"/><path d="M9 12l2 2 4-4"/></svg>
+          <div><strong>Eco Friendly</strong><span>42% de material reciclado</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stage" id="stage">
+      <div class="stage-glow" id="stageGlow"></div>
+      <div class="stage-ring"></div>
+      <div class="stage-ring two"></div>
+      <div class="shoe-shadow"></div>
+
+      <div class="shoe-wrap" id="shoeWrap">
+        <div class="shoe-float">
+          <img class="hero-shoe" id="heroShoe" src="assets/shoe-orange.webp" alt="Tênis Volterra Flux na cor laranja" draggable="false">
+        </div>
+      </div>
+
+      <div class="glass-card gc-tech">
+        <span class="gc-icon"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg></span>
+        <div>
+          <h4>Leveza extrema</h4>
+          <p>Construção feather-light para o dia inteiro de conforto.</p>
+        </div>
+        <span class="arrow"><svg viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"/></svg></span>
+      </div>
+
+      <div class="glass-card gc-colors">
+        <div class="gc-title"><span>Cores</span><b id="colorName">Sunset Orange</b></div>
+        <div class="swatches" id="heroSwatches">
+          <button class="swatch active" data-color="orange" aria-label="Cor laranja"></button>
+          <button class="swatch" data-color="black" aria-label="Cor preta"></button>
+          <button class="swatch" data-color="blue" aria-label="Cor azul"></button>
+          <button class="swatch" data-color="court" aria-label="Cor cru"></button>
+        </div>
+      </div>
+
+      <div class="hero-thumbs" id="heroThumbs">
+        <button class="thumb" data-shoe="black" data-color="black" aria-label="Ver Volterra Carbon"><img src="assets/shoe-black.webp" alt=""></button>
+        <button class="thumb active" data-shoe="orange" data-color="orange" aria-label="Ver Volterra Flux"><img src="assets/shoe-orange.webp" alt=""></button>
+        <button class="thumb" data-shoe="blue" data-color="blue" aria-label="Ver Volterra Aero"><img src="assets/shoe-blue.webp" alt=""></button>
+        <button class="thumb" data-shoe="court" data-color="court" aria-label="Ver Volterra Court"><img src="assets/shoe-court.webp" alt=""></button>
+        <div class="thumb-count"><b>4</b>cores</div>
+      </div>
+
+      <div class="drag-hint" id="dragHint">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12h16M8 8l-4 4 4 4M16 8l4 4-4 4"/></svg>
+        Arraste o tênis
+      </div>
+
+      <div class="scroll-cue"><span>Scroll<br>Down</span><span class="mouse"><i></i></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== MARQUEE ========== -->
+<div class="marquee" aria-hidden="true">
+  <div class="marquee-track" id="marqueeTrack">
+    <span>ULTRA LEVE <i>✦</i> MESH RESPIRÁVEL <i>✦</i> AMORTECIMENTO RESPONSIVO <i>✦</i> GRIP DURÁVEL <i>✦</i> ECO FRIENDLY <i>✦</i></span>
+    <span>ULTRA LEVE <i>✦</i> MESH RESPIRÁVEL <i>✦</i> AMORTECIMENTO RESPONSIVO <i>✦</i> GRIP DURÁVEL <i>✦</i> ECO FRIENDLY <i>✦</i></span>
+  </div>
+</div>
+
+<!-- ========== TECNOLOGIA ========== -->
+<section class="section tech" id="tecnologia">
+  <div class="wrap">
+    <div class="section-head">
+      <div data-reveal>
+        <span class="eyebrow"><span class="dot-pulse"></span> Engenharia Volterra</span>
+        <h2>Tecnologia que você sente no primeiro passo</h2>
+      </div>
+      <p data-reveal style="transition-delay:.1s">Cada camada foi desenhada em laboratório e validada nas ruas. Passe o mouse nos itens para ver os detalhes — do knit ao outsole.</p>
+    </div>
+
+    <div class="tech-grid">
+      <div class="tech-visual" data-reveal="zoom">
+        <div class="layer on" data-layer="0"><img src="assets/detail.webp" alt="Detalhe do knit respirável do Volterra"></div>
+        <div class="layer" data-layer="1"><img src="assets/shoe-orange.webp" alt="Amortecimento responsivo" style="object-fit:contain;padding:8%;background:radial-gradient(circle at 50% 50%,#20344c,#0b1420)"></div>
+        <div class="layer" data-layer="2"><img src="assets/lifestyle.webp" alt="Solado com aderência em trilha"></div>
+        <div class="layer" data-layer="3"><img src="assets/shoe-court.webp" alt="Construção sustentável" style="object-fit:contain;padding:9%;background:radial-gradient(circle at 50% 50%,#e9f5ff,#cfe6f8)"></div>
+        <span class="tv-badge"><span class="dot-pulse"></span> Lab 01 — Live</span>
+        <div class="tv-ring"></div>
+        <div class="tv-cap">
+          <small id="tvTag">Knit 3D</small>
+          <h3 id="tvTitle">Respire em cada passo</h3>
+          <p id="tvText">Malha técnica com 1.200 microperfurações que expulsam o calor e mantêm o pé seco do início ao fim do treino.</p>
+        </div>
+      </div>
+
+      <div>
+        <div class="tech-list" data-reveal="right">
+          <article class="tech-item active" data-tech="0">
+            <div class="ti-head"><span class="ti-num">01</span><h4>Knit 3D respirável</h4><span class="ti-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"/></svg></span></div>
+            <p>Malha técnica com 1.200 microperfurações que expulsam o calor e mantêm o pé seco do início ao fim do treino.</p>
+          </article>
+          <article class="tech-item" data-tech="1">
+            <div class="ti-head"><span class="ti-num">02</span><h4>Amortecimento responsivo</h4><span class="ti-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"/></svg></span></div>
+            <p>Espuma de dupla densidade que devolve energia em cada aterrissagem e mantém o retorno macio nos longões.</p>
+          </article>
+          <article class="tech-item" data-tech="2">
+            <div class="ti-head"><span class="ti-num">03</span><h4>Grip que não escorrega</h4><span class="ti-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"/></svg></span></div>
+            <p>Borracha com sulcos multidirecionais inspirados em pneus de rally: aderência em asfalto molhado, terra e pedra.</p>
+          </article>
+          <article class="tech-item" data-tech="3">
+            <div class="ti-head"><span class="ti-num">04</span><h4>Menos impacto, mais planeta</h4><span class="ti-arrow"><svg viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"/></svg></span></div>
+            <p>42% de material reciclado na entressola e embalagem 100% compostável. Performance sem culpa.</p>
+          </article>
+        </div>
+
+        <div class="tech-meters" data-reveal style="transition-delay:.15s">
+          <div class="meter"><b>242g</b><span>Peso</span><div class="bar"><i data-w="82"></i></div></div>
+          <div class="meter"><b>8mm</b><span>Drop</span><div class="bar"><i data-w="64"></i></div></div>
+          <div class="meter"><b>+34%</b><span>Retorno</span><div class="bar"><i data-w="90"></i></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== 360 EXPERIENCE ========== -->
+<section class="section viewer-sec" id="experiencia">
+  <div class="wrap viewer">
+    <div class="viewer-copy" data-reveal="left">
+      <span class="eyebrow"><span class="dot-pulse"></span> Experiência interativa</span>
+      <h2>Gire.<br>Explore.<br>Sinta.</h2>
+      <p>Arraste o tênis para girar em 360°, solte para ele continuar girando sozinho. Troque as cores e descubra cada detalhe antes de comprar.</p>
+
+      <div class="vp-swatches">
+        <span class="vp-label">Cor</span>
+        <button class="swatch active" data-color="orange" aria-label="Sunset Orange"></button>
+        <button class="swatch" data-color="black" aria-label="Carbon Black"></button>
+        <button class="swatch" data-color="blue" aria-label="Aero Blue"></button>
+        <button class="swatch" data-color="trail" aria-label="Trail Moss"></button>
+        <button class="swatch" data-color="court" aria-label="Court Cream"></button>
+      </div>
+
+      <div class="vp-specs">
+        <div class="vp-spec"><svg viewBox="0 0 24 24"><path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"/></svg><div><b>242g</b><span>Peso por pé (tam. 40)</span></div></div>
+        <div class="vp-spec"><svg viewBox="0 0 24 24"><path d="M4 14h16M4 18h16M8 6v4M16 6v4"/></svg><div><b>Drop 8mm</b><span>Transição suave</span></div></div>
+        <div class="vp-spec"><svg viewBox="0 0 24 24"><path d="M12 3c4 3 6 6 6 10a6 6 0 0 1-12 0c0-4 2-7 6-10z"/></svg><div><b>Knit 3D</b><span>Transpiração máxima</span></div></div>
+        <div class="vp-spec"><svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><div><b>Garantia</b><span>90 dias de teste real</span></div></div>
+      </div>
+
+      <div class="vp-cta">
+        <button class="btn btn-dark" data-add="flux">Adicionar ao carrinho <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h13M12 5l7 7-7 7"/></svg></button>
+        <button class="btn btn-ghost" data-scroll="#colecao">Ver coleção</button>
+      </div>
+    </div>
+
+    <div class="viper" id="viper" aria-label="Visualizador 360 graus do tênis. Arraste para girar.">
+      <div class="vp-glow" id="vpGlow"></div>
+      <div class="vp-floor"></div>
+      <img class="vp-shoe" id="vpShoe" src="assets/shoe-orange.webp" alt="Tênis Volterra girando em 360 graus" draggable="false">
+      <div class="vp-shine" id="vpShine" style="background:linear-gradient(100deg,rgba(255,255,255,0) 30%,rgba(255,255,255,.75) 50%,rgba(255,255,255,0) 70%)"></div>
+      <div class="hotspot h1" tabindex="0"><span>Knit respirável</span></div>
+      <div class="hotspot h2" tabindex="0"><span>Amortecimento EnergyFoam</span></div>
+      <div class="hotspot h3" tabindex="0"><span>Outsole GripMax</span></div>
+      <div class="viper-hud top"><span class="pill"><span class="dot-pulse"></span> 360° ao vivo</span></div>
+      <div class="viper-hud bottom">
+        <span class="angle-read" id="angleRead">0°</span>
+        <button class="auto-btn on" id="autoRotate" aria-pressed="true">
+          <svg class="ic-play" viewBox="0 0 24 24"><path d="M8 5.5v13l11-6.5z"/></svg>
+          <svg class="ic-pause" viewBox="0 0 24 24"><path d="M7 5h3v14H7zM14 5h3v14h-3z"/></svg>
+          <span id="autoLabel">Auto-rotate</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== COLEÇÃO ========== -->
+<section class="section collection" id="colecao">
+  <div class="wrap">
+    <div class="section-head">
+      <div data-reveal>
+        <span class="eyebrow"><span class="dot-pulse"></span> Coleção 2025</span>
+        <h2>Escolha o seu próximo passo</h2>
+        <p>Cinco silhuetas, uma obsessão: fazer você ir mais longe. Todos com frete grátis e troca em 30 dias.</p>
+      </div>
+      <div class="filters-wrap" data-reveal style="transition-delay:.1s">
+        <label class="search-field">
+          <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.6-3.6"/></svg>
+          <input type="search" id="searchProducts" placeholder="Buscar modelo..." aria-label="Buscar modelo na coleção" autocomplete="off">
+        </label>
+        <div class="filters" id="filters">
+          <button class="filter-btn active" data-filter="all">Todos</button>
+          <button class="filter-btn" data-filter="corrida">Corrida</button>
+          <button class="filter-btn" data-filter="trilha">Trilha</button>
+          <button class="filter-btn" data-filter="lifestyle">Lifestyle</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-grid" id="productGrid"></div>
+
+    <div class="collection-foot" data-reveal>
+      <a href="https://wa.me/5567999016886?text=Ol%C3%A1!%20Quero%20ver%20a%20cole%C3%A7%C3%A3o%20completa%20Volterra." target="_blank" rel="noopener" class="btn btn-ghost">Ver coleção completa <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== BANNER PARALLAX ========== -->
+<section class="banner">
+  <div class="banner-img" id="bannerImg"><img src="assets/lifestyle.webp" alt="Corredor em trilha ao amanhecer usando Volterra"></div>
+  <div class="wrap banner-inner">
+    <span class="eyebrow" style="color:rgba(255,255,255,.82)" data-reveal><span class="dot-pulse"></span> Feito para ir além</span>
+    <h2 data-reveal style="transition-delay:.06s">O limite é só<br>o próximo <em>quilômetro</em></h2>
+    <p data-reveal style="transition-delay:.12s">Testado por atletas amadores e ultramaratonistas em 14 países. Da primeira caminhada ao recorde pessoal — Volterra acompanha o seu ritmo.</p>
+    <div class="banner-foot" data-reveal style="transition-delay:.18s">
+      <div class="bstat"><b data-count="128" data-suffix="mil">0</b><span>Pares em uso</span></div>
+      <div class="bstat"><b data-count="4.9" data-decimals="1" data-suffix="/5">0</b><span>Avaliação média</span></div>
+      <div class="bstat"><b data-count="42" data-suffix="%">0</b><span>Material reciclado</span></div>
+      <a href="#experiencia" class="btn" data-scroll="#experiencia">Experimentar 360° <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h13M12 5l7 7-7 7"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- ========== DEPOIMENTOS ========== -->
+<section class="section testi" id="depoimentos">
+  <div class="wrap">
+    <div class="section-head">
+      <div data-reveal>
+        <span class="eyebrow"><span class="dot-pulse"></span> Quem já corre com a gente</span>
+        <h2>Histórias de quem foi mais longe</h2>
+      </div>
+      <div class="testi-nav" data-reveal>
+        <button class="round-btn" id="testiPrev" aria-label="Depoimento anterior"><svg viewBox="0 0 24 24"><path d="M19 12H6M12 5l-7 7 7 7"/></svg></button>
+        <button class="round-btn" id="testiNext" aria-label="Próximo depoimento"><svg viewBox="0 0 24 24"><path d="M5 12h13M12 5l7 7-7 7"/></svg></button>
+      </div>
+    </div>
+
+    <div class="testi-track" id="testiTrack">
+      <article class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p>“Comprei o Flux para treinar 5k e acabei correndo minha primeira meia maratona. O amortecimento continua igual depois de 400 km.”</p>
+        <div class="testi-user"><div class="avatar o">MC</div><div><b>Mariana Costa</b><span>Corredora amadora · Campo Grande</span></div></div>
+      </article>
+      <article class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p>“Trabalho 10 horas em pé na clínica. O Carbon virou meu tênis de todo dia: parece que não estou usando nada.”</p>
+        <div class="testi-user"><div class="avatar">RH</div><div><b>Rafael Higa</b><span>Fisioterapeuta · Chapadão do Sul</span></div></div>
+      </article>
+      <article class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p>“Trilha com pedra molhada era meu medo. O Terra agarra de um jeito que eu esqueci que estava escorregando antes.”</p>
+        <div class="testi-user"><div class="avatar g">LS</div><div><b>Lucas Serra</b><span>Guia de trilha · Bonito</span></div></div>
+      </article>
+      <article class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p>“Atendimento pelo WhatsApp foi rápido e o tênis chegou em 3 dias. Já é o terceiro par aqui em casa.”</p>
+        <div class="testi-user"><div class="avatar">AP</div><div><b>Ana Paula</b><span>Professora · Três Lagoas</span></div></div>
+      </article>
+      <article class="testi-card">
+        <div class="stars">★★★★★</div>
+        <p>“O detalhe do knite respirável é real: meu pé não esquenta nem no calor de 38 graus do Mato Grosso do Sul.”</p>
+        <div class="testi-user"><div class="avatar o">JB</div><div><b>João Batista</b><span>Personal trainer · Dourados</span></div></div>
+      </article>
+    </div>
+  </div>
+</section>
+
+<!-- ========== FOOTER ========== -->
+<footer class="footer" id="contato">
+  <div class="wrap">
+    <div class="newsletter">
+      <div data-reveal>
+        <h3>Receba lançamentos<br>antes de todo mundo</h3>
+        <p>Um e-mail por mês com novidades, conteúdos de treino e acesso antecipado aos drops. Sem spam, prometido.</p>
+      </div>
+      <div data-reveal style="transition-delay:.1s">
+        <form class="news-form" id="newsForm" novalidate>
+          <input type="email" id="newsEmail" placeholder="seu@email.com" aria-label="Seu e-mail" required>
+          <button class="btn btn-orange" type="submit" id="newsBtn">Quero receber</button>
+        </form>
+        <div class="news-msg" id="newsMsg" role="status"></div>
+      </div>
+    </div>
+
+    <div class="footer-grid">
+      <div>
+        <a href="#top" class="brand" aria-label="Volterra">
+          <svg viewBox="0 0 40 40" fill="none" aria-hidden="true">
+            <path d="M4 9l11 22c1.4 2.8 5.4 2.6 6.6-.3L32 9" stroke="#ffffff" stroke-width="3.2" stroke-linecap="round"/>
+            <path d="M14 6L26 6" stroke="#ff6a00" stroke-width="3.2" stroke-linecap="round"/>
+          </svg>
+          <span class="brand-name">VOLTERRA</span>
+        </a>
+        <p class="footer-about">Performance com propósito. Tênis leves, duráveis e feitos com material reciclado para quem não para de se mover.</p>
+        <div class="socials">
+          <a href="#" aria-label="Instagram"><svg viewBox="0 0 24 24"><path d="M12 2.2c3.2 0 3.6 0 4.9.1 1.2.1 1.8.2 2.2.4.6.2 1 .5 1.4.9.4.4.7.8.9 1.4.2.4.4 1 .4 2.2.1 1.3.1 1.7.1 4.9s0 3.6-.1 4.9c-.1 1.2-.2 1.8-.4 2.2-.2.6-.5 1-.9 1.4-.4.4-.8.7-1.4.9-.4.2-1 .4-2.2.4-1.3.1-1.7.1-4.9.1s-3.6 0-4.9-.1c-1.2-.1-1.8-.2-2.2-.4-.6-.2-1-.5-1.4-.9-.4-.4-.7-.8-.9-1.4-.2-.4-.4-1-.4-2.2C2.2 15.6 2.2 15.2 2.2 12s0-3.6.1-4.9c.1-1.2.2-1.8.4-2.2.2-.6.5-1 .9-1.4.4-.4.8-.7 1.4-.9.4-.2 1-.4 2.2-.4C8.4 2.2 8.8 2.2 12 2.2zm0 3.4A6.4 6.4 0 1 0 18.4 12 6.4 6.4 0 0 0 12 5.6zm0 10.5A4.1 4.1 0 1 1 16.1 12 4.1 4.1 0 0 1 12 16.1zm6.7-10.9a1.5 1.5 0 1 0 1.5 1.5 1.5 1.5 0 0 0-1.5-1.5z"/></svg></a>
+          <a href="#" aria-label="TikTok"><svg viewBox="0 0 24 24"><path d="M16.6 5.8a4.9 4.9 0 0 0 3.4 1.4V10a7.7 7.7 0 0 1-3.6-.9v5.6A5.8 5.8 0 1 1 10.6 9v3a2.8 2.8 0 1 0 2.8 2.8V2h2.9a4.9 4.9 0 0 0 .3 3.8z"/></svg></a>
+          <a href="#" aria-label="YouTube"><svg viewBox="0 0 24 24"><path d="M21.6 7.2a2.5 2.5 0 0 0-1.8-1.8C18.2 5 12 5 12 5s-6.2 0-7.8.4A2.5 2.5 0 0 0 2.4 7.2 26 26 0 0 0 2 12a26 26 0 0 0 .4 4.8 2.5 2.5 0 0 0 1.8 1.8C5.8 19 12 19 12 19s6.2 0 7.8-.4a2.5 2.5 0 0 0 1.8-1.8A26 26 0 0 0 22 12a26 26 0 0 0-.4-4.8zM10 15.5v-7l6 3.5z"/></svg></a>
+          <a href="https://wa.me/5567999016886" target="_blank" rel="noopener" aria-label="WhatsApp"><svg viewBox="0 0 32 32"><path d="M27.3 4.7A15.8 15.8 0 0 0 2.5 23.8L.3 31.7l8.1-2.1A15.7 15.7 0 0 0 16 31.5h.1A15.8 15.8 0 0 0 27.3 4.7Zm-11.2 24a13 13 0 0 1-6.6-1.8l-.5-.3-4.8 1.3 1.3-4.7-.3-.5a13 13 0 1 1 10.9 6Zm7.1-9.7c-.4-.2-2.3-1.1-2.7-1.3-.4-.1-.6-.2-.9.2-.3.4-1 1.3-1.3 1.6-.2.3-.5.3-.9.1-2.3-1.1-3.8-2-5.3-4.6-.4-.7.4-.7 1.1-2.2.1-.3.1-.5 0-.7-.1-.2-.9-2.1-1.2-2.9-.3-.8-.7-.7-.9-.7h-.8c-.3 0-.7.1-1.1.5-.4.4-1.4 1.4-1.4 3.4s1.5 4 1.7 4.3c.2.3 2.9 4.4 7 6.2 2.6 1.1 3.6 1.2 4.9 1 .8-.1 2.3-.9 2.6-1.8.3-.9.3-1.7.2-1.8-.1-.2-.4-.3-.8-.5Z"/></svg></a>
+        </div>
+      </div>
+      <div class="fcol">
+        <h5>Loja</h5>
+        <a href="#colecao">Corrida</a><a href="#colecao">Trilha</a><a href="#colecao">Lifestyle</a><a href="#colecao">Lançamentos</a>
+      </div>
+      <div class="fcol">
+        <h5>Ajuda</h5>
+        <a href="#">Trocas e devoluções</a><a href="#">Guia de medidas</a><a href="#">Rastrear pedido</a><a href="#">Fale no WhatsApp</a>
+      </div>
+      <div class="fcol">
+        <h5>Contato</h5>
+        <a href="https://wa.me/5567999016886" target="_blank" rel="noopener">(67) 99901-6886</a>
+        <a href="mailto:contato@volterra.com">contato@volterra.com</a>
+        <a href="#">Chapadão do Sul · MS</a>
+        <a href="#">Seg a sáb · 8h às 18h</a>
+      </div>
+    </div>
+
+    <div class="footer-bottom">
+      <span>© 2025 Volterra. Modelo demonstrativo criado por <a href="../index.html">SITEFOLIO</a>.</span>
+      <span><a href="#">Privacidade</a> · <a href="#">Termos</a> · Feito para se mover.</span>
+    </div>
+  </div>
+</footer>
+</main>
+
+<!-- ========== CART ========== -->
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="cartDrawer" aria-label="Carrinho de compras" aria-hidden="true">
+  <div class="drawer-head">
+    <h3>Seu carrinho <span id="cartDrawerCount" style="color:#8a99ad;font-family:var(--font-body);font-size:12px;font-weight:700">(0)</span></h3>
+    <button class="close" id="cartClose" aria-label="Fechar carrinho"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+  </div>
+  <div class="drawer-body" id="cartBody"></div>
+  <div class="drawer-foot">
+    <div class="cart-total"><span>Total</span><b id="cartTotal">R$ 0</b></div>
+    <button class="btn btn-dark" id="checkoutBtn" style="width:100%">Finalizar no WhatsApp <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h13M12 5l7 7-7 7"/></svg></button>
+    <small>Frete grátis · Troca em 30 dias · Pix, cartão ou WhatsApp</small>
+  </div>
+</aside>
+
+<!-- ========== PRODUCT MODAL ========== -->
+<div class="modal" id="productModal" aria-hidden="true" role="dialog" aria-label="Detalhes do produto">
+  <div class="modal-bg" data-close-modal></div>
+  <div class="modal-card">
+    <button class="modal-close" data-close-modal aria-label="Fechar"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="product-modal" id="productModalBody"></div>
+  </div>
+</div>
+
+<!-- ========== FILM MODAL ========== -->
+<div class="modal video-modal" id="filmModal" aria-hidden="true" role="dialog" aria-label="Vídeo Volterra">
+  <div class="modal-bg" data-close-modal></div>
+  <div class="modal-card">
+    <button class="modal-close" data-close-modal aria-label="Fechar vídeo"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="film">
+      <div class="film-sky"></div>
+      <img class="film-shoe" src="assets/shoe-orange.webp" alt="">
+      <div class="film-lines">
+        <p>Todo passo começa<br>com uma <em>decisão</em>.</p>
+        <p>Você não precisa de asas.<br>Precisa de <em>Volterra</em>.</p>
+        <p>Move Faster.<br><em>Go Further.</em></p>
+      </div>
+      <div class="film-bar"></div>
+    </div>
+  </div>
+</div>
+
+<div class="mobile-buy" id="mobileBuy">
+  <div><small>Volterra Flux</small><b>Sunset Orange · 242g</b><span>R$ 699,90</span></div>
+  <button class="btn btn-dark btn-small" data-add="flux">Adicionar</button>
+</div>
+<div class="toast-wrap" id="toastWrap"></div>
+<button class="to-top" id="toTop" aria-label="Voltar ao topo"><svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg></button>
+
+<script>
+/* ============================================================
+   VOLTERRA — interações
+   ============================================================ */
+(function(){
+  'use strict';
+  const $  = (s,c=document)=>c.querySelector(s);
+  const $$ = (s,c=document)=>[...c.querySelectorAll(s)];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- dados ---------- */
+  const COLOR = {
+    orange:{name:'Sunset Orange', src:'assets/shoe-orange.webp', glow:'radial-gradient(circle,rgba(255,140,60,.6),rgba(255,255,255,0) 70%)', chip:'linear-gradient(135deg,#ffb066,#ff5b00)'},
+    black:{name:'Carbon Black', src:'assets/shoe-black.webp', glow:'radial-gradient(circle,rgba(40,220,200,.45),rgba(255,255,255,0) 70%)', chip:'linear-gradient(135deg,#3b4757,#080d16)'},
+    blue:{name:'Aero Blue', src:'assets/shoe-blue.webp', glow:'radial-gradient(circle,rgba(70,150,255,.55),rgba(255,255,255,0) 70%)', chip:'linear-gradient(135deg,#8fc6ff,#2f7bff)'},
+    trail:{name:'Trail Moss', src:'assets/shoe-trail.webp', glow:'radial-gradient(circle,rgba(150,200,60,.5),rgba(255,255,255,0) 70%)', chip:'linear-gradient(135deg,#b7cf6a,#5c7a2e)'},
+    court:{name:'Court Cream', src:'assets/shoe-court.webp', glow:'radial-gradient(circle,rgba(240,225,190,.65),rgba(255,255,255,0) 70%)', chip:'linear-gradient(135deg,#f5f0e6,#cdc2ae)'}
+  };
+
+  const PRODUCTS = [
+    {id:'flux', name:'Volterra Flux', cat:'corrida', catLabel:'Corrida', price:699.9, old:799.9, colors:['orange','black','blue'],
+     desc:'O equilíbrio perfeito entre leveza e resposta para treinos diários.', tag:'Mais vendido', tagClass:'new',
+     img:'assets/shoe-orange.webp', hits:['Knit 3D respirável','EnergyFoam 8mm','242g']},
+    {id:'aero', name:'Volterra Aero', cat:'corrida', catLabel:'Corrida', price:649.9, old:0, colors:['blue','orange','court'],
+     desc:'Propulsão para dias de velocidade com placa flexível de nylon.', tag:'Novo', tagClass:'new',
+     img:'assets/shoe-blue.webp', hits:['Placa de nylon','Drop 6mm','216g']},
+    {id:'carbon', name:'Volterra Carbon', cat:'lifestyle', catLabel:'Lifestyle', price:589.9, old:0, colors:['black','court'],
+     desc:'Visual monocromático e conforto de caminhada para o dia inteiro.', tag:'Best seller', tagClass:'',
+     img:'assets/shoe-black.webp', hits:['Malha elástica','Palmilha gel','Design urbano']},
+    {id:'terra', name:'Volterra Terra', cat:'trilha', catLabel:'Trilha', price:749.9, old:0, colors:['trail','black','orange'],
+     desc:'Tração agressiva e proteção lateral para terrenos irregulares.', tag:'Trail', tagClass:'sale',
+     img:'assets/shoe-trail.webp', hits:['GripMax 5mm','Toe cap reforçado','Impermeável']},
+    {id:'court', name:'Volterra Court', cat:'lifestyle', catLabel:'Lifestyle', price:499.9, old:599.9, colors:['court','black','blue'],
+     desc:'Couro premium e silhueta atemporal que combina com tudo.', tag:'-17%', tagClass:'sale',
+     img:'assets/shoe-court.webp', hits:['Couro premium','Solado creme','Unissex']}
+  ];
+  const SIZES = [36,37,38,39,40,41,42,43,44];
+  const BRL = n => 'R$ ' + n.toLocaleString('pt-BR',{minimumFractionDigits:2, maximumFractionDigits:2});
+
+  /* ---------- utils ---------- */
+  const toastEl = $('#toastWrap');
+  let toastTimer;
+  function toast(msg, type){
+    toastEl.innerHTML = '';
+    const t = document.createElement('div');
+    t.className = 'toast' + (type==='warn'?' warn':'');
+    t.innerHTML = `<svg viewBox="0 0 24 24"><path d="M5 12l5 5L20 7"/></svg><span>${msg}</span>`;
+    toastEl.appendChild(t);
+    requestAnimationFrame(()=>t.classList.add('show'));
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(()=>{ t.classList.remove('show'); setTimeout(()=>t.remove(), 500); }, 2800);
+  }
+
+  /* ---------- loader ---------- */
+  window.addEventListener('load', ()=>{
+    setTimeout(()=>$('#loader').classList.add('done'), 450);
+  });
+  setTimeout(()=>$('#loader').classList.add('done'), 2600);
+
+  /* ---------- cursor ---------- */
+  if (matchMedia('(hover:hover) and (pointer:fine)').matches && !reduce){
+    const dot = $('#cursorDot'), ring = $('#cursorRing');
+    let mx=innerWidth/2,my=innerHeight/2, rx=mx, ry=my;
+    document.body.classList.add('has-cursor');
+    addEventListener('mousemove', e=>{
+      mx=e.clientX; my=e.clientY;
+      dot.style.transform = `translate(${mx}px,${my}px) translate(-50%,-50%)`;
+    });
+    (function loop(){
+      rx += (mx-rx)*.15; ry += (my-ry)*.15;
+      ring.style.transform = `translate(${rx}px,${ry}px) translate(-50%,-50%)`;
+      requestAnimationFrame(loop);
+    })();
+    document.addEventListener('mouseover', e=>{
+      if (e.target.closest('a,button,.product,.swatch,.thumb,.hotspot')) ring.classList.add('hov');
+    });
+    document.addEventListener('mouseout', e=>{
+      if (e.target.closest('a,button,.product,.swatch,.thumb,.hotspot')) ring.classList.remove('hov');
+    });
+  }
+
+  /* ---------- menu ---------- */
+  const menuToggle = $('#menuToggle'), mobileMenu = $('#mobileMenu');
+  function setMenu(open){
+    document.body.classList.toggle('menu-open', open);
+    mobileMenu.classList.toggle('open', open);
+    mobileMenu.setAttribute('aria-hidden', !open);
+    menuToggle.setAttribute('aria-expanded', open);
+    document.body.classList.toggle('is-locked', open);
+  }
+  menuToggle.addEventListener('click', ()=>setMenu(!mobileMenu.classList.contains('open')));
+  $$('#mobileMenu a').forEach(a=>a.addEventListener('click', ()=>setMenu(false)));
+
+  /* ---------- scroll: header, progress, parallax ---------- */
+  const header = $('#siteHeader'), progress = $('#progress'), toTop = $('#toTop');
+  const demoBar = $('.demo-bar');
+  const demoH = () => demoBar ? demoBar.offsetHeight : 0;
+  let dbh = demoH();
+  addEventListener('resize', ()=>{ dbh = demoH(); onScroll(); });
+  header.style.top = dbh + 'px';
+  const sky = $('#heroSky img'), islands = $$('.hero-island'), bannerImg = $('#bannerImg');
+  let lastScroll = 0, ticking = false;
+
+  function onScroll(){
+    const y = window.scrollY;
+    header.style.top = (y > 18 ? 0 : dbh) + 'px';
+    header.classList.toggle('scrolled', y > 40);
+    const h = document.documentElement.scrollHeight - innerHeight;
+    progress.style.width = Math.min(100, (y / (h||1)) * 100) + '%';
+    toTop.classList.toggle('show', y > 700);
+    const mb = $('#mobileBuy');
+    if (mb){
+      const nearEnd = y + innerHeight > document.documentElement.scrollHeight - 420;
+      mb.classList.toggle('show', y > 620 && !nearEnd);
+    }
+
+    if (!reduce){
+      if (sky && y < innerHeight*1.4) sky.style.transform = `scale(1.08) translate3d(0,${y*0.18}px,0)`;
+      islands.forEach((el,i)=> el.style.marginTop = (y * (0.04 + i*0.025)) + 'px');
+      if (bannerImg){
+        const r = bannerImg.parentElement.getBoundingClientRect();
+        if (r.top < innerHeight && r.bottom > 0){
+          const p = (innerHeight - r.top) / (innerHeight + r.height);
+          bannerImg.style.transform = `translate3d(0,${(p-0.5) * -12}%,0) scale(1.06)`;
+        }
+      }
+    }
+    $$('[data-parallax]').forEach(el=>{
+      const sp = parseFloat(el.dataset.parallax)||0;
+      const r = el.getBoundingClientRect();
+      if (r.top < innerHeight && r.bottom > 0) el.style.transform = `translate3d(0,${(r.top - innerHeight/2) * -sp}px,0)`;
+    });
+    lastScroll = y; ticking = false;
+  }
+  addEventListener('scroll', ()=>{ if(!ticking){ ticking = true; requestAnimationFrame(onScroll); } }, {passive:true});
+  onScroll();
+  toTop.addEventListener('click', ()=>window.scrollTo({top:0, behavior: reduce?'auto':'smooth'}));
+
+  /* ---------- reveal ---------- */
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if (en.isIntersecting){ en.target.classList.add('in'); io.unobserve(en.target); }
+    });
+  }, {threshold:.12, rootMargin:'0px 0px -8% 0px'});
+  $$('[data-reveal]').forEach(el=>io.observe(el));
+
+  /* ---------- nav ativo ---------- */
+  const navLinks = $$('.nav a');
+  const sections = navLinks.map(a=>{
+    const id = a.getAttribute('href');
+    return id && id.startsWith('#') ? document.querySelector(id) : null;
+  });
+  const navIO = new IntersectionObserver((entries)=>{
+    entries.forEach(en=>{
+      if (en.isIntersecting){
+        const idx = sections.indexOf(en.target);
+        navLinks.forEach((l,i)=>l.classList.toggle('active', i===idx));
+      }
+    });
+  }, {threshold:.2, rootMargin:'-25% 0px -55% 0px'});
+  sections.forEach(s=>s && navIO.observe(s));
+
+  /* ---------- smooth anchors com offset ---------- */
+  document.addEventListener('click', e=>{
+    const a = e.target.closest('a[href^="#"], [data-scroll]');
+    if (!a) return;
+    const sel = a.dataset.scroll || a.getAttribute('href');
+    if (!sel || sel === '#') return;
+    const target = document.querySelector(sel);
+    if (!target) return;
+    e.preventDefault();
+    const top = target.getBoundingClientRect().top + scrollY - 74;
+    window.scrollTo({top, behavior: reduce?'auto':'smooth'});
+    history.replaceState(null,'',sel);
+  });
+
+  /* ---------- contadores / medidores ---------- */
+  const countIO = new IntersectionObserver((ents)=>{
+    ents.forEach(en=>{
+      if (!en.isIntersecting) return;
+      const el = en.target, target = parseFloat(el.dataset.count), dec = +(el.dataset.decimals||0), suf = el.dataset.suffix||'';
+      const t0 = performance.now(), dur = 1700;
+      (function step(t){
+        const p = Math.min(1,(t-t0)/dur), e = 1-Math.pow(1-p,3);
+        el.textContent = (target*e).toLocaleString('pt-BR',{minimumFractionDigits:dec, maximumFractionDigits:dec}) + suf;
+        if (p<1) requestAnimationFrame(step);
+      })(t0);
+      countIO.unobserve(el);
+    });
+  }, {threshold:.5});
+  $$('[data-count]').forEach(el=>countIO.observe(el));
+
+  const meterIO = new IntersectionObserver((ents)=>{
+    ents.forEach(en=>{ if(en.isIntersecting){ en.target.style.width = en.target.dataset.w + '%'; meterIO.unobserve(en.target); } });
+  }, {threshold:.4});
+  $$('.meter .bar i').forEach(el=>meterIO.observe(el));
+
+  /* ---------- HERO: cor + tilt + drag ---------- */
+  const heroShoe = $('#heroShoe'), stage = $('#stage'), glow = $('#stageGlow');
+  const shoeWrap = $('#shoeWrap'), colorName = $('#colorName'), dragHint = $('#dragHint');
+  let heroColor = 'orange';
+  let tilt = {rx:0, ry:0, mx:0, my:0, rz:0, dragging:false, lx:0, ly:0};
+
+  function applyTilt(){
+    shoeWrap.style.setProperty('--rx', tilt.rx+'deg');
+    shoeWrap.style.setProperty('--ry', tilt.ry+'deg');
+    shoeWrap.style.setProperty('--rz', tilt.rz+'deg');
+    shoeWrap.style.setProperty('--mx', tilt.mx+'px');
+    shoeWrap.style.setProperty('--my', tilt.my+'px');
+  }
+  function setHeroColor(key, fromThumb){
+    if (!COLOR[key]) return;
+    heroColor = key;
+    heroShoe.classList.add('swap');
+    setTimeout(()=>{
+      heroShoe.src = COLOR[key].src;
+      heroShoe.alt = 'Tênis Volterra ' + COLOR[key].name;
+      heroShoe.classList.remove('swap');
+    }, reduce?0:220);
+    colorName.textContent = COLOR[key].name;
+    glow.style.background = COLOR[key].glow;
+    $$('#heroSwatches .swatch').forEach(b=>b.classList.toggle('active', b.dataset.color===key));
+    $$('.thumb').forEach(b=>b.classList.toggle('active', b.dataset.color===key));
+    if (!fromThumb) $$('.thumb').forEach(b=>{ if(b.dataset.color===key) b.scrollIntoView({block:'nearest', inline:'center', behavior:'smooth'}); });
+  }
+  $$('#heroSwatches .swatch').forEach(b=>b.addEventListener('click', ()=>setHeroColor(b.dataset.color)));
+  $$('.thumb').forEach(b=>b.addEventListener('click', ()=>setHeroColor(b.dataset.color, true)));
+
+  const FINE = !reduce && matchMedia('(hover:hover) and (pointer:fine)').matches;
+  stage.addEventListener('pointermove', e=>{
+    if (tilt.dragging){
+      const dx = e.clientX - tilt.lx, dy = e.clientY - tilt.ly;
+      tilt.rz = Math.max(-15, Math.min(15, tilt.rz + dx*0.12));
+      tilt.ry = Math.max(-30, Math.min(30, tilt.ry + dx*0.2));
+      tilt.rx = Math.max(-20, Math.min(20, tilt.rx - dy*0.12));
+      tilt.lx = e.clientX; tilt.ly = e.clientY;
+      applyTilt();
+    } else if (FINE){
+      const r = stage.getBoundingClientRect();
+      const x = (e.clientX - r.left)/r.width - .5;
+      const y = (e.clientY - r.top)/r.height - .5;
+      tilt.ry = x * 24;
+      tilt.rx = -y * 14;
+      tilt.mx = x * 20;
+      tilt.my = y * 14;
+      applyTilt();
+    }
+  }, {passive:true});
+  stage.addEventListener('pointerleave', ()=>{
+    if (tilt.dragging) return;
+    tilt.rx = 0; tilt.ry = 0; tilt.rz = 0; tilt.mx = 0; tilt.my = 0; applyTilt();
+  });
+
+  let pressTimer;
+  shoeWrap.addEventListener('pointerdown', e=>{
+    tilt.dragging = true; tilt.lx = e.clientX; tilt.ly = e.clientY;
+    shoeWrap.classList.add('dragging');
+    shoeWrap.setPointerCapture && shoeWrap.setPointerCapture(e.pointerId);
+    dragHint && dragHint.classList.add('hide');
+  });
+  ['pointerup','pointercancel','pointerleave'].forEach(ev=>{
+    shoeWrap.addEventListener(ev, ()=>{
+      if (!tilt.dragging) return;
+      tilt.dragging = false;
+      shoeWrap.classList.remove('dragging');
+      setTimeout(()=>{ if(!tilt.dragging){ tilt.rx=0; tilt.ry=0; tilt.rz=0; tilt.mx=0; tilt.my=0; applyTilt(); } }, 320);
+    });
+  });
+  pressTimer = setTimeout(()=>dragHint && dragHint.classList.add('hide'), 9000);
+
+  /* ---------- 360 viewer ---------- */
+  const viper = $('#viper'), vpShoe = $('#vpShoe'), vpShine = $('#vpShine'), vpGlow = $('#vpGlow');
+  const angleRead = $('#angleRead'), autoBtn = $('#autoRotate'), autoLabel = $('#autoLabel');
+  let vAngle = 0, vAuto = true, vDrag = false, vLastX = 0, vLastY = 0, vTiltX = 0, vVel = 0;
+
+  function vRender(){
+    const a = Math.max(-42, Math.min(42, vAngle));
+    const tiltX = Math.max(-10, Math.min(10, vTiltX));
+    vpShoe.style.transform = `perspective(1300px) rotateY(${a}deg) rotateX(${tiltX}deg) rotateZ(${a*-0.06}deg) translateX(${a*0.22}%) scale(${1 - Math.abs(a)/620})`;
+    vpShine.style.transform = `translateX(${a*1.4}%)`;
+    vpShine.style.opacity = String(0.28 + (1-Math.abs(a)/42)*0.42);
+    angleRead.textContent = Math.round(((vAngle%360)+360)%360) + '°';
+    $$('.hotspot', viper).forEach(h=> h.style.opacity = Math.max(0, 1 - Math.abs(a)/26));
+  }
+  function vSetColor(key){
+    if (!COLOR[key]) return;
+    vpShoe.style.opacity = '0';
+    vpShoe.style.transform += ' scale(.92)';
+    setTimeout(()=>{
+      vpShoe.src = COLOR[key].src;
+      vpShoe.style.opacity = '1';
+      vpGlow.style.background = COLOR[key].glow;
+      vRender();
+    }, reduce?0:180);
+    $$('.vp-swatches .swatch').forEach(b=>b.classList.toggle('active', b.dataset.color===key));
+  }
+  $$('.vp-swatches .swatch').forEach(b=>b.addEventListener('click', ()=>vSetColor(b.dataset.color)));
+
+  if (viper){
+    viper.addEventListener('pointerdown', e=>{
+      vDrag = true; vLastX = e.clientX; vLastY = e.clientY;
+      if (vAuto){ setAuto(false); }
+      viper.classList.add('grabbing');
+      viper.setPointerCapture && viper.setPointerCapture(e.pointerId);
+    });
+    viper.addEventListener('pointermove', e=>{
+      if (!vDrag) return;
+      const dx = e.clientX - vLastX;
+      vAngle += dx * (Math.abs(vAngle) > 32 ? 0.26 : 0.5);
+      vTiltX = Math.max(-10, Math.min(10, vTiltX - (e.clientY - vLastY) * 0.12));
+      vVel = dx * 0.6;
+      vLastX = e.clientX; vLastY = e.clientY;
+      vRender();
+    });
+    ['pointerup','pointercancel','pointerleave'].forEach(ev=>{
+      viper.addEventListener(ev, ()=>{ vDrag = false; viper.classList.remove('grabbing'); });
+    });
+  }
+  let vTime = 0;
+  (function vLoop(){
+    if (!reduce){
+      if (!vDrag){
+        if (vAuto){
+          vTime += 0.011;
+          vAngle = Math.sin(vTime) * 34;
+          vTiltX *= 0.98;
+        } else if (Math.abs(vVel) > 0.04){
+          vAngle += vVel; vVel *= 0.94;
+        }
+        vRender();
+      }
+    }
+    requestAnimationFrame(vLoop);
+  })();
+  function setAuto(on){
+    vAuto = on;
+    autoBtn.classList.toggle('on', vAuto);
+    autoBtn.setAttribute('aria-pressed', vAuto);
+    autoLabel.textContent = vAuto ? 'Auto-rotate' : 'Girar sozinho';
+    if (vAuto) vTime = Math.asin(Math.max(-1,Math.min(1,vAngle/34)));
+  }
+  autoBtn.addEventListener('click', ()=>setAuto(!vAuto));
+  vRender();
+
+  /* ---------- PRODUTOS ---------- */
+  const grid = $('#productGrid');
+  let wishStore = [];
+  try { wishStore = JSON.parse(localStorage.getItem('volterra_wish')||'[]') || []; } catch(e){ wishStore = []; }
+  const wish = new Set(wishStore);
+
+  function colorDots(keys){
+    return `<div class="product-colors">${keys.map(k=>`<i style="background:${COLOR[k].chip}" title="${COLOR[k].name}"></i>`).join('')}</div>`;
+  }
+  function renderProducts(filter='all', term=''){
+    const list = PRODUCTS.filter(p=>{
+      const okCat = filter==='all' || p.cat===filter || p.colors.includes(filter);
+      const okTerm = !term || (p.name+' '+p.desc+' '+p.catLabel).toLowerCase().includes(term.toLowerCase());
+      return okCat && okTerm;
+    });
+    if (!list.length){
+      grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:50px 10px;color:var(--muted)">
+        <h4 style="font-size:18px;color:var(--ink)">Nenhum modelo encontrado</h4>
+        <p style="font-size:13px;margin-top:6px">Tente outro filtro ou fale com a gente no WhatsApp.</p></div>`;
+      return;
+    }
+    grid.innerHTML = list.map((p,i)=>`
+      <article class="product" data-tilt data-id="${p.id}" style="transition-delay:${Math.min(i*40,200)}ms">
+        <div class="product-media">
+          <span class="tag-flag ${p.tagClass}">${p.tag}</span>
+          <div class="quick-actions">
+            <button class="qa ${wish.has(p.id)?'liked':''}" data-wish="${p.id}" aria-label="Favoritar ${p.name}" aria-pressed="${wish.has(p.id)}">
+              <svg viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-9.4A4.1 4.1 0 0 1 12 7.6a4.1 4.1 0 0 1 7.5 3C19.5 15.4 12 20 12 20z"/></svg>
+            </button>
+            <button class="qa" data-quickview="${p.id}" aria-label="Ver detalhes de ${p.name}">
+              <svg viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.6"/></svg>
+            </button>
+          </div>
+          <img src="${p.img}" alt="${p.name}" loading="lazy">
+        </div>
+        <div class="product-body">
+          <div class="product-cat">${p.catLabel} · Volterra</div>
+          <h3 class="product-name">${p.name}</h3>
+          <p class="product-desc">${p.desc}</p>
+          ${colorDots(p.colors)}
+          <div class="product-foot">
+            <div class="price">${BRL(p.price)}${p.old?`<small>${BRL(p.old)}</small>`:''}</div>
+            <button class="buy-btn" data-add="${p.id}">Adicionar <svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+          </div>
+        </div>
+      </article>
+    `).join('');
+    initTilt();
+  }
+
+  /* tilt 3d nos cards */
+  function initTilt(){
+    if (reduce || !matchMedia('(hover:hover) and (pointer:fine)').matches) return;
+    $$('[data-tilt]').forEach(card=>{
+      card.addEventListener('pointermove', e=>{
+        const r = card.getBoundingClientRect();
+        const x = (e.clientX-r.left)/r.width - .5, y = (e.clientY-r.top)/r.height - .5;
+        card.style.transform = `perspective(900px) rotateY(${x*5}deg) rotateX(${-y*5}deg) translateY(-6px)`;
+      });
+      card.addEventListener('pointerleave', ()=>{ card.style.transform = ''; });
+    });
+  }
+
+  let activeFilter = 'all', searchTerm = '';
+  renderProducts();
+  $$('#filters .filter-btn').forEach(b=>b.addEventListener('click', ()=>{
+    $$('#filters .filter-btn').forEach(x=>x.classList.remove('active'));
+    b.classList.add('active');
+    activeFilter = b.dataset.filter;
+    renderProducts(activeFilter, searchTerm);
+  }));
+
+  /* ---------- carrinho ---------- */
+  let cart = [];
+  try { cart = JSON.parse(localStorage.getItem('volterra_cart')||'[]') || []; } catch(e){ cart = []; }
+  const cartBody = $('#cartBody'), cartCount = $('#cartCount'), cartTotalEl = $('#cartTotal');
+  const drawer = $('#cartDrawer'), overlay = $('#overlay'), drawerCount = $('#cartDrawerCount');
+
+  const findProduct = id => PRODUCTS.find(p=>p.id===id);
+  const cartQty = () => cart.reduce((s,i)=>s+i.qty,0);
+  const cartSum = () => cart.reduce((s,i)=> s + (findProduct(i.id)?.price||0) * i.qty, 0);
+
+  function saveCart(){ localStorage.setItem('volterra_cart', JSON.stringify(cart)); }
+  function paintCart(){
+    const n = cartQty();
+    cartCount.textContent = n;
+    cartCount.classList.toggle('show', n>0);
+    drawerCount.textContent = `(${n})`;
+    cartTotalEl.textContent = BRL(cartSum());
+
+    if (!cart.length){
+      cartBody.innerHTML = `<div class="cart-empty">
+        <svg viewBox="0 0 24 24"><path d="M4 7h16l-1.4 11.2a2 2 0 0 1-2 1.8H7.4a2 2 0 0 1-2-1.8L4 7z"/><path d="M9 7V5.6a3 3 0 0 1 6 0V7"/></svg>
+        <h4>Seu carrinho está vazio</h4>
+        <p>Escolha um modelo da coleção e comece<br>a se mover mais rápido.</p>
+      </div>`;
+      return;
+    }
+    cartBody.innerHTML = cart.map(it=>{
+      const p = findProduct(it.id);
+      return `<div class="cart-item">
+        <img src="${p.img}" alt="${p.name}">
+        <div class="cart-item-info">
+          <b>${p.name}</b>
+          <span>Tamanho ${it.size} · ${COLOR[it.color||p.colors[0]].name}</span>
+          <div class="qty">
+            <button data-dec="${it.id}-${it.size}" aria-label="Diminuir quantidade">−</button>
+            <b>${it.qty}</b>
+            <button data-inc="${it.id}-${it.size}" aria-label="Aumentar quantidade">+</button>
+          </div>
+          <button class="cart-remove" data-remove="${it.id}-${it.size}">remover</button>
+        </div>
+        <div class="cart-item-price">${BRL(p.price*it.qty)}</div>
+      </div>`;
+    }).join('');
+  }
+  function addToCart(id, size, color){
+    const p = findProduct(id); if (!p) return;
+    size = size || 40;
+    const found = cart.find(i=>i.id===id && i.size===size);
+    if (found) found.qty++;
+    else cart.push({id, size, color: color||p.colors[0], qty:1});
+    saveCart(); paintCart();
+    cartCount.classList.remove('bump'); void cartCount.offsetWidth; cartCount.classList.add('bump');
+    toast(`${p.name} (${size}) adicionado ao carrinho`);
+  }
+  function openCart(open){
+    drawer.classList.toggle('open', open);
+    overlay.classList.toggle('open', open);
+    document.body.classList.toggle('is-locked', open);
+    drawer.setAttribute('aria-hidden', !open);
+  }
+  $('#cartBtn').addEventListener('click', ()=>openCart(true));
+  $('#cartClose').addEventListener('click', ()=>openCart(false));
+  overlay.addEventListener('click', ()=>openCart(false));
+
+  document.addEventListener('click', e=>{
+    const add = e.target.closest('[data-add]');
+    if (add){ addToCart(add.dataset.add); return; }
+    const inc = e.target.closest('[data-inc]'), dec = e.target.closest('[data-dec]'), rm = e.target.closest('[data-remove]');
+    if (inc){
+      const [id,size] = inc.dataset.inc.split('-');
+      const it = cart.find(i=>i.id===id && String(i.size)===size); if(it){ it.qty++; saveCart(); paintCart(); }
+    }
+    if (dec){
+      const [id,size] = dec.dataset.dec.split('-');
+      const it = cart.find(i=>i.id===id && String(i.size)===size);
+      if(it){ it.qty--; if(it.qty<=0) cart.splice(cart.indexOf(it),1); saveCart(); paintCart(); }
+    }
+    if (rm){
+      const [id,size] = rm.dataset.remove.split('-');
+      const i = cart.findIndex(it=>it.id===id && String(it.size)===size);
+      if(i>-1){ cart.splice(i,1); saveCart(); paintCart(); toast('Item removido do carrinho','warn'); }
+    }
+    const wishBtn = e.target.closest('[data-wish]');
+    if (wishBtn){
+      const id = wishBtn.dataset.wish;
+      if (wish.has(id)) wish.delete(id); else wish.add(id);
+      localStorage.setItem('volterra_wish', JSON.stringify([...wish]));
+      wishBtn.classList.toggle('liked', wish.has(id));
+      wishBtn.setAttribute('aria-pressed', wish.has(id));
+      const wc = $('#wishCount');
+      wc.textContent = wish.size; wc.classList.toggle('show', wish.size>0);
+      toast(wish.has(id) ? 'Salvo nos favoritos' : 'Removido dos favoritos');
+    }
+    const qv = e.target.closest('[data-quickview]');
+    if (qv) openProduct(qv.dataset.quickview);
+  });
+  $('#wishBtn').addEventListener('click', ()=>{
+    if (!wish.size) return toast('Toque no coração de um modelo para favoritar','warn');
+    toast(`${wish.size} modelo${wish.size>1?'s':''} nos favoritos`);
+    document.querySelector('#colecao').scrollIntoView({behavior:'smooth'});
+  });
+  $('#checkoutBtn').addEventListener('click', ()=>{
+    if (!cart.length) { toast('Adicione um modelo antes de finalizar','warn'); return; }
+    const lines = cart.map(it=>{
+      const p = findProduct(it.id);
+      return `• ${p.name} — tam ${it.size} — ${it.qty}x — ${BRL(p.price*it.qty)}`;
+    }).join('%0A');
+    const msg = `Olá! Quero finalizar meu pedido Volterra:%0A%0A${lines}%0A%0ATotal: ${BRL(cartSum())}`;
+    window.open('https://wa.me/5567999016886?text='+msg, '_blank');
+    toast('Pedido enviado para o WhatsApp');
+  });
+  paintCart();
+  const wc = $('#wishCount'); wc.textContent = wish.size; wc.classList.toggle('show', wish.size>0);
+
+  /* ---------- modal produto ---------- */
+  const productModal = $('#productModal'), pmBody = $('#productModalBody');
+  let pmSize = 40, pmId = null;
+  function openProduct(id){
+    const p = findProduct(id); if(!p) return;
+    pmId = id; pmSize = 40;
+    const c = COLOR[p.colors[0]];
+    pmBody.innerHTML = `
+      <div class="pm-media">
+        <span class="tag-flag ${p.tagClass}" style="position:absolute;top:16px;left:16px">${p.tag}</span>
+        <img src="${p.img}" alt="${p.name}" id="pmImg">
+      </div>
+      <div class="pm-body">
+        <div class="product-cat">${p.catLabel} · Volterra</div>
+        <h3>${p.name}</h3>
+        <p>${p.desc} ${p.hits.join(' · ')}.</p>
+        <div class="vp-swatches" style="margin-top:14px;gap:8px">
+          <span class="vp-label" style="font-size:10px">Cor</span>
+          ${p.colors.map((k,i)=>`<button class="swatch ${i===0?'active':''}" data-pmcolor="${k}" style="width:26px;height:26px;background:${COLOR[k].chip}" aria-label="${COLOR[k].name}"></button>`).join('')}
+        </div>
+        <div style="font-size:10.5px;color:var(--muted);margin-top:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase">Tamanho</div>
+        <div class="sizes">${SIZES.map(s=>`<button class="size ${s===40?'active':''}" data-size="${s}">${s}</button>`).join('')}</div>
+        <div class="pm-price">
+          <span class="price" style="font-size:24px">${BRL(p.price)}</span>
+          ${p.old?`<span class="price-old">${BRL(p.old)}</span>`:''}
+        </div>
+        <button class="btn btn-dark" id="pmAdd" style="width:100%;margin-top:16px">Adicionar ao carrinho <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h13M12 5l7 7-7 7"/></svg></button>
+        <p style="font-size:10.5px;color:var(--muted);text-align:center;margin-top:10px">Frete grátis · Troca em 30 dias</p>
+      </div>`;
+    pmBody.querySelectorAll('[data-size]').forEach(b=>b.addEventListener('click',()=>{
+      pmBody.querySelectorAll('[data-size]').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active'); pmSize = +b.dataset.size;
+    }));
+    pmBody.querySelectorAll('[data-pmcolor]').forEach(b=>b.addEventListener('click',()=>{
+      pmBody.querySelectorAll('[data-pmcolor]').forEach(x=>x.classList.remove('active'));
+      b.classList.add('active');
+      const img = $('#pmImg');
+      img.style.opacity='0';
+      setTimeout(()=>{ img.src = COLOR[b.dataset.pmcolor].src; img.style.opacity='1'; }, 160);
+    }));
+    $('#pmAdd').addEventListener('click', ()=>{ addToCart(pmId, pmSize); closeModals(); openCart(true); });
+    productModal.classList.add('open');
+    productModal.setAttribute('aria-hidden','false');
+    document.body.classList.add('is-locked');
+  }
+  function closeModals(){
+    $$('.modal').forEach(m=>{ m.classList.remove('open'); m.setAttribute('aria-hidden','true'); });
+    document.body.classList.remove('is-locked');
+  }
+  $$('[data-close-modal]').forEach(el=>el.addEventListener('click', closeModals));
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape'){ closeModals(); openCart(false); setMenu(false); } });
+
+  /* ---------- filme ---------- */
+  const filmModal = $('#filmModal');
+  $('#openFilm').addEventListener('click', ()=>{
+    filmModal.classList.add('open');
+    filmModal.setAttribute('aria-hidden','false');
+    document.body.classList.add('is-locked');
+  });
+
+  /* ---------- depoimentos ---------- */
+  const track = $('#testiTrack'), prev = $('#testiPrev'), next = $('#testiNext');
+  function step(dir){
+    const card = track.querySelector('.testi-card');
+    const w = card ? card.getBoundingClientRect().width + 20 : 340;
+    track.scrollBy({left: dir*w, behavior:'smooth'});
+  }
+  prev.addEventListener('click', ()=>step(-1));
+  next.addEventListener('click', ()=>step(1));
+  let tDrag = false, tStartX = 0, tStartScroll = 0;
+  track.addEventListener('pointerdown', e=>{
+    tDrag = true; tStartX = e.clientX; tStartScroll = track.scrollLeft;
+    track.classList.add('drag');
+  });
+  track.addEventListener('pointermove', e=>{
+    if(!tDrag) return;
+    track.scrollLeft = tStartScroll - (e.clientX - tStartX);
+  });
+  ['pointerup','pointerleave','pointercancel'].forEach(ev=>track.addEventListener(ev, ()=>{
+    tDrag = false; track.classList.remove('drag');
+  }));
+
+  /* ---------- tecnologia hover ---------- */
+  const techItems = $$('.tech-item'), techLayers = $$('.tech-visual .layer');
+  const techData = [
+    {tag:'Knit 3D', title:'Respire em cada passo', text:'Malha técnica com 1.200 microperfurações que expulsam o calor e mantêm o pé seco do início ao fim do treino.'},
+    {tag:'EnergyFoam', title:'Energia de volta a cada passo', text:'Espuma de dupla densidade que absorve o impacto e devolve energia na impulsão, sem perder maciez nos longões.'},
+    {tag:'GripMax', title:'Aderência em qualquer terreno', text:'Sulcos multidirecionais inspirados em pneus de rally: asfalto molhado, terra solta e pedra, sem escorregar.'},
+    {tag:'Eco Build', title:'Menos impacto, mais planeta', text:'42% de material reciclado na entressola, tingimento a seco e embalagem 100% compostável.'}
+  ];
+  function setTech(i){
+    techItems.forEach((el,k)=>el.classList.toggle('active', k===i));
+    techLayers.forEach((el,k)=>el.classList.toggle('on', k===i));
+    $('#tvTag').textContent = techData[i].tag;
+    $('#tvTitle').textContent = techData[i].title;
+    $('#tvText').textContent = techData[i].text;
+  }
+  techItems.forEach((el,i)=>{
+    el.addEventListener('mouseenter', ()=>setTech(i));
+    el.addEventListener('click', ()=>setTech(i));
+    el.addEventListener('focus', ()=>setTech(i));
+  });
+
+  /* ---------- busca ---------- */
+  const searchInput = $('#searchProducts');
+  if (searchInput){
+    searchInput.addEventListener('input', ()=>{
+      searchTerm = searchInput.value;
+      if (searchTerm.trim()){
+        activeFilter = 'all';
+        $$('#filters .filter-btn').forEach(x=>x.classList.toggle('active', x.dataset.filter==='all'));
+      }
+      renderProducts(activeFilter, searchTerm);
+    });
+  }
+  $('#searchBtn').addEventListener('click', ()=>{
+    const sec = document.querySelector('#colecao');
+    window.scrollTo({top: sec.offsetTop - 74, behavior:'smooth'});
+    setTimeout(()=>{ searchInput && searchInput.focus({preventScroll:true}); }, 650);
+  });
+
+  /* ---------- newsletter ---------- */
+  const newsForm = $('#newsForm'), newsMsg = $('#newsMsg'), newsBtn = $('#newsBtn');
+  newsForm.addEventListener('submit', e=>{
+    e.preventDefault();
+    const val = $('#newsEmail').value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(val)){
+      newsMsg.textContent = 'Digite um e-mail válido para continuar.';
+      newsMsg.style.color = '#ffb066';
+      return;
+    }
+    newsBtn.textContent = 'Enviando...';
+    newsBtn.disabled = true;
+    setTimeout(()=>{
+      newsMsg.textContent = 'Pronto! Você está na lista VIP da Volterra.';
+      newsMsg.style.color = '#8ef0bc';
+      newsBtn.textContent = 'Inscrito ✓';
+      newsForm.reset();
+      toast('Inscrição confirmada. Bem-vindo à Volterra!');
+    }, 900);
+  });
+
+  /* ---------- mascara de foco nos botões (ripple) ---------- */
+  document.addEventListener('click', e=>{
+    const b = e.target.closest('.btn');
+    if (!b || reduce) return;
+    const r = b.getBoundingClientRect();
+    const s = document.createElement('span');
+    s.style.cssText = `position:absolute;border-radius:50%;pointer-events:none;background:rgba(255,255,255,.5);width:${Math.max(r.width,r.height)}px;height:${Math.max(r.width,r.height)}px;left:${e.clientX-r.left-Math.max(r.width,r.height)/2}px;top:${e.clientY-r.top-Math.max(r.width,r.height)/2}px;transform:scale(0);opacity:.7;transition:transform .7s cubic-bezier(.22,1,.36,1),opacity .7s;z-index:-1`;
+    b.appendChild(s);
+    requestAnimationFrame(()=>{ s.style.transform='scale(1.6)'; s.style.opacity='0'; });
+    setTimeout(()=>s.remove(), 750);
+  });
+})();
+</script>
+</body>
+</html>
