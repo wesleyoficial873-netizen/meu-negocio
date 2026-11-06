@@ -45,6 +45,9 @@ jobs:
             adb shell am broadcast -a android.intent.action.MEDIA_SCANNER_SCAN_FILE -d file:///sdcard/Music/2fon-test.wav
             sleep 5
             adb shell am start -W -n com.twofon.player/.MainActivity
+            sleep 10
+            echo "::notice title=Android errors::$(adb logcat -d -s AndroidRuntime:E '*:S' | tail -40 | tr '\n' ' ' | cut -c1-7000)"
+            echo "::notice title=Activity::$(adb shell dumpsys activity activities | grep -E 'mResumed|topResumed' | tr '\n' ' ' || true)"
             pid=$(adb shell pidof com.twofon.player | tr -d '\r')
             echo "::notice title=App PID::$pid"
             echo "::notice title=WebView socket::$(adb shell cat /proc/net/unix | grep webview | tr '\n' ' ' || true)"
