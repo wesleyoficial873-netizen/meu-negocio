@@ -21,7 +21,6 @@ jobs:
         with:
           distribution: temurin
           java-version: '17'
-      - uses: android-actions/setup-android@v3
       - run: npm ci --ignore-scripts
       - run: npm run build && npx cap sync android
       - run: ./gradlew assembleDebug
