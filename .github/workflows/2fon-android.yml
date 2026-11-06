@@ -4,8 +4,6 @@ on:
     branches: [arena/1a367ab6-meu-negocio]
     paths: ['2fon/**', '.github/workflows/2fon-android.yml']
   workflow_dispatch:
-permissions:
-  contents: write
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -50,11 +48,3 @@ jobs:
             adb install 2fon/android/app/build/outputs/apk/debug/app-debug.apk
             adb shell am start -W -n com.twofon.player/.MainActivity
             adb shell pidof com.twofon.player
-      - name: Update requested APK on session branch
-        run: |
-          cp android/app/build/outputs/apk/debug/app-debug.apk 2FON.apk
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add 2FON.apk
-          git commit -m "Update 2FON APK"
-          git push origin HEAD:arena/1a367ab6-meu-negocio
