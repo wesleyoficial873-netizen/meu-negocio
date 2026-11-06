@@ -29,4 +29,7 @@ jobs:
             adb install 2fon/2FON.apk
             adb shell am start -W -n com.twofon.player/.MainActivity
             sleep 10
+            echo "::notice title=Process::$(adb shell pidof com.twofon.player || true)"
+            echo "::notice title=Runtime::$(adb logcat -d -t 2000 -s AndroidRuntime:E | tr '\n' ' ' | cut -c1-8000)"
+            echo "::notice title=Activity::$(adb shell dumpsys activity activities | grep -E 'mResumedActivity|topResumedActivity' | tr '\n' ' ' || true)"
             adb shell pidof com.twofon.player
