@@ -1,0 +1,23 @@
+name: Read Android test diagnostics
+on:
+  push:
+    branches: [arena/1a367ab6-meu-negocio]
+    paths: ['.github/workflows/2fon-diagnostic.yml']
+permissions:
+  actions: read
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Read test log
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run view 42265203540 --repo wesleyoficial873-netizen/meu-negocio --log-failed > /tmp/2fon-log.txt || true
+          python3 - <<'PY'
+          text=open('/tmp/2fon-log.txt').read()[-25000:]
+          for line in text.splitlines():
+              if any(x in line.lower() for x in ['pidof','am start','failure','error','exception','fatal','sh -c','success','2fon.player','system error','crash']):
+                  print('::notice title=Android diagnostic::'+line.replace('%','%25').replace('\r','%0D'))
+          PY
