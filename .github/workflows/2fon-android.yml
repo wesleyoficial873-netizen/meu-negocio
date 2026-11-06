@@ -4,6 +4,8 @@ on:
     branches: [arena/1a367ab6-meu-negocio]
     paths: ['2fon/**', '.github/workflows/2fon-android.yml']
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -30,3 +32,13 @@ jobs:
           name: 2FON-Android-APK
           path: 2fon/android/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
+      # Transfer the requested APK back to the session through this same branch.
+      # It is removed from Git after retrieval; the user keeps the download.
+      - name: Transfer APK to session branch
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk 2FON-temporary.apk
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add 2FON-temporary.apk
+          git commit -m "Temporary APK transfer"
+          git push origin HEAD:arena/1a367ab6-meu-negocio
