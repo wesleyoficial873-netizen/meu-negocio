@@ -1,0 +1,33 @@
+name: Build 2FON Android APK
+on:
+  push:
+    branches: [arena/1a367ab6-meu-negocio]
+    paths: ['2fon/**', '.github/workflows/2fon-android.yml']
+  workflow_dispatch:
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: 2fon
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: 2fon/package-lock.json
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+      - run: npm ci --ignore-scripts
+      - run: npm run build && npx cap sync android
+      - run: ./gradlew assembleDebug
+        working-directory: 2fon/android
+      - uses: actions/upload-artifact@v4
+        with:
+          name: 2FON-Android-APK
+          path: 2fon/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
