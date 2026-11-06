@@ -1,9 +1,9 @@
 // Android WebView functional smoke test over its debugging protocol.
 const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
 async function main() {
- let targets;
- for(let i=0;i<60;i++) { try { targets=await (await fetch('http://127.0.0.1:9222/json')).json(); if(targets.length)break; } catch {} await wait(1000); }
- if(!targets?.length) throw new Error('WebView debugging target not found');
+ let targets,lastError;
+ for(let i=0;i<60;i++) { try { targets=await (await fetch('http://127.0.0.1:9222/json')).json(); if(targets.length)break; } catch (e) {lastError=e.message} await wait(1000); }
+ if(!targets?.length) throw new Error('WebView debugging target not found: '+(lastError||JSON.stringify(targets)));
  const ws=new WebSocket(targets[0].webSocketDebuggerUrl); await new Promise((resolve,reject)=>{ws.onopen=resolve;ws.onerror=reject});
  let id=0; const pending=new Map();
  ws.onmessage=e=>{const msg=JSON.parse(e.data);if(msg.id&&pending.has(msg.id)){const {resolve,reject}=pending.get(msg.id);pending.delete(msg.id);msg.error?reject(new Error(msg.error.message)):resolve(msg.result)}};

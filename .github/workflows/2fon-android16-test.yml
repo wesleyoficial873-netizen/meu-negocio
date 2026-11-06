@@ -46,5 +46,8 @@ jobs:
             sleep 5
             adb shell am start -W -n com.twofon.player/.MainActivity
             pid=$(adb shell pidof com.twofon.player | tr -d '\r')
+            echo "::notice title=App PID::$pid"
+            echo "::notice title=WebView socket::$(adb shell cat /proc/net/unix | grep webview | tr '\n' ' ' || true)"
             adb forward tcp:9222 localabstract:webview_devtools_remote_$pid
+            echo "::notice title=Forward::$(adb forward --list | tr '\n' ' ')"
             node 2fon/tests/android-smoke.cjs
