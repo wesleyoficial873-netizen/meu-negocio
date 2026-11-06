@@ -15,7 +15,8 @@ async function readTracks(folder){
  return Promise.all(files.map(async file => {
   let common={}, format={}; try { ({common,format}=await parseFile(file,{duration:true})); } catch {}
   const picture=common.picture?.[0];
-  return {id:'file:'+file, path:file, folder, url:'twophon://local/audio?path='+encodeURIComponent(file), title:common.title || path.basename(file,path.extname(file)), artist:common.artist || 'Artista desconhecido', album:common.album || 'Álbum desconhecido', duration:format.duration || 0, cover:picture ? `data:${picture.format};base64,${Buffer.from(picture.data).toString('base64')}` : '', format:path.extname(file).slice(1).toUpperCase()};
+  let lyrics=common.lyrics?.find(item=>item.text)?.text || ""; try { lyrics=await fs.readFile(file.slice(0,-path.extname(file).length)+".lrc","utf8"); } catch {}
+  return {id:'file:'+file, path:file, folder, url:'twophon://local/audio?path='+encodeURIComponent(file), title:common.title || path.basename(file,path.extname(file)), artist:common.artist || 'Artista desconhecido', album:common.album || 'Álbum desconhecido', duration:format.duration || 0, cover:picture ? `data:${picture.format};base64,${Buffer.from(picture.data).toString('base64')}` : '', lyrics, format:path.extname(file).slice(1).toUpperCase()};
  }));
 }
 app.whenReady().then(()=>{
