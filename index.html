@@ -2,366 +2,489 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>SITEFOLIO — Escolha o site ideal para o seu negócio</title>
-<meta name="description" content="Modelos profissionais, modernos e personalizados para apresentar sua empresa na internet. Escolha o segmento e visualize o site funcionando antes de contratar.">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#060607">
+<title>Henrique — Sites &amp; Catálogos Digitais | Showroom de modelos</title>
+<meta name="description" content="Showroom digital com dezenas de demonstrações funcionais de sites e catálogos digitais para restaurantes, lojas, mercados, agronegócio, beleza, imóveis, automotivo, serviços, eventos e hotelaria.">
+<meta name="author" content="Henrique — Sites &amp; Catálogos Digitais">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="pt_BR">
+<meta property="og:title" content="Henrique — Sites &amp; Catálogos Digitais">
+<meta property="og:description" content="Seu negócio merece uma presença digital extraordinária. Explore demonstrações funcionais de sites e catálogos digitais por segmento.">
+<meta property="og:image" content="assets/img/site/hero-showroom.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%230b0b0d'/%3E%3Cpath d='M22 16v32M42 16v32M22 32h20' stroke='%23d3b07c' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
-<link rel="stylesheet" href="assets/css/contact.css">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@300;400;500;600;700&family=Sora:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Space+Grotesk:wght@400;500;700&family=Manrope:wght@400;600;800&family=Bebas+Neue&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/core.css">
+<link rel="stylesheet" href="assets/css/demo.css">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ProfessionalService",
+  "name": "Henrique — Sites & Catálogos Digitais",
+  "description": "Desenvolvimento de sites profissionais e catálogos digitais para empresas de diversos segmentos.",
+  "areaServed": "Brasil",
+  "telephone": "+55 67 99901-6886",
+  "sameAs": ["https://wa.me/5567999016886"],
+  "founder": { "@type": "Person", "name": "Henrique" },
+  "knowsAbout": ["Criação de sites", "Catálogos digitais", "Design de interfaces", "Presença digital"]
+}
+</script>
 </head>
 <body>
-<header class="header">
-  <div class="container header-inner">
-    <a href="index.html" class="brand">
-      <div class="brand-mark">S</div>
-      <div>
-        <div class="brand-name">SITEFOLIO</div>
-        <div class="brand-sub">Modelos profissionais</div>
-      </div>
+<a class="skip-link" href="#galeria">Ir para a galeria de modelos</a>
+
+<!-- ============ PRELOADER ============ -->
+<div class="preloader" id="preloader" aria-hidden="true">
+  <div class="preloader-inner">
+    <div class="preloader-mark">
+      <span class="pm-line"></span>
+      <span class="pm-name">HENRIQUE</span>
+      <span class="pm-line"></span>
+    </div>
+    <p class="preloader-sub">Sites &amp; Catálogos Digitais</p>
+    <div class="preloader-bar"><span id="preloaderFill"></span></div>
+    <p class="preloader-count"><span id="preloaderPct">0</span>%</p>
+  </div>
+</div>
+
+<!-- ============ HEADER ============ -->
+<header class="site-header" id="siteHeader">
+  <div class="shell header-inner">
+    <a href="#topo" class="brand" aria-label="Henrique — Sites e Catálogos Digitais, ir para o início">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" fill="none"><path d="M11 6v20M21 6v20M11 16h10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+      </span>
+      <span class="brand-text">
+        <strong>Henrique</strong>
+        <small>Sites &amp; Catálogos Digitais</small>
+      </span>
     </a>
-    <nav class="nav">
+
+    <nav class="main-nav" aria-label="Navegação principal">
       <a href="#modelos">Modelos</a>
-      <a href="#categorias">Categorias</a>
-      <a href="#como-funciona">Como funciona</a>
-      <a href="#servicos">Serviços</a>
-      <a href="admin.html">Administração</a>
+      <a href="#categorias">Segmentos</a>
+      <a href="#catalogos">Catálogos</a>
+      <a href="#processo">Processo</a>
+      <a href="#contato">Contato</a>
     </nav>
+
     <div class="header-actions">
-      <a href="#modelos" class="btn btn-ghost btn-small" style="display:none" id="headerGhost">Ver modelos</a>
-      <button class="btn btn-primary btn-small" onclick="openModal()">Solicitar orçamento</button>
-      <button class="menu-btn" aria-label="Menu" onclick="toggleDrawer()">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      <button class="icon-btn search-trigger" id="searchTrigger" aria-label="Buscar modelos">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
+        <span class="search-hint">Buscar</span>
+        <kbd>/</kbd>
+      </button>
+      <a class="btn btn-primary btn-sm" href="https://wa.me/5567999016886?text=Ol%C3%A1%20Henrique!%20Conheci%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar%20sobre%20um%20site%20ou%20cat%C3%A1logo%20digital." target="_blank" rel="noopener">
+        <span>Falar com Henrique</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>
+      </a>
+      <button class="icon-btn menu-trigger" id="menuTrigger" aria-label="Abrir menu" aria-expanded="false" aria-controls="mobileMenu">
+        <span></span><span></span>
       </button>
     </div>
   </div>
+  <div class="header-progress" id="headerProgress"></div>
 </header>
 
-<div class="drawer" id="drawer" onclick="if(event.target===this)toggleDrawer()">
-  <div class="drawer-panel">
-    <div class="drawer-head">
-      <strong>SITEFOLIO</strong>
-      <button class="modal-close" onclick="toggleDrawer()">✕</button>
+<!-- ============ MOBILE MENU ============ -->
+<div class="mobile-menu" id="mobileMenu" aria-hidden="true">
+  <div class="mobile-menu-panel">
+    <div class="mm-top">
+      <span class="eyebrow">Navegação</span>
+      <button class="icon-btn" id="menuClose" aria-label="Fechar menu">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6 6 18"/></svg>
+      </button>
     </div>
-    <div class="drawer-nav">
-      <a href="#modelos" onclick="toggleDrawer()">Ver todos os modelos</a>
-      <a href="#destaques" onclick="toggleDrawer()">Destaques</a>
-      <a href="#populares" onclick="toggleDrawer()">Mais populares</a>
-      <a href="#como-funciona" onclick="toggleDrawer()">Como funciona</a>
-      <a href="#servicos" onclick="toggleDrawer()">Serviços e orçamento</a>
-    </div>
-    <a href="admin.html" class="admin-link">Painel de administração →</a>
-    <div style="margin-top:20px;padding:16px;background:#fcfcf9;border:1px solid #e7e7e3;border-radius:16px">
-          <p style="font-size:13px;color:#6b7280">Orçamentos com Wesley Henrique</p>
-          <a href="https://wa.me/5567999016886?text=Ol%C3%A1%20Wesley%20Henrique%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento." target="_blank" rel="noopener" style="display:block;font-weight:600;margin-top:6px">WhatsApp: (67) 99901-6886</a>
-      <p style="font-size:12px;color:#6b7280;margin-top:6px">Segunda a sábado, 8h às 18h</p>
-    </div>
+    <nav class="mm-nav" aria-label="Menu">
+      <a href="#modelos"><span>01</span>Modelos</a>
+      <a href="#categorias"><span>02</span>Segmentos</a>
+      <a href="#catalogos"><span>03</span>Catálogos digitais</a>
+      <a href="#processo"><span>04</span>Processo</a>
+      <a href="#contato"><span>05</span>Contato</a>
+    </nav>
+    <a class="btn btn-primary mm-cta" href="https://wa.me/5567999016886?text=Ol%C3%A1%20Henrique!%20Conheci%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar%20sobre%20um%20site%20ou%20cat%C3%A1logo%20digital." target="_blank" rel="noopener">Solicitar meu projeto</a>
+    <p class="mm-note">WhatsApp direto · (67) 99901-6886</p>
   </div>
 </div>
 
-<section class="hero">
-  <div class="container">
-    <div class="hero-grid">
-      <div>
-        <div class="eyebrow"><span class="eyebrow-dot"></span> Agência digital premium • Chapadão do Sul e todo Brasil</div>
-        <h1>Escolha o site <em>ideal para o seu negócio</em></h1>
-        <p class="sub">Modelos profissionais, modernos e personalizados para apresentar sua empresa na internet. Veja funcionando antes de contratar.</p>
-
-        <div class="search-wrap">
-          <div class="search-icon">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
-          </div>
-          <input id="searchInput" type="search" placeholder="Buscar por segmento, ex: restaurante, clínica, loja..." autocomplete="off">
-          <button class="btn btn-primary" onclick="applyFilters()">Buscar</button>
-        </div>
-
-        <div class="hero-stats">
-          <div class="stat"><strong>36+</strong><span>Modelos ativos</span></div>
-          <div class="stat"><strong>26</strong><span>Categorias</span></div>
-          <div class="stat"><strong>4.9</strong><span>Avaliação média</span></div>
-        </div>
-
-        <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
-          <a href="#modelos" class="btn btn-primary">Explorar modelos</a>
-          <a href="#como-funciona" class="btn btn-ghost">Como funciona</a>
-        </div>
-      </div>
-
-      <div class="hero-preview">
-        <div class="hero-preview-top">
-          <div class="dots"><i></i><i></i><i></i></div>
-          <span style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#71717a;font-weight:600">Prévia ao vivo</span>
-          <span class="badge">Novo</span>
-        </div>
-        <img class="preview-img" id="heroPreviewImg" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=900&auto=format&fit=crop" alt="Prévia" loading="eager" onerror="this.src='assets/img/placeholder.svg'">
-        <div class="preview-meta">
-          <div>
-            <h4 id="heroPreviewTitle">Restaurante Premium</h4>
-            <p id="heroPreviewCat">Restaurantes • Cardápio digital</p>
-          </div>
-          <button class="btn btn-primary btn-small" onclick="document.getElementById('featuredGrid').scrollIntoView({behavior:'smooth'})">Ver agora</button>
-        </div>
-      </div>
+<!-- ============ SEARCH OVERLAY ============ -->
+<div class="search-overlay" id="searchOverlay" role="dialog" aria-modal="true" aria-label="Buscar modelos" aria-hidden="true">
+  <div class="search-box">
+    <div class="search-field">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
+      <input type="search" id="searchInput" placeholder="Busque por segmento, tipo de negócio ou modelo..." autocomplete="off" aria-label="Buscar modelos">
+      <button class="search-close" id="searchClose" aria-label="Fechar busca">ESC</button>
     </div>
-  </div>
-</section>
-
-<div class="filters-bar" id="categorias">
-  <div class="container">
-    <div class="filters-inner" id="filterChips"></div>
+    <div class="search-results" id="searchResults">
+      <p class="search-empty">Digite para encontrar entre 84 demonstrações.</p>
+    </div>
+    <div class="search-suggest" id="searchSuggest"></div>
   </div>
 </div>
 
-<main class="container">
-  <!-- Destaques -->
-  <section class="section" id="destaques">
-    <div class="section-head">
-      <div>
-        <h2>Destaques da semana</h2>
-        <p>Seleção curada dos modelos com melhor desempenho e acabamento premium.</p>
-      </div>
-      <div style="display:flex;align-items:center;gap:14px">
-        <span class="count" id="featuredCount"></span>
-        <a href="#modelos" class="view-all">Ver todos</a>
-      </div>
-    </div>
-    <div class="grid" id="featuredGrid"></div>
-  </section>
+<main id="topo">
+  <!-- ============ HERO ============ -->
+  <section class="hero" aria-labelledby="heroTitle">
+    <canvas class="hero-canvas" id="particles" aria-hidden="true"></canvas>
+    <div class="hero-glow" aria-hidden="true"></div>
+    <div class="hero-grid-lines" aria-hidden="true"></div>
 
-  <!-- Todos os modelos -->
-  <section class="section" id="modelos">
-    <div class="section-head">
-      <div>
-        <h2>Todos os modelos</h2>
-        <p id="resultInfo">Escolha o segmento e visualize cada modelo funcionando como um site real.</p>
+    <div class="shell hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow reveal" data-reveal>
+          <span class="dot" aria-hidden="true"></span>
+          Estúdio de sites e catálogos digitais
+        </p>
+        <h1 class="hero-title" id="heroTitle">
+          <span class="line"><span>Seu negócio merece</span></span>
+          <span class="line"><span>uma presença digital</span></span>
+          <span class="line"><em>extraordinária.</em></span>
+        </h1>
+        <p class="hero-lede reveal" data-reveal data-delay="1">
+          Sites profissionais e catálogos digitais desenvolvidos para valorizar sua marca,
+          apresentar seus produtos e transformar visitantes em clientes.
+        </p>
+        <div class="hero-actions reveal" data-reveal data-delay="2">
+          <a href="#modelos" class="btn btn-primary btn-lg magnetic" data-magnetic>
+            <span>Explorar modelos</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>
+          </a>
+          <a href="https://wa.me/5567999016886?text=Ol%C3%A1%20Henrique!%20Conheci%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar%20sobre%20um%20site%20ou%20cat%C3%A1logo%20digital." target="_blank" rel="noopener" class="btn btn-ghost btn-lg magnetic" data-magnetic>
+            <span>Falar com Henrique</span>
+          </a>
+        </div>
+        <dl class="hero-metrics reveal" data-reveal data-delay="3">
+          <div><dt><span class="count" data-count="84">84</span></dt><dd>demonstrações funcionais</dd></div>
+          <div><dt><span class="count" data-count="10">10</span></dt><dd>segmentos comerciais</dd></div>
+          <div><dt><span class="count" data-count="100" data-suffix="%">100%</span></dt><dd>responsivo e otimizado</dd></div>
+        </dl>
       </div>
-      <div style="display:flex;gap:10px;align-items:center">
-        <select id="sortSelect" onchange="applyFilters()" style="padding:10px 14px;border-radius:999px;border:1px solid #e7e7e3;background:white;font-size:13px">
-          <option value="featured">Destaques primeiro</option>
-          <option value="popular">Mais populares</option>
-          <option value="new">Mais recentes</option>
-          <option value="name">Nome A-Z</option>
-        </select>
+
+      <div class="hero-stage" aria-hidden="true">
+        <div class="stage-frame">
+          <div class="stage-screen" id="stageScreen">
+            <img src="assets/img/gastronomia/restaurante-sofisticado-hero.jpg" alt="" class="stage-img is-active" data-stage-img>
+            <img src="assets/img/site/atelier.jpg" alt="" class="stage-img" data-stage-img>
+            <img src="assets/img/gastronomia/pizzaria-moderna-hero.jpg" alt="" class="stage-img" data-stage-img>
+            <div class="stage-ui">
+              <span class="stage-dots"><i></i><i></i><i></i></span>
+              <span class="stage-url" id="stageUrl">casa-almeida.com.br</span>
+              <span class="stage-live"><i></i>demonstração</span>
+            </div>
+            <div class="stage-caption">
+              <span class="stage-cat" id="stageCat">Gastronomia</span>
+              <span class="stage-name" id="stageName">Restaurante sofisticado</span>
+            </div>
+          </div>
+          <div class="stage-chip chip-a glass">
+            <span class="chip-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 7h16v10H4z"/><path d="M8 21h8"/></svg>
+            </span>
+            <span><strong>73 modelos</strong><small>prontos para personalizar</small></span>
+          </div>
+          <div class="stage-chip chip-b glass">
+            <span class="chip-icon">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M5 8l7-5 7 5v8l-7 5-7-5z"/></svg>
+            </span>
+            <span><strong>Pedidos no WhatsApp</strong><small>sem taxas de aplicativo</small></span>
+          </div>
+        </div>
       </div>
     </div>
 
-    <div class="grid" id="modelsGrid"></div>
-    <div id="skeletonGrid" class="grid" style="display:none"></div>
-    <div id="emptyState" class="empty" style="display:none">
-      <h4>Nenhum modelo encontrado</h4>
-      <p>Tente buscar por outro termo ou selecione outra categoria.</p>
-      <button class="btn btn-ghost" style="margin-top:16px" onclick="clearFilters()">Limpar filtros</button>
-    </div>
-
-    <div class="load-more-wrap" id="loadMoreWrap" style="display:none">
-      <button class="btn-load" onclick="loadMore()">Carregar mais modelos</button>
-    </div>
-
-    <div class="cta-banner" style="margin-top:36px">
-      <div>
-        <h3>Não encontrou o seu segmento?</h3>
-        <p>Criamos um modelo exclusivo para o seu negócio em até 7 dias, com identidade própria.</p>
-      </div>
-      <button class="btn" onclick="openModal()">Solicitar modelo exclusivo</button>
-    </div>
-  </section>
-
-  <!-- Populares -->
-  <section class="section" id="populares">
-    <div class="section-head">
-      <div>
-        <h2>Mais populares</h2>
-        <p>Os modelos mais escolhidos por clientes nas últimas semanas.</p>
-      </div>
-    </div>
-    <div class="grid" id="popularGrid"></div>
-  </section>
-
-  <!-- Serviços e contato -->
-  <section class="section" id="servicos">
-    <div class="section-head">
-      <div>
-        <h2>Soluções para sua empresa ser encontrada</h2>
-        <p>Fale diretamente com Wesley Henrique e solicite um orçamento sem compromisso.</p>
-      </div>
-      <a class="view-all" href="https://wa.me/5567999016886?text=Ol%C3%A1%20Wesley%20Henrique%2C%20gostaria%20de%20solicitar%20um%20or%C3%A7amento." target="_blank" rel="noopener">Conversar no WhatsApp</a>
-    </div>
-    <div class="services-grid">
-      <article class="service-card">
-        <div class="service-icon">01</div>
-        <h3>Web site profissional</h3>
-        <p>Sites modernos, rápidos e responsivos para apresentar sua empresa e transformar visitantes em clientes.</p>
-        <a href="https://wa.me/5567999016886?text=Ol%C3%A1%20Wesley%20Henrique%2C%20gostaria%20de%20um%20or%C3%A7amento%20para%20um%20web%20site%20profissional." target="_blank" rel="noopener">Solicitar orçamento <span>→</span></a>
-      </article>
-      <article class="service-card">
-        <div class="service-icon">02</div>
-        <h3>Catálogo digital</h3>
-        <p>Apresente produtos, fotos, preços e categorias em um catálogo fácil de compartilhar e integrado ao WhatsApp.</p>
-        <a href="https://wa.me/5567999016886?text=Ol%C3%A1%20Wesley%20Henrique%2C%20gostaria%20de%20um%20or%C3%A7amento%20para%20um%20cat%C3%A1logo%20digital." target="_blank" rel="noopener">Solicitar orçamento <span>→</span></a>
-      </article>
-      <article class="service-card">
-        <div class="service-icon">03</div>
-        <h3>Google Pesquisas</h3>
-        <p>Configuração e otimização da presença da sua empresa para aumentar as chances de aparecer nas pesquisas.</p>
-        <a href="https://wa.me/5567999016886?text=Ol%C3%A1%20Wesley%20Henrique%2C%20gostaria%20de%20um%20or%C3%A7amento%20para%20melhorar%20minha%20empresa%20nas%20pesquisas%20do%20Google." target="_blank" rel="noopener">Solicitar orçamento <span>→</span></a>
-      </article>
-      <article class="service-card">
-        <div class="service-icon">04</div>
-        <h3>Google Maps</h3>
-        <p>Criação e organização do perfil da empresa com localização, fotos, horários, contato e informações comerciais.</p>
-        <a href="https://wa.me/5567999016886?text=Ol%C3%A1%20Wesley%20Henrique%2C%20gostaria%20de%20um%20or%C3%A7amento%20para%20Google%20Maps." target="_blank" rel="noopener">Solicitar orçamento <span>→</span></a>
-      </article>
-    </div>
-    <div class="contact-panel">
-      <div class="contact-avatar">WH</div>
-      <div class="contact-copy">
-        <span>Atendimento e orçamentos</span>
-        <h3>Wesley Henrique</h3>
-        <p>Web sites, catálogos digitais, Google Pesquisas e Google Maps.</p>
-      </div>
-      <a class="whatsapp-contact" href="https://wa.me/5567999016886?text=Ol%C3%A1%20Wesley%20Henrique%2C%20vim%20pelo%20SITEFOLIO%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="Conversar com Wesley Henrique pelo WhatsApp">
-        <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M27.3 4.7A15.8 15.8 0 0 0 2.5 23.8L.3 31.7l8.1-2.1A15.7 15.7 0 0 0 16 31.5h.1A15.8 15.8 0 0 0 27.3 4.7Zm-11.2 24a13 13 0 0 1-6.6-1.8l-.5-.3-4.8 1.3 1.3-4.7-.3-.5a13 13 0 1 1 10.9 6Zm7.1-9.7c-.4-.2-2.3-1.1-2.7-1.3-.4-.1-.6-.2-.9.2-.3.4-1 1.3-1.3 1.6-.2.3-.5.3-.9.1-2.3-1.1-3.8-2-5.3-4.6-.4-.7.4-.7 1.1-2.2.1-.3.1-.5 0-.7-.1-.2-.9-2.1-1.2-2.9-.3-.8-.7-.7-.9-.7h-.8c-.3 0-.7.1-1.1.5-.4.4-1.4 1.4-1.4 3.4s1.5 4 1.7 4.3c.2.3 2.9 4.4 7 6.2 2.6 1.1 3.6 1.2 4.9 1 .8-.1 2.3-.9 2.6-1.8.3-.9.3-1.7.2-1.8-.1-.2-.4-.3-.8-.5Z"/></svg>
-        <span><small>Falar pelo WhatsApp</small><strong>(67) 99901-6886</strong></span>
-      </a>
+    <div class="hero-scroll" aria-hidden="true">
+      <span>role para explorar</span>
+      <span class="scroll-line"></span>
     </div>
   </section>
 
-  <!-- Como funciona -->
-  <section class="section" id="como-funciona">
-    <div class="section-head">
-      <div>
-        <h2>Como funciona</h2>
-        <p>Uma jornada simples para quem não entende de tecnologia.</p>
+  <!-- ============ MARQUEE ============ -->
+  <section class="marquee-section" aria-label="Segmentos atendidos">
+    <div class="marquee" id="marquee">
+      <div class="marquee-track">
+        <span>Restaurantes</span><i></i><span>Lojas</span><i></i><span>Supermercados</span><i></i>
+        <span>Agronegócio</span><i></i><span>Beleza</span><i></i><span>Imóveis</span><i></i>
+        <span>Automotivo</span><i></i><span>Serviços</span><i></i><span>Eventos</span><i></i><span>Hotelaria</span><i></i>
+        <span>Restaurantes</span><i></i><span>Lojas</span><i></i><span>Supermercados</span><i></i>
+        <span>Agronegócio</span><i></i><span>Beleza</span><i></i><span>Imóveis</span><i></i>
+        <span>Automotivo</span><i></i><span>Serviços</span><i></i><span>Eventos</span><i></i><span>Hotelaria</span><i></i>
       </div>
     </div>
-    <div style="display:grid;gap:16px;grid-template-columns:1fr">
-      <div style="display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
-        <div style="background:white;border:1px solid #e7e7e3;border-radius:20px;padding:22px">
-          <div style="width:40px;height:40px;border-radius:12px;background:#0a0a0a;color:white;display:grid;place-items:center;font-weight:700">01</div>
-          <h4 style="margin:14px 0 6px;font-weight:600">Escolha a categoria</h4>
-          <p style="font-size:13px;color:#6b7280;line-height:1.6">Filtre por Restaurantes, Clínicas, Lojas, Imobiliárias e mais 22 categorias.</p>
-        </div>
-        <div style="background:white;border:1px solid #e7e7e3;border-radius:20px;padding:22px">
-          <div style="width:40px;height:40px;border-radius:12px;background:#0a0a0a;color:white;display:grid;place-items:center;font-weight:700">02</div>
-          <h4 style="margin:14px 0 6px;font-weight:600">Visualize funcionando</h4>
-          <p style="font-size:13px;color:#6b7280;line-height:1.6">Cada card abre um site real navegável, não apenas uma imagem estática.</p>
-        </div>
-        <div style="background:white;border:1px solid #e7e7e3;border-radius:20px;padding:22px">
-          <div style="width:40px;height:40px;border-radius:12px;background:#0a0a0a;color:white;display:grid;place-items:center;font-weight:700">03</div>
-          <h4 style="margin:14px 0 6px;font-weight:600">Teste o modelo</h4>
-          <p style="font-size:13px;color:#6b7280;line-height:1.6">Navegue, adicione ao carrinho, teste o agendamento e veja no celular.</p>
-        </div>
-        <div style="background:white;border:1px solid #e7e7e3;border-radius:20px;padding:22px">
-          <div style="width:40px;height:40px;border-radius:12px;background:#0a0a0a;color:white;display:grid;place-items:center;font-weight:700">04</div>
-          <h4 style="margin:14px 0 6px;font-weight:600">Solicite pelo WhatsApp</h4>
-          <p style="font-size:13px;color:#6b7280;line-height:1.6">Clique em Quero este modelo e receba atendimento com o modelo já selecionado.</p>
-        </div>
-      </div>
-      <div style="background:#0a0a0a;color:white;border-radius:20px;padding:24px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+  </section>
+
+  <!-- ============ CATEGORIAS ============ -->
+  <section class="section categories-section" id="categorias" aria-labelledby="catTitle">
+    <div class="shell">
+      <div class="section-head">
         <div>
-          <p style="font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#a1a1aa">Demonstração guiada</p>
-          <p style="font-size:15px;margin-top:6px;font-weight:500">Quer ver um modelo sendo testado em 1 minuto?</p>
+          <p class="eyebrow reveal" data-reveal><span class="dot"></span>Segmentos</p>
+          <h2 class="section-title reveal" data-reveal id="catTitle">Uma solução digital<br>para cada tipo de negócio.</h2>
         </div>
-        <button class="btn" style="background:white;color:#0a0a0a" onclick="document.getElementById('destaques').scrollIntoView({behavior:'smooth'})">Ver demonstração agora</button>
+        <p class="section-lede reveal" data-reveal data-delay="1">
+          Dez universos comerciais, dezenas de projetos completos. Escolha o segmento do seu negócio
+          e navegue por demonstrações reais, com navegação, catálogo e contato funcionando.
+        </p>
+      </div>
+      <div class="category-grid" id="categoryGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ DESTAQUES ============ -->
+  <section class="section featured-section" aria-labelledby="featTitle">
+    <div class="shell">
+      <div class="section-head compact">
+        <div>
+          <p class="eyebrow reveal" data-reveal><span class="dot"></span>Seleção do estúdio</p>
+          <h2 class="section-title reveal" data-reveal id="featTitle">Projetos em destaque</h2>
+        </div>
+        <a href="#modelos" class="link-arrow reveal" data-reveal>Ver galeria completa
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="featured-rail" id="featuredRail" tabindex="0" aria-label="Demonstrações em destaque"></div>
+  </section>
+
+  <!-- ============ GALERIA ============ -->
+  <section class="section gallery-section" id="modelos" aria-labelledby="galTitle">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow reveal" data-reveal><span class="dot"></span>Showroom completo</p>
+          <h2 class="section-title reveal" data-reveal id="galTitle">Galeria de sites<br>e catálogos digitais</h2>
+        </div>
+        <p class="section-lede reveal" data-reveal data-delay="1">
+          Cada card abre uma demonstração navegável, com identidade própria, páginas internas,
+          catálogo e botão de contato. Explore sem limites.
+        </p>
+      </div>
+
+      <div class="gallery-toolbar" id="galleryToolbar">
+        <div class="chips" id="filterChips" role="tablist" aria-label="Filtrar por segmento"></div>
+        <div class="toolbar-right">
+          <label class="inline-search">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m16.5 16.5 4 4"/></svg>
+            <input type="search" id="gallerySearch" placeholder="Filtrar modelos..." aria-label="Filtrar modelos por nome">
+          </label>
+          <div class="count-pill" id="resultCount">84 modelos</div>
+        </div>
+      </div>
+
+      <div class="model-grid" id="modelGrid" aria-live="polite"></div>
+      <div class="empty-state" id="emptyState" hidden>
+        <p>Nenhum modelo encontrado para esse filtro.</p>
+        <button class="btn btn-ghost btn-sm" id="clearFilters">Limpar filtros</button>
+      </div>
+      <p class="gallery-note">Todos os projetos são demonstrativos. Cada um é adaptado à identidade, ao catálogo e aos objetivos do seu negócio.</p>
+    </div>
+  </section>
+
+  <!-- ============ RECURSOS ============ -->
+  <section class="section features-section" aria-labelledby="recTitle">
+    <div class="shell features-grid">
+      <div class="features-copy">
+        <p class="eyebrow reveal" data-reveal><span class="dot"></span>Estrutura</p>
+        <h2 class="section-title reveal" data-reveal id="recTitle">Feito para vender,<br>não apenas para aparecer.</h2>
+        <p class="section-lede reveal" data-reveal data-delay="1">
+          Cada projeto é construído sobre uma base sólida de desempenho, organização e experiência —
+          do primeiro impacto visual ao clique que gera a conversa no WhatsApp.
+        </p>
+        <a href="#contato" class="btn btn-ghost reveal" data-reveal data-delay="2">Conversar sobre meu projeto</a>
+      </div>
+      <div class="feature-list" id="featureList"></div>
+    </div>
+  </section>
+
+  <!-- ============ CATÁLOGOS DIGITAIS ============ -->
+  <section class="section catalog-section" id="catalogos" aria-labelledby="catDigTitle">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow reveal" data-reveal><span class="dot"></span>Linha exclusiva</p>
+          <h2 class="section-title reveal" data-reveal id="catDigTitle">Catálogos digitais<br>com oito identidades</h2>
+        </div>
+        <p class="section-lede reveal" data-reveal data-delay="1">
+          Capa personalizada, apresentação da empresa, categorias de produtos e páginas que se
+          comportam como um catálogo impresso — só que vivo, navegável e sempre atualizado.
+        </p>
+      </div>
+      <div class="catalog-grid" id="catalogGrid"></div>
+    </div>
+  </section>
+
+  <!-- ============ PROCESSO ============ -->
+  <section class="section process-section" id="processo" aria-labelledby="procTitle">
+    <div class="shell">
+      <div class="section-head">
+        <div>
+          <p class="eyebrow reveal" data-reveal><span class="dot"></span>Processo</p>
+          <h2 class="section-title reveal" data-reveal id="procTitle">Do primeiro contato<br>ao site no ar</h2>
+        </div>
+        <p class="section-lede reveal" data-reveal data-delay="1">
+          Um caminho direto, transparente e acompanhado de perto. Você participa de cada etapa,
+          sempre com clareza sobre o que vem a seguir.
+        </p>
+      </div>
+      <ol class="process-list" id="processList"></ol>
+    </div>
+  </section>
+
+  <!-- ============ CONTATO ============ -->
+  <section class="section contact-section" id="contato" aria-labelledby="contTitle">
+    <div class="shell">
+      <div class="contact-card">
+        <div class="contact-glow" aria-hidden="true"></div>
+        <div class="contact-content">
+          <p class="eyebrow reveal" data-reveal><span class="dot"></span>Contato comercial</p>
+          <h2 class="contact-title reveal" data-reveal id="contTitle">Vamos criar a presença digital<br><em>do seu negócio?</em></h2>
+          <p class="contact-lede reveal" data-reveal data-delay="1">
+            Apresente sua empresa de uma maneira moderna, profissional e organizada. Escolha um modelo
+            de referência e entre em contato para desenvolvermos uma solução personalizada.
+          </p>
+          <div class="contact-actions reveal" data-reveal data-delay="2">
+            <a class="btn btn-primary btn-lg magnetic" data-magnetic href="https://wa.me/5567999016886?text=Ol%C3%A1%20Henrique!%20Conheci%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar%20sobre%20um%20site%20ou%20cat%C3%A1logo%20digital." target="_blank" rel="noopener">
+              <span>Solicitar meu projeto</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M5 12h13m-5-5 5 5-5 5"/></svg>
+            </a>
+            <a class="btn btn-ghost btn-lg" href="https://wa.me/5567999016886" target="_blank" rel="noopener">
+              <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2s-.8 1-.9 1.2c-.2.2-.3.3-.7.1a8.6 8.6 0 0 1-2.5-1.6 9.6 9.6 0 0 1-1.7-2.2c-.2-.3 0-.5.1-.7l.6-.7c.1-.2.2-.3.3-.5s0-.4 0-.6c-.1-.2-.7-1.7-.9-2.3-.2-.5-.4-.5-.6-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1-1.1 2.6s1.2 3 1.3 3.2c.2.2 2.2 3.5 5.4 4.7 3.1 1.2 3.1.8 3.7.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.4-.1-.2-.3-.2-.6-.4Z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg>
+              WhatsApp direto
+            </a>
+          </div>
+          <div class="contact-id reveal" data-reveal data-delay="3">
+            <span class="contact-avatar" aria-hidden="true">H</span>
+            <span>
+              <strong>Henrique</strong>
+              <small>Desenvolvimento de Sites e Catálogos Digitais</small>
+            </span>
+            <span class="contact-phone">(67) 99901-6886</span>
+          </div>
+        </div>
+        <div class="contact-visual" aria-hidden="true">
+          <img src="assets/img/site/atelier.jpg" alt="" loading="lazy">
+          <div class="contact-visual-tag glass">
+            <span class="live-dot"></span> Atendimento direto com o desenvolvedor
+          </div>
+        </div>
       </div>
     </div>
   </section>
 </main>
 
-<footer class="footer">
-  <div class="container footer-inner">
-    <div>
-      <div class="footer-brand">
-        <div class="brand-mark">S</div>
-        <div>
-          <div style="font-weight:700;letter-spacing:.14em;font-size:13px">SITEFOLIO</div>
-          <div style="font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#71717a">Vitrine profissional de sites</div>
-        </div>
-      </div>
-      <p style="font-size:13px;color:#71717a;margin-top:14px;max-width:520px;line-height:1.6">Plataforma de demonstração criada para agências e profissionais que vendem sites. Cada modelo parece um site real funcionando — com identidade própria e estrutura pensada para o segmento.</p>
+<!-- ============ FOOTER ============ -->
+<footer class="site-footer">
+  <div class="shell footer-top">
+    <div class="footer-brand">
+      <a href="#topo" class="brand" aria-label="Henrique — início">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 32 32" fill="none"><path d="M11 6v20M21 6v20M11 16h10" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+        </span>
+        <span class="brand-text"><strong>Henrique</strong><small>Sites &amp; Catálogos Digitais</small></span>
+      </a>
+      <p>Sites profissionais e catálogos digitais que valorizam marcas, organizam catálogos e aproximam empresas de seus clientes.</p>
+      <a class="footer-wa" href="https://wa.me/5567999016886?text=Ol%C3%A1%20Henrique!%20Conheci%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar%20sobre%20um%20site%20ou%20cat%C3%A1logo%20digital." target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/><path d="M17.5 14.4c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2s-.8 1-.9 1.2c-.2.2-.3.3-.7.1a8.6 8.6 0 0 1-2.5-1.6 9.6 9.6 0 0 1-1.7-2.2c-.2-.3 0-.5.1-.7l.6-.7c.1-.2.2-.3.3-.5s0-.4 0-.6c-.1-.2-.7-1.7-.9-2.3-.2-.5-.4-.5-.6-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1-1.1 2.6s1.2 3 1.3 3.2c.2.2 2.2 3.5 5.4 4.7 3.1 1.2 3.1.8 3.7.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.4-.1-.2-.3-.2-.6-.4Z"/></svg>
+        (67) 99901-6886
+      </a>
     </div>
-    <div style="text-align:right">
-      <div class="footer-nav" style="justify-content:flex-end">
-        <a href="#modelos">Modelos</a>
-        <a href="admin.html">Administração</a>
-        <a href="#" onclick="openModal();return false">Contato</a>
-      </div>
-      <div style="margin-top:16px;display:inline-flex;gap:10px;flex-wrap:wrap;justify-content:flex-end">
-        <span style="font-size:12px;color:#71717a">Atendimento:</span>
-        <a href="https://wa.me/5567999016886" target="_blank" style="font-size:12px;font-weight:600;text-decoration:underline"> (67) 99901-6886</a>
-      </div>
-      <div style="margin-top:14px">
-        <button class="btn btn-primary" onclick="openModal()">Quero meu site</button>
-      </div>
+    <div class="footer-col">
+      <h3>Navegação</h3>
+      <a href="#modelos">Modelos</a>
+      <a href="#categorias">Segmentos</a>
+      <a href="#catalogos">Catálogos digitais</a>
+      <a href="#processo">Processo</a>
+      <a href="#contato">Contato</a>
+    </div>
+    <div class="footer-col" id="footerCategories">
+      <h3>Segmentos</h3>
+    </div>
+    <div class="footer-col">
+      <h3>Serviços</h3>
+      <span>Sites institucionais</span>
+      <span>Catálogos digitais</span>
+      <span>Cardápios e vitrines</span>
+      <span>Landing pages comerciais</span>
+      <span>Otimização e SEO</span>
     </div>
   </div>
-  <div class="container copy">
-    <span>© 2025 SITEFOLIO — Todos os direitos reservados. Chapadão do Sul, MS.</span>
-    <span>Criado para vender. Feito para impressionar.</span>
+  <div class="shell footer-bottom">
+    <p>© <span id="year">2026</span> Henrique — Sites &amp; Catálogos Digitais. Todos os direitos reservados.</p>
+    <p class="footer-note">Projetos demonstrativos desenvolvidos para apresentação comercial.</p>
+    <button class="to-top" id="toTop" aria-label="Voltar ao início">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 19V6m-6 6 6-6 6 6"/></svg>
+      Topo
+    </button>
   </div>
 </footer>
 
-<a class="floating-whatsapp" href="https://wa.me/5567999016886?text=Ol%C3%A1%20Wesley%20Henrique%2C%20vim%20pelo%20SITEFOLIO%20e%20gostaria%20de%20solicitar%20um%20or%C3%A7amento." target="_blank" rel="noopener" aria-label="Solicitar orçamento com Wesley Henrique pelo WhatsApp">
-  <svg viewBox="0 0 32 32" aria-hidden="true"><path d="M27.3 4.7A15.8 15.8 0 0 0 2.5 23.8L.3 31.7l8.1-2.1A15.7 15.7 0 0 0 16 31.5h.1A15.8 15.8 0 0 0 27.3 4.7Zm-11.2 24a13 13 0 0 1-6.6-1.8l-.5-.3-4.8 1.3 1.3-4.7-.3-.5a13 13 0 1 1 10.9 6Zm7.1-9.7c-.4-.2-2.3-1.1-2.7-1.3-.4-.1-.6-.2-.9.2-.3.4-1 1.3-1.3 1.6-.2.3-.5.3-.9.1-2.3-1.1-3.8-2-5.3-4.6-.4-.7.4-.7 1.1-2.2.1-.3.1-.5 0-.7-.1-.2-.9-2.1-1.2-2.9-.3-.8-.7-.7-.9-.7h-.8c-.3 0-.7.1-1.1.5-.4.4-1.4 1.4-1.4 3.4s1.5 4 1.7 4.3c.2.3 2.9 4.4 7 6.2 2.6 1.1 3.6 1.2 4.9 1 .8-.1 2.3-.9 2.6-1.8.3-.9.3-1.7.2-1.8-.1-.2-.4-.3-.8-.5Z"/></svg>
-  <span>Orçamento</span>
+<!-- ============ WHATSAPP FLOAT ============ -->
+<a class="wa-float" href="https://wa.me/5567999016886?text=Ol%C3%A1%20Henrique!%20Conheci%20seu%20portf%C3%B3lio%20e%20gostaria%20de%20conversar%20sobre%20um%20site%20ou%20cat%C3%A1logo%20digital." target="_blank" rel="noopener" aria-label="Falar com Henrique no WhatsApp">
+  <span class="wa-pulse"></span>
+  <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.5 14.4c-.3-.2-1.8-.9-2.1-1-.3-.1-.5-.2-.7.2s-.8 1-.9 1.2c-.2.2-.3.3-.7.1a8.6 8.6 0 0 1-2.5-1.6 9.6 9.6 0 0 1-1.7-2.2c-.2-.3 0-.5.1-.7l.6-.7c.1-.2.2-.3.3-.5s0-.4 0-.6c-.1-.2-.7-1.7-.9-2.3-.2-.5-.4-.5-.6-.5h-.6c-.2 0-.6.1-.9.4-.3.3-1.1 1-1.1 2.6s1.2 3 1.3 3.2c.2.2 2.2 3.5 5.4 4.7 3.1 1.2 3.1.8 3.7.8.6-.1 1.8-.8 2.1-1.5.3-.7.3-1.3.2-1.4-.1-.2-.3-.2-.6-.4Z"/><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg>
+  <span class="wa-label">Falar com Henrique</span>
 </a>
 
-<!-- Modal Solicitação -->
-<div class="modal-backdrop" id="modal">
-  <div class="modal" role="dialog" aria-modal="true">
-    <div class="modal-head">
-      <div>
-        <h3>Solicitar este modelo</h3>
-        <p style="font-size:12px;color:#6b7280;margin-top:4px">Resposta em até 2 horas úteis • Sem compromisso</p>
-      </div>
-      <button class="modal-close" onclick="closeModal()">✕</button>
+<!-- ============ DEMO OVERLAY ============ -->
+<div class="demo-overlay" id="demoOverlay" role="dialog" aria-modal="true" aria-label="Demonstração do modelo" aria-hidden="true">
+  <div class="demo-flip" id="demoFlip" aria-hidden="true"></div>
+  <div class="demo-chrome" id="demoChrome">
+    <button class="demo-back" id="demoBack">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M19 12H6m5 5-5-5 5-5"/></svg>
+      <span>Voltar à galeria</span>
+    </button>
+    <div class="demo-title-wrap">
+      <span class="demo-title-cat" id="demoCat">Segmento</span>
+      <span class="demo-title-name" id="demoName">Modelo</span>
     </div>
-    <div class="modal-body">
-      <form id="leadForm" onsubmit="submitLead(event)">
-        <div class="form-grid">
-          <div>
-            <label class="label">Nome completo</label>
-            <input class="input" name="nome" required placeholder="Ex: Ana Paula">
-          </div>
-          <div>
-            <label class="label">WhatsApp</label>
-            <input class="input" name="whatsapp" required placeholder="(67) 9 9999-9999">
-          </div>
-          <div>
-            <label class="label">Empresa</label>
-            <input class="input" name="empresa" placeholder="Nome da sua empresa">
-          </div>
-          <div>
-            <label class="label">Cidade</label>
-            <input class="input" name="cidade" placeholder="Chapadão do Sul">
-          </div>
-          <div class="full">
-            <label class="label">Modelo escolhido</label>
-            <select class="input" name="modelo" id="modeloSelect" required></select>
-          </div>
-          <div class="full">
-            <label class="label">Mensagem (opcional)</label>
-            <textarea class="input" name="mensagem" rows="3" placeholder="Conte um pouco sobre seu negócio..."></textarea>
-          </div>
-        </div>
-        <button type="submit" class="btn btn-primary" style="width:100%;margin-top:18px;padding:15px">Solicitar este modelo</button>
-        <p class="help">Ao enviar, você será redirecionado para o WhatsApp com a mensagem pronta.</p>
-
-        <div class="whatsapp-alt">
-          <div>
-            <strong style="font-size:13px">Prefere falar direto?</strong>
-            <p>Clique para abrir o WhatsApp com o modelo selecionado.</p>
-          </div>
-          <button type="button" class="btn btn-whatsapp btn-small" onclick="openWhatsappDirect()">Falar pelo WhatsApp</button>
-        </div>
-      </form>
+    <div class="demo-chrome-actions">
+      <span class="demo-badge"><i></i>Demonstração navegável</span>
+      <a class="btn btn-primary btn-xs" id="demoWhats" href="https://wa.me/5567999016886" target="_blank" rel="noopener">Quero este modelo</a>
     </div>
   </div>
+  <div class="demo-loader" id="demoLoader" aria-hidden="true">
+    <div class="loader-ring"></div>
+    <span>Preparando demonstração</span>
+  </div>
+  <div class="demo-viewport" id="demoViewport" tabindex="0"></div>
+  <div class="demo-exit-hint" aria-hidden="true">ESC para voltar</div>
 </div>
 
-<script src="assets/js/data.js"></script>
-<script src="assets/js/more-models.js"></script>
+<!-- ============ LIGHTBOX ============ -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Galeria de imagens" aria-hidden="true">
+  <button class="lb-close" id="lbClose" aria-label="Fechar galeria">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M6 6l12 12M18 6 6 18"/></svg>
+  </button>
+  <button class="lb-nav lb-prev" id="lbPrev" aria-label="Imagem anterior">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M15 5l-7 7 7 7"/></svg>
+  </button>
+  <figure class="lb-figure"><img id="lbImage" src="" alt=""><figcaption id="lbCaption"></figcaption></figure>
+  <button class="lb-nav lb-next" id="lbNext" aria-label="Próxima imagem">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M9 5l7 7-7 7"/></svg>
+  </button>
+</div>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="assets/js/data/00-categorias.js"></script>
+<script src="assets/js/data/01-gastronomia.js"></script>
+<script src="assets/js/data/02-lojas.js"></script>
+<script src="assets/js/data/03-mercados.js"></script>
+<script src="assets/js/data/04-agro.js"></script>
+<script src="assets/js/data/05-beleza.js"></script>
+<script src="assets/js/data/06-imoveis.js"></script>
+<script src="assets/js/data/07-automotivo.js"></script>
+<script src="assets/js/data/08-servicos.js"></script>
+<script src="assets/js/data/09-eventos.js"></script>
+<script src="assets/js/data/10-hotelaria.js"></script>
+<script src="assets/js/data/11-catalogos.js"></script>
+<script src="assets/js/render/base.js"></script>
+<script src="assets/js/render/layouts-a.js"></script>
+<script src="assets/js/render/layouts-b.js"></script>
+<script src="assets/js/render/layouts-c.js"></script>
 <script src="assets/js/app.js"></script>
 </body>
 </html>
