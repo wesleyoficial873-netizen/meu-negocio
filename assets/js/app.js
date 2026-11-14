@@ -24,6 +24,11 @@
     return null;
   }
   function cover(seg) { return seg.hero; }
+  function syncTotals() {
+    var els = document.querySelectorAll('[data-total]');
+    for (var i = 0; i < els.length; i++) els[i].textContent = SEGMENTS.length;
+  }
+
   function thumb(seg, w) {
     var src = seg.hero || '';
     if (src.indexOf('images.unsplash.com') > -1) {
@@ -830,6 +835,7 @@
      Inicialização
      --------------------------------------------------------- */
   function init() {
+    syncTotals();
     injectThemes();
     renderCategories();
     renderChips();
