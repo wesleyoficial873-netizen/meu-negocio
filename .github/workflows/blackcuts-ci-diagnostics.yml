@@ -18,10 +18,10 @@ jobs:
           python3 - <<'PY'
           import re
           text=open('/tmp/falhas.txt',errors='replace').read().splitlines()
-          patterns=('error', 'failed', 'not found', 'exception', 'still exists', 'not visible', 'not opened', 'blackcuts', 'uiautomator', 'permission', 'exit code')
-          selected=[line for line in text if any(p in line.lower() for p in patterns)]
-          print("::notice::Log lines: %d / filtered: %d" % (len(text), len(selected)))
-          for line in selected[-45:]:
-              line=re.sub(r'\x1b\[[0-9;]*m', '', line).replace('%','%25').replace('\r','%0D').replace('\n','%0A')
-              print('::notice::'+line[-2000:])
+          for name in ('emulator-smoke (28)', 'emulator-smoke (29)'):
+              lines=[line for line in text if line.startswith(name+'\tRun reactivecircus')]
+              end=next((i for i,line in enumerate(lines) if 'Script exited with' in line or 'Error: The process' in line), len(lines))
+              excerpt=lines[max(0,end-35):min(len(lines),end+3)]
+              value='\n'.join(excerpt).replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+              print('::notice::'+value)
           PY
