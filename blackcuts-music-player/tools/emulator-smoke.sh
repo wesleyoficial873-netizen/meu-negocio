@@ -102,8 +102,9 @@ tap_ui 'Biblioteca'
 tap_ui 'Opções de'
 tap_ui 'Excluir do aparelho'
 tap_ui 'CANCELAR'
-adb shell test -f /sdcard/Music/blackcuts-smoke.wav
-tap_ui 'Opções de'
+present=$(adb shell 'if [ -f /sdcard/Music/blackcuts-smoke.wav ]; then echo YES; else echo NO; fi' | tr -d '\r')
+if [ "$present" != YES ]; then echo 'File disappeared after cancellation' >&2; false; fi
+tap_ui 'Opções de' 
 tap_ui 'Excluir do aparelho'
 tap_ui 'EXCLUIR DO APARELHO'
 # Android 10+ may ask for system confirmation in the emulator locale.
@@ -119,6 +120,7 @@ PY_SYSTEM
 sleep 5
 dump_delete_ui
 cp /tmp/blackcuts-delete-window.xml /tmp/blackcuts-after-delete.xml
-if adb shell test -f /sdcard/Music/blackcuts-smoke.wav; then echo 'Test audio still exists after deletion' >&2; exit 1; fi
-if adb shell content query --uri content://media/external/audio/media --projection _display_name | grep -q blackcuts-smoke.wav; then echo 'Test audio still indexed after deletion' >&2; exit 1; fi
+present=$(adb shell 'if [ -f /sdcard/Music/blackcuts-smoke.wav ]; then echo YES; else echo NO; fi' | tr -d '\r')
+if [ "$present" != NO ]; then echo "Test audio still exists after deletion (file status: $present)" >&2; false; fi
+if adb shell content query --uri content://media/external/audio/media --projection _display_name | grep -q blackcuts-smoke.wav; then echo 'Test audio still indexed after deletion' >&2; false; fi
 echo "Deletion cancellation and confirmed deletion passed on API $API."
