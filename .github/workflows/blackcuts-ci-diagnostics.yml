@@ -14,10 +14,19 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          gh run download 44915442275 --repo "$GITHUB_REPOSITORY" --name blackcuts-emulator-diagnostics-29 --dir /tmp/diag29 || true
+          gh run download 44915442275 --repo "$GITHUB_REPOSITORY" --name blackcuts-emulator-diagnostics-28 --dir /tmp/diag28 || true
           gh run view 44915442275 --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/falhas.txt || true
           python3 - <<'PY'
           import re
           text=open('/tmp/falhas.txt',errors='replace').read().splitlines()
+          import glob,xml.etree.ElementTree as ET
+          for path in glob.glob('/tmp/diag*/*window.xml'):
+              try:
+                  root=ET.parse(path)
+                  labels=[(n.attrib.get('text',''),n.attrib.get('content-desc','')) for n in root.iter() if n.attrib.get('text') or n.attrib.get('content-desc')]
+                  print('::notice::'+path+': '+str(labels).replace('%','%25').replace('\n','%0A'))
+              except Exception as exc: print('::notice::'+path+': '+str(exc))
           for name in ('emulator-smoke (28)', 'emulator-smoke (29)'):
               lines=[line for line in text if line.startswith(name+'\tRun reactivecircus')]
               end=next((i for i,line in enumerate(lines) if 'Script exited with' in line or 'Error: The process' in line), len(lines))
