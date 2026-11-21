@@ -7,6 +7,9 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -21,8 +24,10 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Setup Android SDK
-        uses: android-actions/setup-android@v3
+      - name: Install Android SDK 35
+        run: |
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
@@ -33,9 +38,23 @@ jobs:
         working-directory: black-cuts-ad-blocker
         run: gradle assembleDebug --no-daemon
 
+      - name: Verify APK
+        run: ls -lh black-cuts-ad-blocker/app/build/outputs/apk/debug/*.apk
+
       - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
           name: black-cuts-ad-blocker-debug-apk
           path: black-cuts-ad-blocker/app/build/outputs/apk/debug/*.apk
           if-no-files-found: error
+
+      - name: Publish APK to GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          APK_PATH=$(ls black-cuts-ad-blocker/app/build/outputs/apk/debug/*.apk | head -n 1)
+          gh release delete v1.0.0-debug --yes || true
+          gh release create v1.0.0-debug "$APK_PATH" \
+            --title "BLACK°CUTS AD BLOCKER v1.0.0 (Debug APK)" \
+            --notes "APK compilado automaticamente via GitHub Actions." \
+            --target "${{ github.sha }}"
