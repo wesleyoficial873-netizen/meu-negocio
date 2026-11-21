@@ -14,9 +14,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh run download 44916684633 --repo "$GITHUB_REPOSITORY" --name blackcuts-retest-29 --dir /tmp/diag29 || true
-          gh run download 44916684633 --repo "$GITHUB_REPOSITORY" --name blackcuts-retest-28 --dir /tmp/diag28 || true
-          gh run view 44916684633 --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/falhas.txt || true
+          gh run download 44917125932 --repo "$GITHUB_REPOSITORY" --name blackcuts-emulator-diagnostics-29 --dir /tmp/diag29 || true
+          gh run download 44917125932 --repo "$GITHUB_REPOSITORY" --name blackcuts-emulator-diagnostics-28 --dir /tmp/diag28 || true
+          gh run view 44917125932 --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/falhas.txt || true
           python3 - <<'PY'
           import re
           text=open('/tmp/falhas.txt',errors='replace').read().splitlines()
@@ -35,7 +35,7 @@ jobs:
               selected=[line for line in lines if 'blackcuts' in line.lower() or 'MediaProvider' in line or 'RecoverableSecurityException' in line or 'Exception' in line]
               value=('\n'.join(selected[-30:])).replace('%','%25').replace('\r','%0D').replace('\n','%0A')
               print('::notice::'+path+' '+value)
-          for name in ('retest (28)', 'retest (29)'):
+          for name in ('emulator-smoke (28)', 'emulator-smoke (29)'):
               lines=[line for line in text if line.startswith(name+'\tRun reactivecircus')]
               end=next((i for i,line in enumerate(lines) if 'Script exited with' in line or 'Error: The process' in line), len(lines))
               excerpt=lines[max(0,end-35):min(len(lines),end+3)]
