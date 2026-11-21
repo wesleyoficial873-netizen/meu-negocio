@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-set -euo pipefail
+set -Eeuo pipefail
+trap 'status=$?; adb logcat -d -t 1800 > /tmp/blackcuts-logcat.txt || true; adb shell uiautomator dump /sdcard/last-window.xml >/dev/null 2>&1 && adb shell cat /sdcard/last-window.xml > /tmp/blackcuts-last-window.xml || true; echo "::error::Smoke test failed at line $LINENO (exit $status)"; exit "$status"' ERR
 adb wait-for-device
 adb shell settings put system screen_off_timeout 600000
 adb install -r /tmp/blackcuts-apk/app-debug.apk
@@ -74,10 +75,18 @@ adb shell input keyevent KEYCODE_BACK
 sleep 2
 
 # Test cancellation first, then approve deletion of the test file only.
+dump_delete_ui() {
+  for attempt in {1..6}; do
+    adb shell rm -f /sdcard/delete-window.xml
+    adb shell uiautomator dump /sdcard/delete-window.xml >/dev/null 2>&1 || true
+    if adb shell cat /sdcard/delete-window.xml > /tmp/blackcuts-delete-window.xml 2>/dev/null && grep -q '<hierarchy' /tmp/blackcuts-delete-window.xml; then return 0; fi
+    sleep 2
+  done
+  echo 'Could not get current UI hierarchy' >&2; return 1
+}
 tap_ui() {
   local label="$1"
-  adb shell uiautomator dump /sdcard/delete-window.xml >/dev/null
-  adb shell cat /sdcard/delete-window.xml > /tmp/blackcuts-delete-window.xml
+  dump_delete_ui
   python3 - "$label" <<'PY_TAP'
 import xml.etree.ElementTree as ET, re, subprocess, sys
 label=sys.argv[1]
@@ -98,8 +107,7 @@ tap_ui 'Opções de'
 tap_ui 'Excluir do aparelho'
 tap_ui 'EXCLUIR DO APARELHO'
 # Android 10+ may ask for system confirmation in the emulator locale.
-adb shell uiautomator dump /sdcard/delete-window.xml >/dev/null
-adb shell cat /sdcard/delete-window.xml > /tmp/blackcuts-delete-window.xml
+dump_delete_ui
 python3 - <<'PY_SYSTEM'
 import xml.etree.ElementTree as ET, re, subprocess
 labels = {'allow', 'delete', 'move to trash', 'permitir', 'excluir', 'mover para a lixeira'}
@@ -109,6 +117,8 @@ for n in ET.parse('/tmp/blackcuts-delete-window.xml').iter():
         subprocess.run(['adb','shell','input','tap',str((b[0]+b[2])//2),str((b[1]+b[3])//2)],check=True); break
 PY_SYSTEM
 sleep 5
+dump_delete_ui
+cp /tmp/blackcuts-delete-window.xml /tmp/blackcuts-after-delete.xml
 if adb shell test -f /sdcard/Music/blackcuts-smoke.wav; then echo 'Test audio still exists after deletion' >&2; exit 1; fi
 if adb shell content query --uri content://media/external/audio/media --projection _display_name | grep -q blackcuts-smoke.wav; then echo 'Test audio still indexed after deletion' >&2; exit 1; fi
 echo "Deletion cancellation and confirmed deletion passed on API $API."

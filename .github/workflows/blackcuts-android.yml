@@ -89,4 +89,7 @@ jobs:
             /tmp/blackcuts-media-session.txt
             /tmp/blackcuts-player.png
             /tmp/blackcuts-delete-window.xml
+            /tmp/blackcuts-after-delete.xml
+            /tmp/blackcuts-last-window.xml
+            /tmp/blackcuts-logcat.txt
           if-no-files-found: ignore
