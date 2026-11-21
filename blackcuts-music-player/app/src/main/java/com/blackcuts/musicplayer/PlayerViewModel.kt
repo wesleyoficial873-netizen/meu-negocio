@@ -21,6 +21,11 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     private val library = MediaLibrary(app)
     private val dao = LibraryDatabase.get(app).libraryDao()
     private val prefs = Preferences(app)
+    private val onlineSearch = YouTubeSearch(BuildConfig.YOUTUBE_PROXY_URL)
+    val onlineConfigured = onlineSearch.configured
+    val onlineResults = MutableStateFlow<List<OnlineVideo>>(emptyList())
+    val onlineStatus = MutableStateFlow<String?>(null)
+    private var searchJob: Job? = null
     private val backups = BackupRepository(app, LibraryDatabase.get(app), prefs)
     val message = MutableStateFlow<String?>(null)
     val playbackError = MutableStateFlow<String?>(null)
@@ -111,6 +116,17 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     fun deletePlaylist(playlist: Playlist) = viewModelScope.launch { dao.deletePlaylist(playlist) }
     fun addToPlaylist(playlist: Playlist, uri: String) = viewModelScope.launch { dao.addToPlaylist(PlaylistTrack(playlist.id, uri)) }
     fun playPlaylist(playlist: Playlist) = viewModelScope.launch { val map = tracks.value.associateBy { it.uri.toString() }; val items = dao.playlistUris(playlist.id).mapNotNull { map[it] }; if (items.isEmpty()) message.value = "Esta playlist não contém músicas disponíveis." else play(items) }
+    fun searchOnline(query: String) {
+        searchJob?.cancel()
+        searchJob = viewModelScope.launch {
+            onlineResults.value = emptyList()
+            onlineStatus.value = "Pesquisando…"
+            try {
+                onlineResults.value = onlineSearch.search(query)
+                onlineStatus.value = if (onlineResults.value.isEmpty()) "Nenhum resultado encontrado." else null
+            } catch (e: CancellationException) { throw e } catch (e: Exception) { onlineStatus.value = "Não foi possível pesquisar: ${e.message ?: "erro de conexão"}" }
+        }
+    }
     fun exportBackup(uri: Uri) = viewModelScope.launch {
         message.value = try { backups.exportTo(uri); "Backup salvo. Os arquivos de música não foram copiados." } catch (e: CancellationException) { throw e } catch (e: Exception) { "Não foi possível salvar o backup: ${e.message ?: "erro desconhecido"}" }
     }

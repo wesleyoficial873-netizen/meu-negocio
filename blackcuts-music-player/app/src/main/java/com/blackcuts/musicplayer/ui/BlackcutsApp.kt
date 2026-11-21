@@ -72,7 +72,7 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
                 when (tab) {
                     0 -> Home(tracks, current, playing, favorites, error, requestLibrary, { tab = 1 }, model)
                     1 -> Library(tracks, favorites, playlists, error, requestLibrary, model)
-                    2 -> Discover()
+                    2 -> Discover(model)
                     3 -> InfoScreen("DOWNLOADS", "Sua central de downloads", "Downloads de fontes autorizadas ainda não estão disponíveis nesta versão. Seus arquivos locais continuam acessíveis na biblioteca.", Icons.Default.Download)
                     4 -> Settings(theme, model, { car = true }, { equalizer = true })
                 }
@@ -215,18 +215,29 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
     renaming?.let { playlist -> AlertDialog(onDismissRequest = { renaming = null }, title = { Text("Renomear playlist") }, text = { OutlinedTextField(value = newName, onValueChange = { newName = it }, label = { Text("Nome") }, singleLine = true) }, confirmButton = { TextButton(onClick = { model.renamePlaylist(playlist, newName); renaming = null; newName = "" }) { Text("SALVAR") } }, dismissButton = { TextButton(onClick = { renaming = null; newName = "" }) { Text("CANCELAR") } }) }
     if (creating) AlertDialog(onDismissRequest = { creating = false }, title = { Text("Nova playlist") }, text = { OutlinedTextField(value = newName, onValueChange = { newName = it }, label = { Text("Nome") }, singleLine = true) }, confirmButton = { TextButton(onClick = { model.createPlaylist(newName); newName = ""; creating = false }) { Text("CRIAR") } }, dismissButton = { TextButton(onClick = { creating = false }) { Text("CANCELAR") } })
 }
-@Composable private fun Discover() {
+@Composable private fun Discover(model: PlayerViewModel) {
     val context = LocalContext.current
     var query by remember { mutableStateOf("") }
+    val results by model.onlineResults.collectAsState()
+    val status by model.onlineStatus.collectAsState()
     Column(Modifier.fillMaxSize()) {
         Header("além da biblioteca", "Descobrir", "Encontre novas músicas nas fontes oficiais.")
-        OutlinedTextField(value = query, onValueChange = { query = it }, modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp), singleLine = true, leadingIcon = { Icon(Icons.Default.Search, null) }, placeholder = { Text("Título, artista, álbum ou gênero") }, shape = RoundedCornerShape(16.dp))
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = {
-            val uri = Uri.parse("https://www.youtube.com/results").buildUpon().appendQueryParameter("search_query", query).build()
-            runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, uri)) }
-        }, enabled = query.isNotBlank(), modifier = Modifier.padding(horizontal = 22.dp)) { Icon(Icons.Default.OpenInNew, null); Spacer(Modifier.width(8.dp)); Text("PESQUISAR NO YOUTUBE") }
-        Text("A pesquisa abre o YouTube ou o navegador. A API de resultados integrada ainda não está configurada.", color = Muted, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(22.dp))
+        OutlinedTextField(value = query, onValueChange = { query = it.take(200) }, modifier = Modifier.fillMaxWidth().padding(horizontal = 22.dp), singleLine = true, leadingIcon = { Icon(Icons.Default.Search, null) }, placeholder = { Text("Título, artista, álbum ou gênero") }, shape = RoundedCornerShape(16.dp))
+        Row(Modifier.padding(horizontal = 22.dp, vertical = 10.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (model.onlineConfigured) Button(onClick = { model.searchOnline(query) }, enabled = query.isNotBlank()) { Text("PESQUISAR") }
+            TextButton(onClick = {
+                val uri = Uri.parse("https://www.youtube.com/results").buildUpon().appendQueryParameter("search_query", query).build()
+                runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, uri)) }
+            }, enabled = query.isNotBlank()) { Text("ABRIR YOUTUBE") }
+        }
+        if (!model.onlineConfigured) Text("Pesquisa integrada indisponível: configure o serviço oficial. Você ainda pode abrir a busca no YouTube.", color = Muted, modifier = Modifier.padding(horizontal = 22.dp))
+        if (status != null) Text(status.orEmpty(), color = Muted, modifier = Modifier.padding(horizontal = 22.dp))
+        LazyColumn { itemsIndexed(results, key = { _, item -> item.id }) { _, item ->
+            Row(Modifier.fillMaxWidth().clickable { runCatching { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse("https://www.youtube.com/watch?v=${item.id}"))) } }.padding(horizontal = 22.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                AsyncImage(model = item.thumbnail, contentDescription = null, contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.size(68.dp).clip(RoundedCornerShape(12.dp)).background(MaterialTheme.colorScheme.surfaceVariant))
+                Spacer(Modifier.width(12.dp)); Column(Modifier.weight(1f)) { Text(item.title, maxLines = 2, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold); Text(item.channel, color = Muted, maxLines = 1) }; Icon(Icons.Default.OpenInNew, "Abrir no YouTube")
+            }
+        } }
     }
 }
 @Composable private fun InfoScreen(kicker: String, title: String, message: String, icon: ImageVector) {

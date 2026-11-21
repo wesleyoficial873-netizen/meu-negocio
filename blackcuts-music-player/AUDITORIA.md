@@ -15,7 +15,7 @@ Inspeção de todos os arquivos do projeto Android, Gradle, manifesto, workflow 
 | Equalizador | AudioEffect Equalizer vinculado à sessão ExoPlayer | Bandas e suporte variam por aparelho; sem dez bandas garantidas, presets, persistência ou comprovação de processamento em equipamento. |
 | Aparência e carro | Compose, temas, modo carro básico | Não há Android Auto, volume ou playlists no modo carro; falta teste em telas distintas. |
 | Backup/restauração | Documento JSON escolhido pelo usuário; favoritos, playlists e tema, mesclagem no Room | Não inclui músicas/histórico; URIs podem ser inválidas em outro aparelho, não resolve títulos entre aparelhos. Ainda não testado em dispositivo. |
-| Pesquisa YouTube | Abre pesquisa no app/site oficial | Não integra YouTube Data API; resultados dentro do app dependem de configuração oficial. |
+| Pesquisa YouTube | Abre pesquisa no app/site oficial; cliente HTTPS e proxy de referência para a YouTube Data API foram adicionados | Sem endpoint/chave e sem teste com serviço real; não há listas de interesse. |
 | Downloads, reconhecimento e atualizações | Não implementados | Dependem de política de fonte autorizada, provedor de reconhecimento e servidor oficial. |
 | Metadados avançados, letra, estatísticas, sugestões | Não implementados | Exigem decisões de provedores, edição segura e testes. |
 
@@ -30,6 +30,6 @@ Inspeção de todos os arquivos do projeto Android, Gradle, manifesto, workflow 
 
 ## Dependências e compilação
 
-JDK 17, Android SDK 35, Gradle 8.9, Android Gradle Plugin 8.5.2, Kotlin 1.9.24, Compose/Material 3, Media3, Room/KAPT, DataStore, Coil, coroutines e JUnit. O Gradle obtém bibliotecas de Google Maven e Maven Central. Não há Retrofit/WorkManager nem segredo de serviço externo no projeto.
+JDK 17, Android SDK 35, Gradle 8.9, Android Gradle Plugin 8.5.2, Kotlin 1.9.24, Compose/Material 3, Media3, Room/KAPT, DataStore, Coil, coroutines e JUnit. O Gradle obtém bibliotecas de Google Maven e Maven Central. Não há Retrofit/WorkManager nem segredo de serviço externo no projeto. O proxy de referência recebe a chave apenas no ambiente do servidor.
 
 O pipeline foi executado em uma revisão anterior e compila, executa testes unitários e verifica assinatura de debug antes de disponibilizar artefatos. Release é **não assinado**; um APK de produção exige keystore privada do proprietário. Os comandos e passos de download estão no README. Builds locais, lint, testes instrumentados, emuladores e aparelhos são necessários antes de considerar o aplicativo pronto.

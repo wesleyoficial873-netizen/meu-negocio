@@ -4,7 +4,14 @@ Nenhuma das integrações abaixo está concluída nem foi testada. As telas não
 
 ## YouTube Data API
 
-A busca atual apenas abre o YouTube oficialmente. Para oferecer resultados dentro do app, é necessário um projeto Google Cloud com YouTube Data API habilitada, cota e credenciais restritas; um serviço próprio em HTTPS deve guardar a credencial e aplicar autenticação, limites de uso e proteção contra abuso. Um futuro cliente Android deverá enviar somente a consulta ao serviço, tratar cota/erros, exibir título/canal/miniatura reais e abrir o vídeo no mecanismo oficial. Não extrair áudio nem obter dados por raspagem. Não empacotar segredos em BuildConfig, recursos ou Git.
+O cliente opcional consulta um proxy HTTPS configurado na compilação e abre resultados na página oficial do vídeo. Há um servidor de referência em `services/youtube-proxy/server.py`, que utiliza o endpoint `youtube/v3/search` da API oficial; ele não extrai áudio e a chave só existe no processo servidor. Está desativado por padrão e não foi testado com chave/serviço real.
+
+1. Habilite a YouTube Data API em um projeto Google Cloud e configure cota e restrições da chave.
+2. Execute o servidor de referência com `YOUTUBE_API_KEY` em variável de ambiente no servidor. Ele escuta apenas `127.0.0.1:8080`; instale um gateway HTTPS próprio com autenticação, controle de abuso, observabilidade sem registrar buscas/segredos e políticas de proteção de dados. O limitador local é ilustrativo e não substitui proteção de produção.
+3. Configure a URL pública HTTPS do gateway terminando em `/api/search` no Gradle, por exemplo `./gradlew assembleDebug -PblackcutsYoutubeEndpoint=https://seu-dominio.example/api/search`. A URL não é segredo; nunca inclua a chave no Gradle ou aplicativo. Se o gateway exigir credenciais de usuário, é preciso implementar autenticação no cliente antes de usá-lo.
+4. Teste com credenciais e quota reais, restrições e termos do YouTube, respostas de erro e vídeos indisponíveis. Os resultados sempre abrem o YouTube; não garantimos disponibilidade ou reprodução interna.
+
+O backend é apenas ponto de partida e deve passar por revisão de segurança antes de receber tráfego público. Os testes locais de transformação usam respostas simuladas; não são um teste de integração com o YouTube.
 
 ## Identificação
 

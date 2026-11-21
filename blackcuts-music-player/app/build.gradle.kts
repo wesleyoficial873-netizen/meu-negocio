@@ -3,6 +3,8 @@ plugins {
     id("org.jetbrains.kotlin.android")
     id("org.jetbrains.kotlin.kapt")
 }
+val youtubeEndpoint = providers.gradleProperty("blackcutsYoutubeEndpoint").orElse("").get()
+require(youtubeEndpoint.isEmpty() || (youtubeEndpoint.startsWith("https://") && youtubeEndpoint.none { it == '"' || it == '\\' || it == '\n' || it == '\r' })) { "blackcutsYoutubeEndpoint must be HTTPS" }
 android {
     namespace = "com.blackcuts.musicplayer"
     compileSdk = 35
@@ -12,12 +14,13 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0.0"
+        buildConfigField("String", "YOUTUBE_PROXY_URL", "\"$youtubeEndpoint\"")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes { release { isMinifyEnabled = false } }
     compileOptions { sourceCompatibility = JavaVersion.VERSION_17; targetCompatibility = JavaVersion.VERSION_17 }
     kotlinOptions { jvmTarget = "17" }
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
     composeOptions { kotlinCompilerExtensionVersion = "1.5.14" }
     packaging { resources.excludes += "/META-INF/{AL2.0,LGPL2.1}" }
 }
