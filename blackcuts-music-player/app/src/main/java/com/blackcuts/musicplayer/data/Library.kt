@@ -56,6 +56,9 @@ data class PlaylistTrack(val playlistId: Long, val uri: String, val addedAt: Lon
 
 @Dao interface LibraryDao {
     @Query("SELECT uri FROM favorites") fun favorites(): Flow<List<String>>
+    @Query("SELECT uri FROM favorites") suspend fun favoriteSnapshot(): List<String>
+    @Query("SELECT * FROM playlists ORDER BY id") suspend fun playlistSnapshot(): List<Playlist>
+    @Query("SELECT * FROM playlists WHERE name = :name LIMIT 1") suspend fun playlistByName(name: String): Playlist?
     @Insert(onConflict = OnConflictStrategy.IGNORE) suspend fun addFavorite(favorite: Favorite)
     @Query("DELETE FROM favorites WHERE uri = :uri") suspend fun removeFavorite(uri: String)
     @Query("SELECT * FROM playlists ORDER BY name COLLATE NOCASE") fun playlists(): Flow<List<Playlist>>

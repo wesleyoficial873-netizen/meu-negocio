@@ -3,6 +3,8 @@ package com.blackcuts.musicplayer
 import android.app.Application
 import android.content.ComponentName
 import android.database.ContentObserver
+import android.net.Uri
+import com.blackcuts.musicplayer.data.BackupRepository
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.media3.common.Player
@@ -18,6 +20,10 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     private val library = MediaLibrary(app)
     private val dao = LibraryDatabase.get(app).libraryDao()
     private val prefs = Preferences(app)
+    private val backups = BackupRepository(app, LibraryDatabase.get(app), prefs)
+    val message = MutableStateFlow<String?>(null)
+    val playbackError = MutableStateFlow<String?>(null)
+    private var pendingPlay: Pair<List<Track>, Int>? = null
     val tracks = MutableStateFlow<List<Track>>(emptyList())
     val scanError = MutableStateFlow<String?>(null)
     val favorites = dao.favorites().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
@@ -37,11 +43,12 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     private var controller: MediaController? = null
     private val listener = object : Player.Listener {
         override fun onEvents(player: Player, events: Player.Events) { sync(player) }
+        override fun onPlayerError(error: androidx.media3.common.PlaybackException) { playbackError.value = "Não foi possível reproduzir este arquivo: ${error.errorCodeName}." }
     }
     init {
         controllerFuture.addListener({
-            try { controller = controllerFuture.get().also { it.addListener(listener); sync(it) } }
-            catch (_: Exception) { scanError.value = "Não foi possível conectar ao serviço de áudio." }
+            try { controller = controllerFuture.get().also { it.addListener(listener); sync(it) }; pendingPlay?.let { (items, index) -> pendingPlay = null; play(items, index) } }
+            catch (_: Exception) { playbackError.value = "Não foi possível conectar ao serviço de áudio." }
         }, androidx.core.content.ContextCompat.getMainExecutor(app))
         viewModelScope.launch { while (isActive) { controller?.let { sync(it) }; delay(500) } }
     }
@@ -62,13 +69,17 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
         scanJob?.cancel()
         scanJob = viewModelScope.launch {
             try { tracks.value = library.scan(); scanError.value = null }
+            catch (cancelled: CancellationException) { throw cancelled }
             catch (_: SecurityException) { scanError.value = "Permita acesso às músicas para carregar a biblioteca." }
             catch (_: Exception) { scanError.value = "Não foi possível ler a biblioteca. Tente atualizar." }
         }
     }
     fun play(items: List<Track>, index: Int = 0) {
         if (items.isEmpty() || index !in items.indices) return
-        controller?.apply { setMediaItems(items.map { it.mediaItem() }, index, 0); prepare(); play() }
+        val player = controller
+        if (player == null) { pendingPlay = items to index; return }
+        playbackError.value = null
+        player.apply { setMediaItems(items.map { it.mediaItem() }, index, 0); prepare(); play() }
     }
     fun togglePlay() { controller?.let { if (it.isPlaying) it.pause() else it.play() } }
     fun next() { controller?.seekToNextMediaItem() }
@@ -84,6 +95,14 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     fun deletePlaylist(playlist: Playlist) = viewModelScope.launch { dao.deletePlaylist(playlist) }
     fun addToPlaylist(playlist: Playlist, uri: String) = viewModelScope.launch { dao.addToPlaylist(PlaylistTrack(playlist.id, uri)) }
     fun playPlaylist(playlist: Playlist) = viewModelScope.launch { val map = tracks.value.associateBy { it.uri.toString() }; play(dao.playlistUris(playlist.id).mapNotNull { map[it] }) }
+    fun exportBackup(uri: Uri) = viewModelScope.launch {
+        message.value = try { backups.exportTo(uri); "Backup salvo. Os arquivos de música não foram copiados." } catch (e: CancellationException) { throw e } catch (e: Exception) { "Não foi possível salvar o backup: ${e.message ?: "erro desconhecido"}" }
+    }
+    fun importBackup(uri: Uri) = viewModelScope.launch {
+        message.value = try { backups.importFrom(uri); "Backup restaurado. As músicas precisam estar disponíveis nas URIs originais." } catch (e: CancellationException) { throw e } catch (e: Exception) { "Não foi possível restaurar o backup: ${e.message ?: "arquivo inválido"}" }
+    }
+    fun clearMessage() { message.value = null }
+    fun clearPlaybackError() { playbackError.value = null }
     fun setTheme(value: String) = viewModelScope.launch { prefs.setTheme(value) }
     override fun onCleared() {
         observer?.let(library::stopObserving)

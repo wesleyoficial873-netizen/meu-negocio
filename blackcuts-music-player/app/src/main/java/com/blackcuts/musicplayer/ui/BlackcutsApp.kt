@@ -4,6 +4,8 @@ import android.content.Context
 import android.content.Intent
 import android.media.AudioManager
 import android.net.Uri
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.core.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
@@ -49,6 +51,8 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
         val favorites by model.favorites.collectAsState()
         val playlists by model.playlists.collectAsState()
         val error by model.scanError.collectAsState()
+        val message by model.message.collectAsState()
+        val playbackError by model.playbackError.collectAsState()
         var tab by remember { mutableIntStateOf(0) }
         var expanded by remember { mutableStateOf(false) }
         var car by remember { mutableStateOf(false) }
@@ -77,6 +81,8 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
         if (expanded && current != null) FullPlayer(current, model, favorites.contains(current.uri.toString()), playlists, { expanded = false })
         if (car) CarMode(current, playing, model, { car = false })
         if (equalizer) EqualizerDialog { equalizer = false }
+        if (message != null) AlertDialog(onDismissRequest = model::clearMessage, title = { Text("Backup") }, text = { Text(message.orEmpty()) }, confirmButton = { TextButton(onClick = model::clearMessage) { Text("OK") } })
+        if (playbackError != null) AlertDialog(onDismissRequest = model::clearPlaybackError, title = { Text("Reprodução") }, text = { Text(playbackError.orEmpty()) }, confirmButton = { TextButton(onClick = model::clearPlaybackError) { Text("OK") } })
     }
 }
 
@@ -201,6 +207,9 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
     Column { Header(kicker, title); Icon(icon, null, tint = Violet, modifier = Modifier.padding(start = 22.dp, top = 20.dp).size(48.dp)); Text(message, color = Muted, modifier = Modifier.padding(22.dp)) }
 }
 @Composable private fun Settings(theme: String, model: PlayerViewModel, openCar: () -> Unit, openEqualizer: () -> Unit) {
+    val saveBackup = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri -> uri?.let(model::exportBackup) }
+    val loadBackup = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(model::importBackup) }
+    var confirmRestore by remember { mutableStateOf(false) }
     Column(Modifier.verticalScroll(rememberScrollState())) {
         Header("personalize", "Ajustes", "Faça o BLACK°CUTS ser seu.")
         Text("APARÊNCIA", color = Violet, letterSpacing = 1.5.sp, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp))
@@ -209,8 +218,11 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
         ListItem(headlineContent = { Text("Equalizador do dispositivo") }, supportingContent = { Text("Bandas de áudio disponíveis no aparelho") }, leadingContent = { Icon(Icons.Default.Equalizer, null, tint = Violet) }, modifier = Modifier.clickable(onClick = openEqualizer), colors = ListItemDefaults.colors(containerColor = Color.Transparent))
         ListItem(headlineContent = { Text("Modo carro") }, supportingContent = { Text("Controles ampliados. Configure antes de dirigir.") }, leadingContent = { Icon(Icons.Default.DirectionsCar, null, tint = Violet) }, modifier = Modifier.clickable(onClick = openCar), colors = ListItemDefaults.colors(containerColor = Color.Transparent))
         ListItem(headlineContent = { Text("Atualizar biblioteca") }, supportingContent = { Text("Buscar novamente músicas no aparelho") }, leadingContent = { Icon(Icons.Default.Refresh, null, tint = Violet) }, modifier = Modifier.clickable { model.refresh() }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
+        ListItem(headlineContent = { Text("Salvar backup") }, supportingContent = { Text("Favoritos, playlists e aparência; não copia músicas") }, leadingContent = { Icon(Icons.Default.Backup, null, tint = Violet) }, modifier = Modifier.clickable { saveBackup.launch("blackcuts-backup.json") }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
+        ListItem(headlineContent = { Text("Restaurar backup") }, supportingContent = { Text("Mescla com os dados existentes") }, leadingContent = { Icon(Icons.Default.Restore, null, tint = Violet) }, modifier = Modifier.clickable { confirmRestore = true }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
         ListItem(headlineContent = { Text("Sobre esta versão") }, supportingContent = { Text("BLACK°CUTS MUSIC PLAYER · 1.0.0\nProjeto em desenvolvimento. Consulte a documentação para conhecer limitações e privacidade.") }, leadingContent = { Icon(Icons.Default.Info, null, tint = Violet) }, colors = ListItemDefaults.colors(containerColor = Color.Transparent))
     }
+    if (confirmRestore) AlertDialog(onDismissRequest = { confirmRestore = false }, title = { Text("Restaurar backup") }, text = { Text("Os favoritos e playlists serão mesclados. As músicas não estão incluídas e as URIs podem não funcionar em outro aparelho.") }, confirmButton = { TextButton(onClick = { confirmRestore = false; loadBackup.launch(arrayOf("application/json", "text/plain")) }) { Text("ESCOLHER ARQUIVO") } }, dismissButton = { TextButton(onClick = { confirmRestore = false }) { Text("CANCELAR") } })
 }
 
 @Composable private fun FullPlayer(track: Track, model: PlayerViewModel, favorite: Boolean, playlists: List<Playlist>, close: () -> Unit) {
