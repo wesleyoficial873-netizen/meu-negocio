@@ -14,9 +14,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh run download 44916404035 --repo "$GITHUB_REPOSITORY" --name blackcuts-retest-29 --dir /tmp/diag29 || true
-          gh run download 44916404035 --repo "$GITHUB_REPOSITORY" --name blackcuts-retest-28 --dir /tmp/diag28 || true
-          gh run view 44916404035 --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/falhas.txt || true
+          gh run download 44916684633 --repo "$GITHUB_REPOSITORY" --name blackcuts-retest-29 --dir /tmp/diag29 || true
+          gh run download 44916684633 --repo "$GITHUB_REPOSITORY" --name blackcuts-retest-28 --dir /tmp/diag28 || true
+          gh run view 44916684633 --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/falhas.txt || true
           python3 - <<'PY'
           import re
           text=open('/tmp/falhas.txt',errors='replace').read().splitlines()
