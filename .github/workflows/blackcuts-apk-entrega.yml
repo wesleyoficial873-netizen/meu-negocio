@@ -1,0 +1,35 @@
+name: Entrega APK debug BLACKCUTS
+on:
+  push:
+    paths: ['.github/workflows/blackcuts-apk-entrega.yml']
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: write
+jobs:
+  publish-debug:
+    if: github.ref == 'refs/heads/arena/d5086f1b-meu-negocio'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Baixar APK já compilado e testado
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download 44913679499 --repo "$GITHUB_REPOSITORY" --name blackcuts-debug-apk --dir apk
+          cd apk
+          expected=$(awk '{print $1}' SHA256SUMS.txt)
+          actual=$(sha256sum app-debug.apk | awk '{print $1}')
+          test -n "$expected" && test "$expected" = "$actual"
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging app-debug.apk | head -10
+          cp app-debug.apk BLACKCUTS-debug.apk
+          sha256sum BLACKCUTS-debug.apk > BLACKCUTS-debug.apk.sha256
+      - name: Publicar APK de teste como pré-lançamento
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create blackcuts-debug-70c8d52 apk/BLACKCUTS-debug.apk apk/BLACKCUTS-debug.apk.sha256 \
+            --repo "$GITHUB_REPOSITORY" --target 70c8d52dcf4634fa86f9bca55062a3d31316a929 --prerelease \
+            --title 'BLACK°CUTS — APK debug para testes' \
+            --notes 'APK debug para testes, compilado e verificado pelo GitHub Actions na execução 44913679499. Não é release de produção. Há funcionalidades pendentes e não houve validação em aparelho físico. Consulte blackcuts-music-player/STATUS.md.'
