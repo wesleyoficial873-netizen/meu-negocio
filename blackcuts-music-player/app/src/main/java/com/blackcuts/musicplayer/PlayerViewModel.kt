@@ -34,6 +34,7 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     val scanError = MutableStateFlow<String?>(null)
     val favorites = dao.favorites().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
     val playlists = dao.playlists().stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+    val accent = prefs.accent.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Azul")
     val theme = prefs.theme.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "AMOLED")
     val currentUri = MutableStateFlow<String?>(null)
     val playing = MutableStateFlow(false)
@@ -133,8 +134,28 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     fun importBackup(uri: Uri) = viewModelScope.launch {
         message.value = try { backups.importFrom(uri); "Backup restaurado. As músicas precisam estar disponíveis nas URIs originais." } catch (e: CancellationException) { throw e } catch (e: Exception) { "Não foi possível restaurar o backup: ${e.message ?: "arquivo inválido"}" }
     }
+    fun reportMessage(text: String) { message.value = text }
+    fun onTrackDeleted(uri: Uri) {
+        val id = uri.toString()
+        controller?.let { player ->
+            for (i in player.mediaItemCount - 1 downTo 0) {
+                if (player.getMediaItemAt(i).mediaId == id) player.removeMediaItem(i)
+            }
+        }
+        viewModelScope.launch {
+            try {
+                dao.removeFavorite(id)
+                dao.removeTrackEverywhere(id)
+                message.value = "Música excluída do aparelho."
+            } catch (e: CancellationException) { throw e } catch (_: Exception) {
+                message.value = "O arquivo foi excluído, mas não foi possível atualizar todos os dados locais."
+            }
+            refresh()
+        }
+    }
     fun clearMessage() { message.value = null }
     fun clearPlaybackError() { playbackError.value = null }
+    fun setAccent(value: String) = viewModelScope.launch { prefs.setAccent(value) }
     fun setTheme(value: String) = viewModelScope.launch { prefs.setTheme(value) }
     override fun onCleared() {
         observer?.let(library::stopObserving)

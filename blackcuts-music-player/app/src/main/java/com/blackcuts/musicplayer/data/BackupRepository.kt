@@ -27,6 +27,7 @@ class BackupRepository(private val context: Context, private val db: LibraryData
                 .put("favorites", favorites).put("playlists", playlists)
         }
         root.put("theme", prefs.theme.first())
+        root.put("accent", prefs.accent.first())
         val bytes = root.toString(2).toByteArray(Charsets.UTF_8)
         require(bytes.size <= maxBytes) { "backup excede o limite de 4 MB" }
         val stream = context.contentResolver.openOutputStream(destination, "wt") ?: error("destino indisponível")
@@ -47,6 +48,8 @@ class BackupRepository(private val context: Context, private val db: LibraryData
         }
         val theme = root.getString("theme")
         require(theme in listOf("AMOLED", "Escuro", "Claro")) { "tema inválido" }
+        val accent = root.optString("accent", "")
+        require(accent.isEmpty() || accent in listOf("Azul", "Violeta", "Âmbar")) { "cor inválida" }
         val dao = db.libraryDao()
         db.withTransaction {
             favorites.forEach { dao.addFavorite(Favorite(it)) }
@@ -57,6 +60,7 @@ class BackupRepository(private val context: Context, private val db: LibraryData
             }
         }
         prefs.setTheme(theme)
+        if (accent.isNotEmpty()) prefs.setAccent(accent)
     }
     private fun JSONArray.strings(): List<String> {
         require(length() <= 50_000) { "itens demais" }

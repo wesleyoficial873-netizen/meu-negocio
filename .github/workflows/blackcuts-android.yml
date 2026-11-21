@@ -57,6 +57,10 @@ jobs:
           if-no-files-found: ignore
   emulator-smoke:
     needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        api: [28, 29, 33]
     runs-on: ubuntu-latest
     timeout-minutes: 25
     steps:
@@ -72,15 +76,17 @@ jobs:
           sudo udevadm trigger --name-match=kvm
       - uses: reactivecircus/android-emulator-runner@v2
         with:
-          api-level: 29
+          api-level: ${{ matrix.api }}
           arch: x86_64
           disable-animations: true
           script: blackcuts-music-player/tools/emulator-smoke.sh
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: blackcuts-emulator-diagnostics
+          name: blackcuts-emulator-diagnostics-${{ matrix.api }}
           path: |
             /tmp/blackcuts-window.xml
             /tmp/blackcuts-media-session.txt
+            /tmp/blackcuts-player.png
+            /tmp/blackcuts-delete-window.xml
           if-no-files-found: ignore

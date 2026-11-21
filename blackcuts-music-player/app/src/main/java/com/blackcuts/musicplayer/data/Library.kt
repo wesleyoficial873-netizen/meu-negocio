@@ -14,7 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 
-/** MediaStore owns the files; this model never deletes or modifies them. */
+/** MediaStore owns the files. Destructive actions require explicit user confirmation. */
 data class Track(val id: Long, val uri: Uri, val title: String, val artist: String, val album: String, val albumId: Long, val duration: Long) {
     val artwork: Uri get() = ContentUris.withAppendedId(Uri.parse("content://media/external/audio/albumart"), albumId)
     fun mediaItem(): MediaItem = MediaItem.Builder().setMediaId(uri.toString()).setUri(uri)
@@ -66,6 +66,7 @@ data class PlaylistTrack(val playlistId: Long, val uri: String, val addedAt: Lon
     @Delete suspend fun deletePlaylist(playlist: Playlist)
     @Insert(onConflict = OnConflictStrategy.IGNORE) suspend fun addToPlaylist(item: PlaylistTrack)
     @Query("UPDATE playlists SET name = :name WHERE id = :id") suspend fun renamePlaylist(id: Long, name: String)
+    @Query("DELETE FROM playlist_tracks WHERE uri = :uri") suspend fun removeTrackEverywhere(uri: String)
     @Query("DELETE FROM playlist_tracks WHERE playlistId = :playlistId AND uri = :uri") suspend fun removeFromPlaylist(playlistId: Long, uri: String)
     @Query("SELECT uri FROM playlist_tracks WHERE playlistId = :playlistId ORDER BY addedAt") fun observePlaylistUris(playlistId: Long): Flow<List<String>>
     @Query("SELECT uri FROM playlist_tracks WHERE playlistId = :playlistId ORDER BY addedAt") suspend fun playlistUris(playlistId: Long): List<String>

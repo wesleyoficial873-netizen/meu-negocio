@@ -9,6 +9,9 @@ import kotlinx.coroutines.flow.map
 private val Context.store by preferencesDataStore("appearance")
 class Preferences(private val context: Context) {
     private val themeKey = stringPreferencesKey("theme")
+    private val accentKey = stringPreferencesKey("accent")
+    val accent = context.store.data.map { it[accentKey] ?: "Azul" }
+    suspend fun setAccent(value: String) { context.store.edit { it[accentKey] = value } }
     val theme = context.store.data.map { it[themeKey] ?: "AMOLED" }
     suspend fun setTheme(value: String) { context.store.edit { it[themeKey] = value } }
 }

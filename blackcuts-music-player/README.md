@@ -25,7 +25,7 @@ Requisitos: Android Studio recente, JDK 17, Android SDK Platform 35, Build Tools
 ./gradlew testDebugUnitTest assembleDebug
 ```
 
-O APK de debug, se a compilação tiver sucesso, estará em `app/build/outputs/apk/debug/app-debug.apk`. Para instalar em aparelho autorizado: `adb install -r app/build/outputs/apk/debug/app-debug.apk`. Ao abrir a biblioteca, conceda acesso às músicas. Os arquivos devem estar indexados pelo MediaStore do Android.
+O APK de debug, se a compilação tiver sucesso, estará em `app/build/outputs/apk/debug/app-debug.apk`. Para instalar em aparelho autorizado: `adb install -r app/build/outputs/apk/debug/app-debug.apk`. Ao abrir a biblioteca, conceda acesso às músicas. Os arquivos devem estar indexados pelo MediaStore do Android. Na Biblioteca, abra os três pontos de uma faixa e escolha “Excluir do aparelho”; leia a confirmação antes de continuar. O Android pode solicitar autorização adicional. A exclusão afeta o arquivo original e pode ser irreversível.
 
 Para gerar o binário **não assinado** de release: `./gradlew assembleRelease`. Ele não é um APK de distribuição instalável até ser assinado. O fluxo GitHub Actions em `.github/workflows/blackcuts-android.yml` tenta compilar e publicar artefatos. Para obter o APK, abra a aba **Actions** do repositório, selecione **BLACKCUTS Android**, escolha uma execução bem-sucedida da branch `arena/d5086f1b-meu-negocio`, vá até **Artifacts**, baixe `blackcuts-debug-apk`, extraia `app-debug.apk` e instale-o. A assinatura de debug e o SHA-256 são verificados no fluxo; consulte o relatório da execução. Se a execução falhar, nenhum APK de sucesso será publicado. O artefato `blackcuts-release-unsigned`, quando gerado, não é instalável até ser assinado.
 
@@ -38,11 +38,11 @@ Não fornecemos keystore ou senha: uma chave de distribuição precisa ser criad
 1. Conceda acesso às músicas e abra Biblioteca; use atualizar se o Android acabou de indexar arquivos.
 2. Toque em uma faixa para iniciar a fila, ou marque o coração para favoritar. O mini player abre os controles completos.
 3. Em Biblioteca > Playlists crie uma lista; no player use o botão de adicionar e escolha a lista. Toque no nome da playlist para visualizar e remover faixas; use o botão de reprodução para tocá-la. Excluí-la não exclui músicas.
-4. Em Ajustes, selecione tema, equalizador disponível após iniciar uma música, ou modo carro. Configure tudo antes de dirigir.
+4. Em Ajustes, selecione tema e cor do player (azul, violeta ou âmbar), equalizador disponível após iniciar uma música, ou modo carro. Configure tudo antes de dirigir.
 
 ## Arquitetura e privacidade
 
-Compose/Material 3 apresenta o estado do `PlayerViewModel`. O MediaStore continua proprietário dos arquivos; Room guarda URIs de favoritos e membros de playlists; DataStore guarda aparência. Um `MediaSessionService` mantém o ExoPlayer separado da Activity e o Android gerencia foco e saída de áudio. O app não pede microfone e não possui telemetria. A permissão de Internet permite a pesquisa opcional e o carregamento de miniaturas quando o serviço for configurado. A busca externa abre outro aplicativo/site, que tem sua própria política de privacidade. O app não exclui arquivos de música; compartilhar envia a URI selecionada ao aplicativo escolhido. O backup automático do Android está desativado. O backup manual usa um arquivo JSON escolhido pelo usuário e não contém áudio. A restauração mescla playlists e favoritos por URI e restaura o tema; URIs podem ser diferentes em outros aparelhos.
+Compose/Material 3 apresenta o estado do `PlayerViewModel`. O MediaStore continua proprietário dos arquivos; Room guarda URIs de favoritos e membros de playlists; DataStore guarda aparência. Um `MediaSessionService` mantém o ExoPlayer separado da Activity e o Android gerencia foco e saída de áudio. O app não pede microfone e não possui telemetria. A permissão de Internet permite a pesquisa opcional e o carregamento de miniaturas quando o serviço for configurado. A busca externa abre outro aplicativo/site, que tem sua própria política de privacidade. O app só solicita a exclusão do arquivo de música quando o usuário escolhe a opção e confirma; compartilhar envia a URI selecionada ao aplicativo escolhido. O backup automático do Android está desativado. O backup manual usa um arquivo JSON escolhido pelo usuário e não contém áudio. A restauração mescla playlists e favoritos por URI e restaura o tema; URIs podem ser diferentes em outros aparelhos.
 
 ## Plano mínimo de validação antes da distribuição
 

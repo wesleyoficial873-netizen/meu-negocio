@@ -3,7 +3,13 @@ set -euo pipefail
 adb wait-for-device
 adb shell settings put system screen_off_timeout 600000
 adb install -r /tmp/blackcuts-apk/app-debug.apk
-adb shell pm grant com.blackcuts.musicplayer android.permission.READ_EXTERNAL_STORAGE
+API=$(adb shell getprop ro.build.version.sdk | tr -d '\r')
+if [ "$API" -ge 33 ]; then
+  adb shell pm grant com.blackcuts.musicplayer android.permission.READ_MEDIA_AUDIO
+else
+  adb shell pm grant com.blackcuts.musicplayer android.permission.READ_EXTERNAL_STORAGE
+fi
+if [ "$API" -le 28 ]; then adb shell pm grant com.blackcuts.musicplayer android.permission.WRITE_EXTERNAL_STORAGE; fi
 python3 - <<'PY'
 import wave, math, struct
 with wave.open('/tmp/blackcuts-smoke.wav', 'wb') as out:
@@ -42,3 +48,67 @@ if ! grep -q 'com.blackcuts.musicplayer' /tmp/blackcuts-media-session.txt; then 
 if ! grep -Eq 'state=PlaybackState \{state=3|state=3,' /tmp/blackcuts-media-session.txt; then echo 'No playing media session found' >&2; exit 1; fi
 adb shell pidof com.blackcuts.musicplayer >/dev/null
 echo 'Installed, indexed local WAV, started playback and found a playing media session after HOME.'
+
+# Open the new player and capture its layout for visual inspection.
+adb shell am start -n com.blackcuts.musicplayer/.MainActivity >/dev/null
+sleep 3
+adb shell uiautomator dump /sdcard/window.xml >/dev/null
+adb shell cat /sdcard/window.xml > /tmp/blackcuts-window.xml
+python3 - <<'PY_PLAYER'
+import xml.etree.ElementTree as ET, re, subprocess
+root = ET.parse('/tmp/blackcuts-window.xml')
+candidates=[]
+for n in root.iter():
+    if 'blackcuts-smoke' in n.attrib.get('text', '').lower():
+        b=list(map(int,re.findall(r'\d+',n.attrib['bounds'])))
+        candidates.append(b)
+if not candidates: raise SystemExit('Current track not visible in mini player')
+b=max(candidates, key=lambda x:x[1])
+subprocess.run(['adb','shell','input','tap',str((b[0]+b[2])//2),str((b[1]+b[3])//2)],check=True)
+PY_PLAYER
+sleep 3
+adb shell uiautomator dump /sdcard/player.xml >/dev/null
+adb shell cat /sdcard/player.xml | grep -q 'TOCANDO AGORA' || { echo 'Full player was not opened' >&2; exit 1; }
+adb exec-out screencap -p > /tmp/blackcuts-player.png
+adb shell input keyevent KEYCODE_BACK
+sleep 2
+
+# Test cancellation first, then approve deletion of the test file only.
+tap_ui() {
+  local label="$1"
+  adb shell uiautomator dump /sdcard/delete-window.xml >/dev/null
+  adb shell cat /sdcard/delete-window.xml > /tmp/blackcuts-delete-window.xml
+  python3 - "$label" <<'PY_TAP'
+import xml.etree.ElementTree as ET, re, subprocess, sys
+label=sys.argv[1]
+for n in ET.parse('/tmp/blackcuts-delete-window.xml').iter():
+    if label.lower() in (n.attrib.get('text','').lower(), n.attrib.get('content-desc','').lower()) or (label == 'Opções de' and n.attrib.get('content-desc','').startswith(label)):
+        b=list(map(int,re.findall(r'\d+',n.attrib['bounds'])))
+        subprocess.run(['adb','shell','input','tap',str((b[0]+b[2])//2),str((b[1]+b[3])//2)],check=True); break
+else: raise SystemExit('UI element not found: '+label)
+PY_TAP
+  sleep 2
+}
+tap_ui 'Biblioteca'
+tap_ui 'Opções de'
+tap_ui 'Excluir do aparelho'
+tap_ui 'CANCELAR'
+adb shell test -f /sdcard/Music/blackcuts-smoke.wav
+tap_ui 'Opções de'
+tap_ui 'Excluir do aparelho'
+tap_ui 'EXCLUIR DO APARELHO'
+# Android 10+ may ask for system confirmation in the emulator locale.
+adb shell uiautomator dump /sdcard/delete-window.xml >/dev/null
+adb shell cat /sdcard/delete-window.xml > /tmp/blackcuts-delete-window.xml
+python3 - <<'PY_SYSTEM'
+import xml.etree.ElementTree as ET, re, subprocess
+labels = {'allow', 'delete', 'move to trash', 'permitir', 'excluir', 'mover para a lixeira'}
+for n in ET.parse('/tmp/blackcuts-delete-window.xml').iter():
+    if n.attrib.get('text','').strip().lower() in labels:
+        b=list(map(int,re.findall(r'\d+',n.attrib['bounds'])))
+        subprocess.run(['adb','shell','input','tap',str((b[0]+b[2])//2),str((b[1]+b[3])//2)],check=True); break
+PY_SYSTEM
+sleep 5
+if adb shell test -f /sdcard/Music/blackcuts-smoke.wav; then echo 'Test audio still exists after deletion' >&2; exit 1; fi
+if adb shell content query --uri content://media/external/audio/media --projection _display_name | grep -q blackcuts-smoke.wav; then echo 'Test audio still indexed after deletion' >&2; exit 1; fi
+echo "Deletion cancellation and confirmed deletion passed on API $API."

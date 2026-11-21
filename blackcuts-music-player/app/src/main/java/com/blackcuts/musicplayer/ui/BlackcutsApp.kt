@@ -42,9 +42,12 @@ private val DarkScheme = darkColorScheme(primary = Violet, secondary = Cyan, bac
 private val DimScheme = darkColorScheme(primary = Violet, secondary = Cyan, background = Color(0xFF14131A), surface = Color(0xFF211F29), surfaceVariant = Color(0xFF302D3A))
 private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondary = Color(0xFF285A83), background = Color(0xFFF7F5FA), surface = Color.White, surfaceVariant = Color(0xFFE9E5F0))
 
-@Composable fun BlackcutsApp(model: PlayerViewModel, requestLibrary: () -> Unit) {
+@Composable fun BlackcutsApp(model: PlayerViewModel, requestLibrary: () -> Unit, requestDelete: (Track) -> Unit) {
     val theme by model.theme.collectAsState()
-    MaterialTheme(colorScheme = when (theme) { "Claro" -> LightScheme; "Escuro" -> DimScheme; else -> DarkScheme }) {
+    val accent by model.accent.collectAsState()
+    val neon = when (accent) { "Âmbar" -> Color(0xFFFF8A23); "Violeta" -> Color(0xFFAA76FF); else -> Color(0xFF5288FF) }
+    val scheme = when (theme) { "Claro" -> LightScheme; "Escuro" -> DimScheme; else -> DarkScheme }
+    MaterialTheme(colorScheme = scheme.copy(primary = if (theme == "Claro") Color(0xFF5841B8) else neon)) {
         val tracks by model.tracks.collectAsState()
         val currentUri by model.currentUri.collectAsState()
         val playing by model.playing.collectAsState()
@@ -57,6 +60,7 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
         var expanded by remember { mutableStateOf(false) }
         var car by remember { mutableStateOf(false) }
         var equalizer by remember { mutableStateOf(false) }
+        var deleteTrack by remember { mutableStateOf<Track?>(null) }
         val current = tracks.firstOrNull { it.uri.toString() == currentUri }
         val labels = listOf("Início", "Biblioteca", "Descobrir", "Downloads", "Ajustes")
         val icons = listOf(Icons.Default.Home, Icons.Default.LibraryMusic, Icons.Default.Search, Icons.Default.Download, Icons.Default.Settings)
@@ -71,16 +75,22 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
             Column(Modifier.fillMaxSize().padding(padding).statusBarsPadding()) {
                 when (tab) {
                     0 -> Home(tracks, current, playing, favorites, error, requestLibrary, { tab = 1 }, model)
-                    1 -> Library(tracks, favorites, playlists, error, requestLibrary, model)
+                    1 -> Library(tracks, favorites, playlists, error, requestLibrary, model) { deleteTrack = it }
                     2 -> Discover(model)
                     3 -> InfoScreen("DOWNLOADS", "Sua central de downloads", "Downloads de fontes autorizadas ainda não estão disponíveis nesta versão. Seus arquivos locais continuam acessíveis na biblioteca.", Icons.Default.Download)
-                    4 -> Settings(theme, model, { car = true }, { equalizer = true })
+                    4 -> Settings(theme, accent, model, { car = true }, { equalizer = true })
                 }
             }
         }
-        if (expanded && current != null) FullPlayer(current, model, favorites.contains(current.uri.toString()), playlists, { expanded = false })
+        if (expanded && current != null) FullPlayer(current, model, favorites.contains(current.uri.toString()), playlists, neon, { expanded = false })
         if (car) CarMode(current, playing, model, { car = false })
         if (equalizer) EqualizerDialog { equalizer = false }
+        deleteTrack?.let { track ->
+            AlertDialog(onDismissRequest = { deleteTrack = null }, title = { Text("Excluir música do aparelho?") },
+                text = { Text("“${track.title}” será removida do armazenamento do aparelho, não apenas desta lista. O Android pode pedir uma confirmação adicional. Esta ação pode ser irreversível.") },
+                confirmButton = { TextButton(onClick = { deleteTrack = null; requestDelete(track) }) { Text("EXCLUIR DO APARELHO") } },
+                dismissButton = { TextButton(onClick = { deleteTrack = null }) { Text("CANCELAR") } })
+        }
         if (message != null) AlertDialog(onDismissRequest = model::clearMessage, title = { Text("BLACK°CUTS") }, text = { Text(message.orEmpty()) }, confirmButton = { TextButton(onClick = model::clearMessage) { Text("OK") } })
         if (playbackError != null) AlertDialog(onDismissRequest = model::clearPlaybackError, title = { Text("Reprodução") }, text = { Text(playbackError.orEmpty()) }, confirmButton = { TextButton(onClick = model::clearPlaybackError) { Text("OK") } })
     }
@@ -141,11 +151,20 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
         if (track != null) AsyncImage(model = track.artwork, contentDescription = "Capa de ${track.album}", contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.fillMaxSize())
     }
 }
-@Composable private fun TrackRow(track: Track, favorite: Boolean, onClick: () -> Unit, onFavorite: () -> Unit) {
+@Composable private fun TrackRow(track: Track, favorite: Boolean, onClick: () -> Unit, onFavorite: () -> Unit, onDelete: (() -> Unit)? = null) {
     Row(Modifier.fillMaxWidth().clickable(onClick = onClick).padding(horizontal = 22.dp, vertical = 7.dp), verticalAlignment = Alignment.CenterVertically) {
         Artwork(track, Modifier.size(54.dp)); Spacer(Modifier.width(14.dp))
         Column(Modifier.weight(1f)) { Text(track.title, fontWeight = FontWeight.SemiBold, maxLines = 1, overflow = TextOverflow.Ellipsis); Text(track.artist, color = Muted, style = MaterialTheme.typography.bodySmall, maxLines = 1, overflow = TextOverflow.Ellipsis) }
         IconButton(onClick = onFavorite) { Icon(if (favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder, "Favoritar", tint = if (favorite) Violet else Muted) }
+        if (onDelete != null) {
+            var menuOpen by remember { mutableStateOf(false) }
+            Box {
+                IconButton(onClick = { menuOpen = true }) { Icon(Icons.Default.MoreVert, "Opções de ${track.title}") }
+                DropdownMenu(expanded = menuOpen, onDismissRequest = { menuOpen = false }) {
+                    DropdownMenuItem(text = { Text("Excluir do aparelho") }, leadingIcon = { Icon(Icons.Default.DeleteOutline, null) }, onClick = { menuOpen = false; onDelete() })
+                }
+            }
+        }
     }
 }
 @Composable private fun MiniPlayer(track: Track, playing: Boolean, open: () -> Unit, toggle: () -> Unit, next: () -> Unit) {
@@ -157,7 +176,7 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
     }
 }
 
-@Composable private fun Library(tracks: List<Track>, favorites: List<String>, playlists: List<Playlist>, error: String?, request: () -> Unit, model: PlayerViewModel) {
+@Composable private fun Library(tracks: List<Track>, favorites: List<String>, playlists: List<Playlist>, error: String?, request: () -> Unit, model: PlayerViewModel, onDelete: (Track) -> Unit) {
     var query by remember { mutableStateOf("") }
     var section by remember { mutableIntStateOf(0) }
     var creating by remember { mutableStateOf(false) }
@@ -208,7 +227,7 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
             if (error != null) Text(error, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 22.dp))
             if (tracks.isEmpty()) TextButton(onClick = request, modifier = Modifier.padding(horizontal = 14.dp)) { Text("PERMITIR ACESSO ÀS MÚSICAS") }
             if (filtered.isEmpty() && tracks.isNotEmpty()) Text("Nenhuma música encontrada.", color = Muted, modifier = Modifier.padding(22.dp))
-            LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) { itemsIndexed(filtered, key = { _, t -> t.id }) { i, t -> TrackRow(t, t.uri.toString() in favorites, { model.play(filtered, i) }, { model.toggleFavorite(t.uri.toString()) }) } }
+            LazyColumn(contentPadding = PaddingValues(bottom = 16.dp)) { itemsIndexed(filtered, key = { _, t -> t.id }) { i, t -> TrackRow(t, t.uri.toString() in favorites, { model.play(filtered, i) }, { model.toggleFavorite(t.uri.toString()) }, { onDelete(t) }) } }
         }
     }
     deleting?.let { playlist -> AlertDialog(onDismissRequest = { deleting = null }, title = { Text("Excluir playlist?") }, text = { Text("A playlist ${playlist.name} será excluída. Os arquivos de música não serão apagados.") }, confirmButton = { TextButton(onClick = { model.deletePlaylist(playlist); deleting = null }) { Text("EXCLUIR") } }, dismissButton = { TextButton(onClick = { deleting = null }) { Text("CANCELAR") } }) }
@@ -243,7 +262,7 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
 @Composable private fun InfoScreen(kicker: String, title: String, message: String, icon: ImageVector) {
     Column { Header(kicker, title); Icon(icon, null, tint = Violet, modifier = Modifier.padding(start = 22.dp, top = 20.dp).size(48.dp)); Text(message, color = Muted, modifier = Modifier.padding(22.dp)) }
 }
-@Composable private fun Settings(theme: String, model: PlayerViewModel, openCar: () -> Unit, openEqualizer: () -> Unit) {
+@Composable private fun Settings(theme: String, accent: String, model: PlayerViewModel, openCar: () -> Unit, openEqualizer: () -> Unit) {
     val saveBackup = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri -> uri?.let(model::exportBackup) }
     val loadBackup = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri -> uri?.let(model::importBackup) }
     var confirmRestore by remember { mutableStateOf(false) }
@@ -251,6 +270,8 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
         Header("personalize", "Ajustes", "Faça o BLACK°CUTS ser seu.")
         Text("APARÊNCIA", color = Violet, letterSpacing = 1.5.sp, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(horizontal = 22.dp, vertical = 12.dp))
         Row(Modifier.padding(horizontal = 22.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) { listOf("AMOLED", "Escuro", "Claro").forEach { FilterChip(selected = it == theme, onClick = { model.setTheme(it) }, label = { Text(it) }) } }
+        Text("COR DO PLAYER", color = MaterialTheme.colorScheme.primary, letterSpacing = 1.5.sp, fontSize = 11.sp, fontWeight = FontWeight.Bold, modifier = Modifier.padding(start = 22.dp, end = 22.dp, top = 22.dp))
+        Row(Modifier.padding(horizontal = 22.dp), horizontalArrangement = Arrangement.spacedBy(8.dp)) { listOf("Azul", "Violeta", "Âmbar").forEach { FilterChip(selected = it == accent, onClick = { model.setAccent(it) }, label = { Text(it) }) } }
         HorizontalDivider(Modifier.padding(22.dp), color = MaterialTheme.colorScheme.surfaceVariant)
         ListItem(headlineContent = { Text("Equalizador do dispositivo") }, supportingContent = { Text("Bandas de áudio disponíveis no aparelho") }, leadingContent = { Icon(Icons.Default.Equalizer, null, tint = Violet) }, modifier = Modifier.clickable(onClick = openEqualizer), colors = ListItemDefaults.colors(containerColor = Color.Transparent))
         ListItem(headlineContent = { Text("Modo carro") }, supportingContent = { Text("Controles ampliados. Configure antes de dirigir.") }, leadingContent = { Icon(Icons.Default.DirectionsCar, null, tint = Violet) }, modifier = Modifier.clickable(onClick = openCar), colors = ListItemDefaults.colors(containerColor = Color.Transparent))
@@ -262,7 +283,7 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
     if (confirmRestore) AlertDialog(onDismissRequest = { confirmRestore = false }, title = { Text("Restaurar backup") }, text = { Text("Os favoritos e playlists serão mesclados. As músicas não estão incluídas e as URIs podem não funcionar em outro aparelho.") }, confirmButton = { TextButton(onClick = { confirmRestore = false; loadBackup.launch(arrayOf("application/json", "text/plain")) }) { Text("ESCOLHER ARQUIVO") } }, dismissButton = { TextButton(onClick = { confirmRestore = false }) { Text("CANCELAR") } })
 }
 
-@Composable private fun FullPlayer(track: Track, model: PlayerViewModel, favorite: Boolean, playlists: List<Playlist>, close: () -> Unit) {
+@Composable private fun FullPlayer(track: Track, model: PlayerViewModel, favorite: Boolean, playlists: List<Playlist>, neon: Color, close: () -> Unit) {
     val playing by model.playing.collectAsState()
     val pos by model.position.collectAsState()
     val duration by model.duration.collectAsState()
@@ -271,44 +292,76 @@ private val LightScheme = lightColorScheme(primary = Color(0xFF6644C7), secondar
     val speed by model.speed.collectAsState()
     var showPlaylists by remember { mutableStateOf(false) }
     var showTimer by remember { mutableStateOf(false) }
-    val transition = rememberInfiniteTransition(label = "glow")
-    val glow by transition.animateFloat(initialValue = .22f, targetValue = if (playing) .62f else .22f, animationSpec = infiniteRepeatable(tween(1800, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "pulse")
+    val transition = rememberInfiniteTransition(label = "light")
+    val glow by transition.animateFloat(initialValue = .38f, targetValue = if (playing) .9f else .38f, animationSpec = infiniteRepeatable(tween(1800, easing = FastOutSlowInEasing), RepeatMode.Reverse), label = "pulse")
     val context = LocalContext.current
     val audio = remember { context.getSystemService(Context.AUDIO_SERVICE) as AudioManager }
     var volume by remember { mutableFloatStateOf(audio.getStreamVolume(AudioManager.STREAM_MUSIC).toFloat()) }
     Dialog(onDismissRequest = close, properties = DialogProperties(usePlatformDefaultWidth = false)) {
-        Column(Modifier.fillMaxSize().background(Brush.verticalGradient(listOf(Color(0xFF100B25), Color.Black, Color(0xFF09091B)))).statusBarsPadding().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 24.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Row(Modifier.fillMaxWidth().padding(vertical = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                IconButton(onClick = close) { Icon(Icons.Default.KeyboardArrowDown, "Fechar player", tint = Color.White) }
-                Spacer(Modifier.weight(1f)); Text("TOCANDO AGORA", color = Color(0xFFBFB7D9), fontSize = 10.sp, letterSpacing = 2.sp); Spacer(Modifier.weight(1f))
-                IconButton(onClick = { showPlaylists = true }) { Icon(Icons.Default.PlaylistAdd, "Adicionar à playlist", tint = Color.White) }
+        Box(Modifier.fillMaxSize().background(Color(0xFF03030A))) {
+            Box(Modifier.fillMaxWidth().height(440.dp).align(Alignment.TopCenter).background(Brush.radialGradient(listOf(neon.copy(alpha = .3f), neon.copy(alpha = .09f), Color.Transparent))))
+            Box(Modifier.fillMaxWidth().height(360.dp).align(Alignment.BottomCenter).background(Brush.radialGradient(listOf(neon.copy(alpha = .18f), Color.Transparent))))
+            Column(Modifier.fillMaxSize().statusBarsPadding().navigationBarsPadding().verticalScroll(rememberScrollState()).padding(horizontal = 20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
+                Row(Modifier.fillMaxWidth().padding(top = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = close) { Icon(Icons.Default.KeyboardArrowDown, "Fechar player", tint = Color.White) }
+                    Spacer(Modifier.weight(1f))
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Text("BLACK°CUTS", color = Color.White, fontSize = 11.sp, letterSpacing = 3.sp, fontWeight = FontWeight.Black)
+                        Text("TOCANDO AGORA", color = neon, fontSize = 9.sp, letterSpacing = 2.sp)
+                    }
+                    Spacer(Modifier.weight(1f))
+                    IconButton(onClick = { showPlaylists = true }) { Icon(Icons.Default.PlaylistAdd, "Adicionar à playlist", tint = Color.White) }
+                }
+                Spacer(Modifier.height(55.dp))
+                // Luminous floating panel: real artwork sits behind the live controls, never a fake track.
+                Box(Modifier.fillMaxWidth().shadow(35.dp, RoundedCornerShape(32.dp), ambientColor = neon.copy(alpha = glow), spotColor = neon.copy(alpha = glow)).border(1.5.dp, neon.copy(alpha = .8f), RoundedCornerShape(32.dp)).padding(4.dp).border(1.dp, Color.White.copy(alpha = .2f), RoundedCornerShape(28.dp)).clip(RoundedCornerShape(28.dp)).background(Color(0xFF0C0B16))) {
+                    AsyncImage(model = track.artwork, contentDescription = null, contentScale = androidx.compose.ui.layout.ContentScale.Crop, modifier = Modifier.matchParentSize().alpha(.38f))
+                    Box(Modifier.matchParentSize().background(Brush.linearGradient(listOf(Color(0xFF050515).copy(alpha = .88f), neon.copy(alpha = .15f), Color.Black.copy(alpha = .82f)))))
+                    Column(Modifier.fillMaxWidth().padding(horizontal = 20.dp, vertical = 24.dp)) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Box(Modifier.size(7.dp).background(neon, CircleShape))
+                            Text("  BLACK°CUTS  •  LOCAL", color = Color.White.copy(alpha = .82f), fontSize = 9.sp, letterSpacing = 1.6.sp, fontWeight = FontWeight.Bold)
+                            Spacer(Modifier.weight(1f))
+                            IconButton(onClick = { model.toggleFavorite(track.uri.toString()) }, modifier = Modifier.size(40.dp)) { Icon(if (favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder, "Favoritar", tint = if (favorite) neon else Color.White) }
+                        }
+                        Spacer(Modifier.height(18.dp))
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Artwork(track, Modifier.size(94.dp).shadow(18.dp, RoundedCornerShape(14.dp), ambientColor = neon, spotColor = neon))
+                            Spacer(Modifier.width(16.dp))
+                            Column(Modifier.weight(1f)) {
+                                Text(track.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 21.sp, lineHeight = 25.sp, maxLines = 2, overflow = TextOverflow.Ellipsis)
+                                Spacer(Modifier.height(6.dp))
+                                Text(track.artist, color = Color(0xFFD4CFE3), fontSize = 14.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                            }
+                        }
+                        Spacer(Modifier.height(18.dp))
+                        Slider(value = pos.coerceAtMost(duration).toFloat(), onValueChange = { model.seek(it.toLong()) }, valueRange = 0f..duration.coerceAtLeast(1).toFloat(), colors = SliderDefaults.colors(thumbColor = Color.White, activeTrackColor = Color.White, inactiveTrackColor = Color.White.copy(alpha = .25f)))
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text(formatTime(pos), color = Color.White.copy(alpha = .8f), fontSize = 11.sp); Text(formatTime(duration), color = Color.White.copy(alpha = .8f), fontSize = 11.sp) }
+                        Row(Modifier.fillMaxWidth().padding(top = 14.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
+                            IconButton(onClick = model::toggleShuffle) { Icon(Icons.Default.Shuffle, "Aleatório", tint = if (shuffled) neon else Color.White.copy(alpha = .7f)) }
+                            IconButton(onClick = model::previous) { Icon(Icons.Default.SkipPrevious, "Anterior", tint = Color.White, modifier = Modifier.size(32.dp)) }
+                            FilledIconButton(onClick = model::togglePlay, modifier = Modifier.size(60.dp).shadow(20.dp, CircleShape, ambientColor = neon, spotColor = neon), colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.White, contentColor = Color.Black)) { Icon(if (playing) Icons.Default.Pause else Icons.Default.PlayArrow, if (playing) "Pausar" else "Reproduzir", modifier = Modifier.size(34.dp)) }
+                            IconButton(onClick = model::next) { Icon(Icons.Default.SkipNext, "Próxima", tint = Color.White, modifier = Modifier.size(32.dp)) }
+                            IconButton(onClick = model::cycleRepeat) { Icon(if (repeat == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne else Icons.Default.Repeat, "Repetir", tint = if (repeat != Player.REPEAT_MODE_OFF) neon else Color.White.copy(alpha = .7f)) }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(38.dp))
+                Text("CONTROLES DE REPRODUÇÃO", color = Color(0xFFAAA5BB), fontSize = 9.sp, letterSpacing = 2.sp)
+                Row(Modifier.fillMaxWidth().padding(top = 10.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceEvenly) {
+                    TextButton(onClick = { model.skip(-10_000) }) { Text("−10s", color = Color.White) }
+                    TextButton(onClick = { model.skip(10_000) }) { Text("+10s", color = Color.White) }
+                    TextButton(onClick = { model.setSpeed(if (speed >= 2f) .5f else speed + .25f) }) { Text("${speed}x", color = Color.White) }
+                    IconButton(onClick = { showTimer = true }) { Icon(Icons.Default.Timer, "Temporizador", tint = Color.White) }
+                    IconButton(onClick = { val intent = Intent(Intent.ACTION_SEND).setType("audio/*").putExtra(Intent.EXTRA_STREAM, track.uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); runCatching { context.startActivity(Intent.createChooser(intent, "Compartilhar música")) } }) { Icon(Icons.Default.Share, "Compartilhar", tint = Color.White) }
+                }
+                Row(Modifier.fillMaxWidth().padding(vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.VolumeDown, null, tint = Color.LightGray)
+                    Slider(value = volume, onValueChange = { volume = it; audio.setStreamVolume(AudioManager.STREAM_MUSIC, it.toInt(), 0) }, valueRange = 0f..audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC).coerceAtLeast(1).toFloat(), modifier = Modifier.weight(1f), colors = SliderDefaults.colors(thumbColor = neon, activeTrackColor = neon))
+                    Icon(Icons.Default.VolumeUp, null, tint = Color.LightGray)
+                }
+                Text("SUA MÚSICA. SEU UNIVERSO.", color = neon.copy(alpha = .7f), letterSpacing = 2.sp, fontSize = 9.sp, modifier = Modifier.padding(vertical = 24.dp))
             }
-            Spacer(Modifier.height(24.dp))
-            Box(Modifier.fillMaxWidth(.87f).aspectRatio(1f).shadow(30.dp, RoundedCornerShape(26.dp), ambientColor = Violet.copy(alpha = glow), spotColor = Cyan.copy(alpha = glow)).border(1.dp, Violet.copy(alpha = glow), RoundedCornerShape(26.dp)), contentAlignment = Alignment.Center) { Artwork(track, Modifier.fillMaxSize()) }
-            Spacer(Modifier.height(28.dp))
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                Column(Modifier.weight(1f)) { Text(track.title, color = Color.White, fontWeight = FontWeight.Bold, fontSize = 24.sp, maxLines = 1, overflow = TextOverflow.Ellipsis); Text(track.artist, color = Color(0xFFAAA5BB), fontSize = 15.sp, maxLines = 1) }
-                IconButton(onClick = { model.toggleFavorite(track.uri.toString()) }) { Icon(if (favorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder, "Favoritar", tint = if (favorite) Violet else Color.White) }
-            }
-            Spacer(Modifier.height(18.dp))
-            Slider(value = pos.coerceAtMost(duration).toFloat(), onValueChange = { model.seek(it.toLong()) }, valueRange = 0f..duration.coerceAtLeast(1).toFloat(), colors = SliderDefaults.colors(thumbColor = Color.White, activeTrackColor = Color.White, inactiveTrackColor = Color(0xFF494455)))
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) { Text(formatTime(pos), color = Muted, fontSize = 12.sp); Text(formatTime(duration), color = Muted, fontSize = 12.sp) }
-            Row(Modifier.fillMaxWidth().padding(vertical = 14.dp), verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.SpaceBetween) {
-                IconButton(onClick = model::toggleShuffle) { Icon(Icons.Default.Shuffle, "Aleatório", tint = if (shuffled) Violet else Color.LightGray) }
-                IconButton(onClick = model::previous) { Icon(Icons.Default.SkipPrevious, "Anterior", tint = Color.White, modifier = Modifier.size(34.dp)) }
-                FilledIconButton(onClick = model::togglePlay, modifier = Modifier.size(70.dp), colors = IconButtonDefaults.filledIconButtonColors(containerColor = Color.White, contentColor = Color.Black)) { Icon(if (playing) Icons.Default.Pause else Icons.Default.PlayArrow, if (playing) "Pausar" else "Reproduzir", modifier = Modifier.size(36.dp)) }
-                IconButton(onClick = model::next) { Icon(Icons.Default.SkipNext, "Próxima", tint = Color.White, modifier = Modifier.size(34.dp)) }
-                IconButton(onClick = model::cycleRepeat) { Icon(if (repeat == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne else Icons.Default.Repeat, "Repetir", tint = if (repeat != Player.REPEAT_MODE_OFF) Violet else Color.LightGray) }
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                TextButton(onClick = { model.skip(-10_000) }) { Text("−10s", color = Color.White) }
-                TextButton(onClick = { model.skip(10_000) }) { Text("+10s", color = Color.White) }
-                TextButton(onClick = { model.setSpeed(if (speed >= 2f) .5f else speed + .25f) }) { Text("${speed}x", color = Color.White) }
-                IconButton(onClick = { showTimer = true }) { Icon(Icons.Default.Timer, "Temporizador", tint = Color.White) }
-                IconButton(onClick = { val intent = Intent(Intent.ACTION_SEND).setType("audio/*").putExtra(Intent.EXTRA_STREAM, track.uri).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION); runCatching { context.startActivity(Intent.createChooser(intent, "Compartilhar música")) } }) { Icon(Icons.Default.Share, "Compartilhar", tint = Color.White) }
-            }
-            Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) { Icon(Icons.Default.VolumeDown, null, tint = Muted); Slider(value = volume, onValueChange = { volume = it; audio.setStreamVolume(AudioManager.STREAM_MUSIC, it.toInt(), 0) }, valueRange = 0f..audio.getStreamMaxVolume(AudioManager.STREAM_MUSIC).coerceAtLeast(1).toFloat(), modifier = Modifier.weight(1f)); Icon(Icons.Default.VolumeUp, null, tint = Muted) }
-            Spacer(Modifier.height(16.dp))
         }
     }
     if (showPlaylists) AlertDialog(onDismissRequest = { showPlaylists = false }, title = { Text("Adicionar à playlist") }, text = { Column { if (playlists.isEmpty()) Text("Crie uma playlist na Biblioteca primeiro.") else playlists.forEach { p -> TextButton(onClick = { model.addToPlaylist(p, track.uri.toString()); showPlaylists = false }) { Text(p.name) } } } }, confirmButton = { TextButton(onClick = { showPlaylists = false }) { Text("FECHAR") } })

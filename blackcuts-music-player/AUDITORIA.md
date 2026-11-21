@@ -33,3 +33,9 @@ Inspeção de todos os arquivos do projeto Android, Gradle, manifesto, workflow 
 JDK 17, Android SDK 35, Gradle 8.9, Android Gradle Plugin 8.5.2, Kotlin 1.9.24, Compose/Material 3, Media3, Room/KAPT, DataStore, Coil, coroutines e JUnit. O Gradle obtém bibliotecas de Google Maven e Maven Central. Não há Retrofit/WorkManager nem segredo de serviço externo no projeto. O proxy de referência recebe a chave apenas no ambiente do servidor.
 
 O pipeline foi executado em uma revisão anterior e compila, executa testes unitários e verifica assinatura de debug antes de disponibilizar artefatos. Release é **não assinado**; um APK de produção exige keystore privada do proprietário. Os comandos e passos de download estão no README. Builds locais, lint, testes instrumentados, emuladores e aparelhos são necessários antes de considerar o aplicativo pronto.
+
+## Auditoria e alterações após o teste do usuário
+
+O APK anterior não tinha opção de excluir o arquivo de áudio e a tela de reprodução não usava o painel luminoso das referências. Foram adicionados: menu na faixa da biblioteca, confirmação explícita de exclusão do arquivo original, pedido de autorização nativo do Android conforme versão, atualização da fila/favoritos/playlists após exclusão confirmada, e um player com painel arredondado, capa e controles reais sobre fundo de luz azul, violeta ou âmbar. A cor é configurável e persistida. O aspecto se inspira nas referências sem reproduzir suas marcas ou fotos.
+
+A matriz de testes foi ampliada para Android 9, 10 e 13 com cenário de reprodução e exclusão de um arquivo sintético, incluindo cancelamento. O resultado deve ser consultado no Actions; a presença do roteiro não significa aprovação. Existem limitações no modo carro, equalizador, YouTube, downloads, identificação, atualizações, metadados, estatísticas e testes físicos como descrito acima; o projeto segue incompleto e não deve ser anunciado como release de produção.
