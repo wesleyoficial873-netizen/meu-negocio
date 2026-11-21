@@ -1,0 +1,21 @@
+name: Diagnóstico da entrega BLACKCUTS
+on:
+  push:
+    paths: ['.github/workflows/blackcuts-release-diagnostics.yml']
+permissions:
+  actions: read
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ler falha de publicação
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run view 44918822644 --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/release.log || true
+          python3 - <<'PY'
+          lines=open('/tmp/release.log',errors='replace').read().splitlines()
+          text='\n'.join(lines[-35:]).replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+          print('::notice::'+text)
+          PY
