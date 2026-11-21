@@ -11,7 +11,7 @@ Inspeção de todos os arquivos do projeto Android, Gradle, manifesto, workflow 
 | Player e biblioteca | MediaStore + observador; ExoPlayer, serviço Media3, controles e mini player | Sem paginação, histórico, persistência de posição e fila editável. Validar permissões, formatos, Bluetooth, foco e execução de fundo em aparelho. |
 | Capa | URI de capa local do MediaStore via Coil e metadados da sessão | Sem busca ou edição em serviços externos; extração depende de indexação do Android. |
 | Notificação/tela bloqueada | MediaSessionService e permissões de serviço de mídia | Media3 fornece integração de sistema; não validada em versões/aparelhos. |
-| Playlists/favoritos | Room, criação, exclusão, adicionar e tocar | Não há visualização/edição detalhada, reordenação ou histórico; URIs variam entre instalações. |
+| Playlists/favoritos | Room, criação, exclusão, adicionar e tocar | Visualização, remoção e renomeação foram adicionadas após a auditoria inicial; faltam reordenação e histórico; URIs variam entre instalações. |
 | Equalizador | AudioEffect Equalizer vinculado à sessão ExoPlayer | Bandas e suporte variam por aparelho; sem dez bandas garantidas, presets, persistência ou comprovação de processamento em equipamento. |
 | Aparência e carro | Compose, temas, modo carro básico | Não há Android Auto, volume ou playlists no modo carro; falta teste em telas distintas. |
 | Backup/restauração | Documento JSON escolhido pelo usuário; favoritos, playlists e tema, mesclagem no Room | Não inclui músicas/histórico; URIs podem ser inválidas em outro aparelho, não resolve títulos entre aparelhos. Ainda não testado em dispositivo. |
@@ -32,4 +32,4 @@ Inspeção de todos os arquivos do projeto Android, Gradle, manifesto, workflow 
 
 JDK 17, Android SDK 35, Gradle 8.9, Android Gradle Plugin 8.5.2, Kotlin 1.9.24, Compose/Material 3, Media3, Room/KAPT, DataStore, Coil, coroutines e JUnit. O Gradle obtém bibliotecas de Google Maven e Maven Central. Não há Retrofit/WorkManager nem segredo de serviço externo no projeto.
 
-O pipeline compila, executa testes unitários e verifica assinatura de debug antes de disponibilizar artefatos. Release é **não assinado**; um APK de produção exige keystore privada do proprietário. Os comandos e passos de download estão no README. Builds locais, lint, testes instrumentados, emuladores e aparelhos são necessários antes de considerar o aplicativo pronto.
+O pipeline foi executado em uma revisão anterior e compila, executa testes unitários e verifica assinatura de debug antes de disponibilizar artefatos. Release é **não assinado**; um APK de produção exige keystore privada do proprietário. Os comandos e passos de download estão no README. Builds locais, lint, testes instrumentados, emuladores e aparelhos são necessários antes de considerar o aplicativo pronto.
