@@ -20,6 +20,9 @@ jobs:
           python3 - <<'PY'
           import re
           text=open('/tmp/falhas.txt',errors='replace').read().splitlines()
+          for line in text:
+              if 'file status:' in line or 'File disappeared' in line or 'Smoke test failed' in line:
+                  print('::notice::'+line.replace('%','%25').replace('\r','%0D').replace('\n','%0A'))
           import glob,xml.etree.ElementTree as ET
           for path in glob.glob('/tmp/diag*/*window.xml') + glob.glob('/tmp/diag*/blackcuts-after-delete.xml'):
               try:
@@ -32,9 +35,6 @@ jobs:
               selected=[line for line in lines if 'blackcuts' in line.lower() or 'MediaProvider' in line or 'RecoverableSecurityException' in line or 'Exception' in line]
               value=('\n'.join(selected[-30:])).replace('%','%25').replace('\r','%0D').replace('\n','%0A')
               print('::notice::'+path+' '+value)
-          for line in text:
-              if 'file status:' in line or 'File disappeared' in line or 'Smoke test failed' in line:
-                  print('::notice::'+line.replace('%','%25').replace('\r','%0D').replace('\n','%0A'))
           for name in ('retest (28)', 'retest (29)'):
               lines=[line for line in text if line.startswith(name+'\tRun reactivecircus')]
               end=next((i for i,line in enumerate(lines) if 'Script exited with' in line or 'Error: The process' in line), len(lines))
