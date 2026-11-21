@@ -1,0 +1,51 @@
+name: BLACKCUTS Android
+on:
+  push:
+    paths: ['blackcuts-music-player/**', '.github/workflows/blackcuts-android.yml']
+  pull_request:
+    paths: ['blackcuts-music-player/**', '.github/workflows/blackcuts-android.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: blackcuts-music-player
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: android-actions/setup-android@v3
+      - name: Install Android SDK
+        run: sdkmanager 'platforms;android-35' 'build-tools;35.0.0'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Unit tests and APKs
+        run: ./gradlew --no-daemon testDebugUnitTest assembleDebug assembleRelease
+      - name: Verify debug APK
+        run: |
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --verbose --print-certs app/build/outputs/apk/debug/app-debug.apk
+          "$ANDROID_HOME/build-tools/35.0.0/aapt" dump badging app/build/outputs/apk/debug/app-debug.apk | head -20
+          sha256sum app/build/outputs/apk/debug/app-debug.apk > app/build/outputs/apk/debug/SHA256SUMS.txt
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: blackcuts-debug-apk
+          path: |
+            blackcuts-music-player/app/build/outputs/apk/debug/app-debug.apk
+            blackcuts-music-player/app/build/outputs/apk/debug/SHA256SUMS.txt
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: success()
+        with:
+          name: blackcuts-release-unsigned
+          path: blackcuts-music-player/app/build/outputs/apk/release/*-unsigned.apk
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: blackcuts-test-reports
+          path: blackcuts-music-player/app/build/reports/tests/
+          if-no-files-found: ignore
