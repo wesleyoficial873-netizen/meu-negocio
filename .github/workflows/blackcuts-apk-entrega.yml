@@ -16,7 +16,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh run download 44913679499 --repo "$GITHUB_REPOSITORY" --name blackcuts-debug-apk --dir apk
+          gh run download 44917995949 --repo "$GITHUB_REPOSITORY" --name blackcuts-debug-apk --dir apk
           cd apk
           expected=$(awk '{print $1}' SHA256SUMS.txt)
           actual=$(sha256sum app-debug.apk | awk '{print $1}')
@@ -29,7 +29,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create blackcuts-debug-70c8d52 apk/BLACKCUTS-debug.apk apk/BLACKCUTS-debug.apk.sha256 \
-            --repo "$GITHUB_REPOSITORY" --target 70c8d52dcf4634fa86f9bca55062a3d31316a929 --prerelease \
+          gh release create blackcuts-debug-7cb4ee7 apk/BLACKCUTS-debug.apk apk/BLACKCUTS-debug.apk.sha256 \
+            --repo "$GITHUB_REPOSITORY" --target 7cb4ee718f5e68136d6f3dbaf82df241198ce432 --prerelease \
             --title 'BLACK°CUTS — APK debug para testes' \
-            --notes 'APK debug para testes, compilado e verificado pelo GitHub Actions na execução 44913679499. Não é release de produção. Há funcionalidades pendentes e não houve validação em aparelho físico. Consulte blackcuts-music-player/STATUS.md.'
+            --notes 'APK debug para testes, compilado e verificado pelo GitHub Actions na execução 44917995949. Player redesenhado e exclusão confirmada testada nos emuladores Android 9, 10 e 13. Não é release de produção; há funcionalidades pendentes e não houve validação em aparelho físico. Consulte blackcuts-music-player/STATUS.md.'

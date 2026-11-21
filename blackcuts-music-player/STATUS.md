@@ -4,6 +4,14 @@
 
 A versão configurada é 1.0.0, mas o produto completo ainda está em desenvolvimento. O app original não foi reiniciado. O site existente foi preservado. O código e os detalhes funcionais estão em [README.md](README.md); a auditoria em [AUDITORIA.md](AUDITORIA.md).
 
+## Teste da atualização com exclusão e novo visual
+
+A [execução 44917995949](https://github.com/wesleyoficial873-netizen/meu-negocio/actions/runs/44917995949), commit `7cb4ee718f5e68136d6f3dbaf82df241198ce432`, compilou o APK debug e o release não assinado, verificou a assinatura debug e passou nos testes unitários. Os testes em emuladores Android 9 (API 28), 10 (API 29) e 13 (API 33) passaram para: instalar, indexar WAV sintético, iniciar áudio, verificar sessão após HOME, abrir o player, cancelar exclusão e excluir o arquivo de teste com confirmação. São testes automatizados limitados, não substituem testes em aparelho físico.
+
+Uma execução anterior detectou remoção só do índice em Android antigo; a correção verifica o arquivo físico. No Android 10, `requestLegacyExternalStorage` e permissão de escrita são necessários para o acesso legado; no Android 11+ a confirmação usa a API de exclusão do sistema. A solicitação somente ocorre após o usuário confirmar. O teste cobre arquivos locais no armazenamento do emulador, não todos os dispositivos e provedores.
+
+As assinaturas de debug de builds diferentes podem ser distintas. Se o Android recusar a atualização por conflito de assinatura, faça backup de playlists/favoritos em Ajustes antes de desinstalar o APK anterior; depois instale este e restaure. Dados locais não incluídos no backup serão perdidos ao desinstalar.
+
 ## Compilação na nuvem
 
 - Primeira tentativa: [execução 44912286148](https://github.com/wesleyoficial873-netizen/meu-negocio/actions/runs/44912286148) falhou na preparação externa do SDK, antes de compilar.
