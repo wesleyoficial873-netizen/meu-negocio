@@ -6,6 +6,8 @@ import android.app.RecoverableSecurityException
 import android.content.IntentSender
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.media.MediaScannerConnection
+import java.io.File
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -76,7 +78,7 @@ class MainActivity : ComponentActivity() {
                     retryAfterGrant = false
                     launchDeleteIntent(MediaStore.createDeleteRequest(contentResolver, listOf(uri)).intentSender)
                 }
-                Build.VERSION.SDK_INT <= 28 && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED -> writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                Build.VERSION.SDK_INT <= 29 && ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED -> writePermission.launch(Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 else -> deleteDirectly(uri)
             }
         } catch (_: Exception) {
@@ -90,8 +92,34 @@ class MainActivity : ComponentActivity() {
     private fun deleteDirectly(uri: Uri) {
         lifecycleScope.launch {
             try {
-                val deleted = withContext(Dispatchers.IO) { contentResolver.delete(uri, null, null) }
-                if (deleted > 0) verifyDeleted(uri) else { pendingDelete = null; model.reportMessage("Não foi possível excluir a música; o arquivo pode já ter sido removido."); model.refresh() }
+                val result = withContext(Dispatchers.IO) {
+                    // On older MediaStore versions deleting an audio row can leave its file behind.
+                    // Read its exact path before deletion; never derive it from the content URI.
+                    val path = contentResolver.query(uri, arrayOf(MediaStore.Audio.Media.DATA), null, null, null)?.use { cursor ->
+                        if (cursor.moveToFirst()) cursor.getString(0) else null
+                    }
+                    if (path.isNullOrBlank()) return@withContext "path-unavailable"
+                    val file = File(path)
+                    val wasVisible = file.exists()
+                    val deleted = contentResolver.delete(uri, null, null)
+                    if (deleted <= 0) return@withContext "not-deleted"
+                    if (!wasVisible) {
+                        MediaScannerConnection.scanFile(this@MainActivity, arrayOf(path), null, null)
+                        return@withContext "unverified"
+                    }
+                    if (file.exists() && !file.delete()) {
+                        MediaScannerConnection.scanFile(this@MainActivity, arrayOf(path), null, null)
+                        return@withContext "file-not-deleted"
+                    }
+                    if (file.exists()) return@withContext "file-not-deleted"
+                    "deleted"
+                }
+                when (result) {
+                    "deleted" -> verifyDeleted(uri)
+                    "path-unavailable" -> { pendingDelete = null; model.reportMessage("O Android não informou o local do arquivo; nenhuma exclusão foi realizada.") }
+                    "unverified", "file-not-deleted" -> { pendingDelete = null; model.reportMessage("Não foi possível excluir ou confirmar a remoção do arquivo físico. Verifique-o no gerenciador de arquivos."); model.refresh() }
+                    else -> { pendingDelete = null; model.reportMessage("Não foi possível excluir a música; o arquivo pode já ter sido removido."); model.refresh() }
+                }
             } catch (e: SecurityException) {
                 if (Build.VERSION.SDK_INT == 29 && e is RecoverableSecurityException) {
                     try { retryAfterGrant = true; launchDeleteIntent(e.userAction.actionIntent.intentSender) }

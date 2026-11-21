@@ -10,7 +10,7 @@ if [ "$API" -ge 33 ]; then
 else
   adb shell pm grant com.blackcuts.musicplayer android.permission.READ_EXTERNAL_STORAGE
 fi
-if [ "$API" -le 28 ]; then adb shell pm grant com.blackcuts.musicplayer android.permission.WRITE_EXTERNAL_STORAGE; fi
+if [ "$API" -le 29 ]; then adb shell pm grant com.blackcuts.musicplayer android.permission.WRITE_EXTERNAL_STORAGE; fi
 python3 - <<'PY'
 import wave, math, struct
 with wave.open('/tmp/blackcuts-smoke.wav', 'wb') as out:
