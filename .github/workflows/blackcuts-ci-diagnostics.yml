@@ -1,0 +1,26 @@
+name: Diagnóstico de testes BLACKCUTS
+on:
+  push:
+    paths: ['.github/workflows/blackcuts-ci-diagnostics.yml']
+  workflow_dispatch:
+permissions:
+  actions: read
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ler falhas de emulador
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run view 44915442275 --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/falhas.txt || true
+          python3 - <<'PY'
+          import re
+          text=open('/tmp/falhas.txt',errors='replace').read().splitlines()
+          patterns=('error', 'failed', 'not found', 'exception', 'still exists', 'not visible', 'not opened', 'blackcuts', 'uiautomator', 'permission', 'exit code')
+          selected=[line for line in text if any(p in line.lower() for p in patterns)]
+          for line in selected[-90:]:
+              line=re.sub(r'\x1b\[[0-9;]*m', '', line).replace('%','%25').replace('\r','%0D').replace('\n','%0A')
+              print('::notice::'+line[-2000:])
+          PY
