@@ -65,6 +65,9 @@ data class PlaylistTrack(val playlistId: Long, val uri: String, val addedAt: Lon
     @Insert(onConflict = OnConflictStrategy.IGNORE) suspend fun createPlaylist(playlist: Playlist)
     @Delete suspend fun deletePlaylist(playlist: Playlist)
     @Insert(onConflict = OnConflictStrategy.IGNORE) suspend fun addToPlaylist(item: PlaylistTrack)
+    @Query("UPDATE playlists SET name = :name WHERE id = :id") suspend fun renamePlaylist(id: Long, name: String)
+    @Query("DELETE FROM playlist_tracks WHERE playlistId = :playlistId AND uri = :uri") suspend fun removeFromPlaylist(playlistId: Long, uri: String)
+    @Query("SELECT uri FROM playlist_tracks WHERE playlistId = :playlistId ORDER BY addedAt") fun observePlaylistUris(playlistId: Long): Flow<List<String>>
     @Query("SELECT uri FROM playlist_tracks WHERE playlistId = :playlistId ORDER BY addedAt") suspend fun playlistUris(playlistId: Long): List<String>
 }
 @Database(entities = [Favorite::class, Playlist::class, PlaylistTrack::class], version = 1, exportSchema = false)

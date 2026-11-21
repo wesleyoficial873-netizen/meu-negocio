@@ -18,6 +18,7 @@ class PlaybackService : MediaSessionService() {
             setAudioAttributes(AudioAttributes.Builder().setUsage(C.USAGE_MEDIA).setContentType(C.AUDIO_CONTENT_TYPE_MUSIC).build(), true)
             setHandleAudioBecomingNoisy(true)
         }
+        SleepTimer.attach(player)
         player.addListener(object : Player.Listener {
             override fun onAudioSessionIdChanged(audioSessionId: Int) { DeviceEqualizer.attach(audioSessionId) }
         })
@@ -27,6 +28,7 @@ class PlaybackService : MediaSessionService() {
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaSession = session
     override fun onDestroy() {
         session.release()
+        SleepTimer.release()
         DeviceEqualizer.release()
         player.release()
         super.onDestroy()

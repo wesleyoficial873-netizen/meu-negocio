@@ -12,6 +12,7 @@ import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
 import com.blackcuts.musicplayer.data.*
 import com.blackcuts.musicplayer.playback.PlaybackService
+import com.blackcuts.musicplayer.playback.SleepTimer
 import com.google.common.util.concurrent.ListenableFuture
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
@@ -38,7 +39,6 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     val speed = MutableStateFlow(1f)
     private var observer: ContentObserver? = null
     private var scanJob: Job? = null
-    private var sleepJob: Job? = null
     private val controllerFuture: ListenableFuture<MediaController> = MediaController.Builder(app, SessionToken(app, ComponentName(app, PlaybackService::class.java))).buildAsync()
     private var controller: MediaController? = null
     private val listener = object : Player.Listener {
@@ -89,12 +89,28 @@ class PlayerViewModel(app: Application) : AndroidViewModel(app) {
     fun toggleShuffle() { controller?.let { it.shuffleModeEnabled = !it.shuffleModeEnabled } }
     fun cycleRepeat() { controller?.let { it.repeatMode = when (it.repeatMode) { Player.REPEAT_MODE_OFF -> Player.REPEAT_MODE_ALL; Player.REPEAT_MODE_ALL -> Player.REPEAT_MODE_ONE; else -> Player.REPEAT_MODE_OFF } } }
     fun setSpeed(value: Float) { controller?.setPlaybackSpeed(value) }
-    fun sleep(minutes: Int) { sleepJob?.cancel(); if (minutes > 0) sleepJob = viewModelScope.launch { delay(minutes * 60_000L); controller?.pause() } }
+    fun sleep(minutes: Int) { SleepTimer.schedule(minutes) }
     fun toggleFavorite(uri: String) = viewModelScope.launch { if (uri in favorites.value) dao.removeFavorite(uri) else dao.addFavorite(Favorite(uri)) }
-    fun createPlaylist(name: String) = viewModelScope.launch { name.trim().takeIf { it.isNotEmpty() }?.let { dao.createPlaylist(Playlist(name = it)) } }
+    fun createPlaylist(name: String) = viewModelScope.launch {
+        val trimmed = name.trim()
+        when {
+            trimmed.isEmpty() || trimmed.length > 200 -> message.value = "Informe um nome entre 1 e 200 caracteres."
+            dao.playlistByName(trimmed) != null -> message.value = "Já existe uma playlist com esse nome."
+            else -> dao.createPlaylist(Playlist(name = trimmed))
+        }
+    }
+    fun playlistTracks(playlistId: Long) = dao.observePlaylistUris(playlistId)
+    fun removeFromPlaylist(playlist: Playlist, uri: String) = viewModelScope.launch { dao.removeFromPlaylist(playlist.id, uri) }
+    fun renamePlaylist(playlist: Playlist, name: String) = viewModelScope.launch {
+        val newName = name.trim()
+        if (newName.isEmpty() || newName.length > 200) { message.value = "Informe um nome entre 1 e 200 caracteres."; return@launch }
+        val existing = dao.playlistByName(newName)
+        if (existing != null && existing.id != playlist.id) { message.value = "Já existe uma playlist com esse nome."; return@launch }
+        try { dao.renamePlaylist(playlist.id, newName) } catch (e: CancellationException) { throw e } catch (e: Exception) { message.value = "Não foi possível renomear a playlist." }
+    }
     fun deletePlaylist(playlist: Playlist) = viewModelScope.launch { dao.deletePlaylist(playlist) }
     fun addToPlaylist(playlist: Playlist, uri: String) = viewModelScope.launch { dao.addToPlaylist(PlaylistTrack(playlist.id, uri)) }
-    fun playPlaylist(playlist: Playlist) = viewModelScope.launch { val map = tracks.value.associateBy { it.uri.toString() }; play(dao.playlistUris(playlist.id).mapNotNull { map[it] }) }
+    fun playPlaylist(playlist: Playlist) = viewModelScope.launch { val map = tracks.value.associateBy { it.uri.toString() }; val items = dao.playlistUris(playlist.id).mapNotNull { map[it] }; if (items.isEmpty()) message.value = "Esta playlist não contém músicas disponíveis." else play(items) }
     fun exportBackup(uri: Uri) = viewModelScope.launch {
         message.value = try { backups.exportTo(uri); "Backup salvo. Os arquivos de música não foram copiados." } catch (e: CancellationException) { throw e } catch (e: Exception) { "Não foi possível salvar o backup: ${e.message ?: "erro desconhecido"}" }
     }
