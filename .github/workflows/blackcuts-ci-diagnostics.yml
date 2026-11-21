@@ -14,14 +14,13 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh api "repos/$GITHUB_REPOSITORY/actions/jobs/136881470397/logs" > /tmp/falhas28.txt || true
-          gh api "repos/$GITHUB_REPOSITORY/actions/jobs/136881470377/logs" > /tmp/falhas29.txt || true
-          cat /tmp/falhas28.txt /tmp/falhas29.txt > /tmp/falhas.txt
+          gh run view 44915442275 --repo "$GITHUB_REPOSITORY" --log-failed > /tmp/falhas.txt || true
           python3 - <<'PY'
           import re
           text=open('/tmp/falhas.txt',errors='replace').read().splitlines()
           patterns=('error', 'failed', 'not found', 'exception', 'still exists', 'not visible', 'not opened', 'blackcuts', 'uiautomator', 'permission', 'exit code')
           selected=[line for line in text if any(p in line.lower() for p in patterns)]
+          print("::notice::Log lines: %d / filtered: %d" % (len(text), len(selected)))
           for line in selected[-45:]:
               line=re.sub(r'\x1b\[[0-9;]*m', '', line).replace('%','%25').replace('\r','%0D').replace('\n','%0A')
               print('::notice::'+line[-2000:])
