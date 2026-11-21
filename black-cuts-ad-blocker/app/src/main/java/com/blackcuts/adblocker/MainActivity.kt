@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Apps
 import androidx.compose.material.icons.filled.BarChart
+import androidx.compose.material.icons.filled.PlayCircle
 import androidx.compose.material.icons.filled.Rule
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Shield
@@ -38,6 +39,7 @@ import com.blackcuts.adblocker.ui.screens.HomeScreen
 import com.blackcuts.adblocker.ui.screens.RulesScreen
 import com.blackcuts.adblocker.ui.screens.SettingsScreen
 import com.blackcuts.adblocker.ui.screens.StatsScreen
+import com.blackcuts.adblocker.ui.screens.YouTubeScreen
 import com.blackcuts.adblocker.ui.theme.ActiveGreen
 import com.blackcuts.adblocker.ui.theme.AmoledBlack
 import com.blackcuts.adblocker.ui.theme.BlackCutsTheme
@@ -46,6 +48,7 @@ import com.blackcuts.adblocker.ui.theme.SurfaceDark
 
 private enum class NavTab(val route: String, val label: String, val icon: ImageVector) {
     HOME("home", "Início", Icons.Default.Shield),
+    YOUTUBE("youtube", "YouTube", Icons.Default.PlayCircle),
     STATS("stats", "Painel", Icons.Default.BarChart),
     APPS("apps", "Apps", Icons.Default.Apps),
     RULES("rules", "Regras", Icons.Default.Rule),
@@ -125,6 +128,7 @@ class MainActivity : ComponentActivity() {
                                 onToggleVpn = { enable -> handleVpnToggle(enable) }
                             )
                         }
+                        composable(NavTab.YOUTUBE.route) { YouTubeScreen() }
                         composable(NavTab.STATS.route) { StatsScreen(viewModel) }
                         composable(NavTab.APPS.route) { AppsScreen(viewModel) }
                         composable(NavTab.RULES.route) { RulesScreen(viewModel) }
